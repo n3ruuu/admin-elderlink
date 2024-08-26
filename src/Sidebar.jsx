@@ -7,6 +7,8 @@ import HealthIcon from "./assets/icons/record.svg"
 import FinancialIcon from "./assets/icons/finance.svg"
 import EventsIcon from "./assets/icons/events.svg"
 import FormsAndAppIcon from "./assets/icons/forms-and-app.svg"
+import FormsIcon from "./assets/icons/forms.svg"
+import ApplicationIcon from "./assets/icons/applications.svg"
 import ArchiveIcon from "./assets/icons/archive.svg"
 import SettingsIcon from "./assets/icons/settings.svg"
 import LogoutIcon from "./assets/icons/logout.svg"
@@ -122,7 +124,7 @@ const Sidebar = () => {
                             <div className="m-4 ml-10 space-y-2">
                                 <div className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]">
                                     <img
-                                        src={FormsAndAppIcon}
+                                        src={FormsIcon}
                                         alt="Forms Icon"
                                         className="group-hover:filter group-hover:brightness-0 group-hover:invert"
                                     />
@@ -130,7 +132,7 @@ const Sidebar = () => {
                                 </div>
                                 <div className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]">
                                     <img
-                                        src={FormsAndAppIcon}
+                                        src={ApplicationIcon}
                                         alt="Applications Icon"
                                         className="group-hover:filter group-hover:brightness-0 group-hover:invert"
                                     />
