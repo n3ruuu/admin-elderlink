@@ -1,7 +1,8 @@
-import Sidebar from "./Sidebar"
+// import Sidebar from "./Sidebar"
+import Login from "./Login"
 
 const App = () => {
-  return <Sidebar />
+    return <Login />
 }
 
 export default App
