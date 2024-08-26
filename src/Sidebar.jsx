@@ -9,6 +9,7 @@ import EventsIcon from "./assets/icons/events.svg"
 import FormsAndAppIcon from "./assets/icons/forms-and-app.svg"
 import SettingsIcon from "./assets/icons/settings.svg"
 import LogoutIcon from "./assets/icons/logout.svg"
+import Dashboard from "./pages/Dashboard"
 
 const Sidebar = () => {
   const [isMembersOpen, setIsMembersOpen] = useState(false)
@@ -23,7 +24,7 @@ const Sidebar = () => {
   }
 
   return (
-    <section>
+    <section className="flex">
       <div className="pl-12 pt-12 font-bold w-[22%] bg-[#FFFFFF] text-[#1F1F29] font-inter h-screen relative">
         <img
           className="h-[60px] mb-8"
@@ -156,6 +157,7 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
+      <Dashboard />
     </section>
   )
 }
