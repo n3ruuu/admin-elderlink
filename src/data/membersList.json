@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "dob": "01/15/1980",
+        "age": 44,
+        "gender": "Male",
+        "address": "123 Main St, Anytown, USA",
+        "phone": "(555) 123-4567"
+    },
+    {
+        "id": 2,
+        "name": "Jane Smith",
+        "dob": "07/22/1975",
+        "age": 49,
+        "gender": "Female",
+        "address": "456 Elm St, Othertown, USA",
+        "phone": "(555) 987-6543"
+    },
+    {
+        "id": 3,
+        "name": "Alice Johnson",
+        "dob": "12/05/1968",
+        "age": 55,
+        "gender": "Female",
+        "address": "789 Maple St, Somewhere, USA",
+        "phone": "(555) 456-7890"
+    }
+]

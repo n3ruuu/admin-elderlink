@@ -13,6 +13,7 @@ import ArchiveIcon from "./assets/icons/archive.svg"
 import SettingsIcon from "./assets/icons/settings.svg"
 import LogoutIcon from "./assets/icons/logout.svg"
 import Dashboard from "./pages/Dashboard"
+import MembersList from "./pages/MembersList"
 
 const Sidebar = () => {
     const [activeSection, setActiveSection] = useState("dashboard")
@@ -70,7 +71,12 @@ const Sidebar = () => {
 
                         {openSubSection === "members" && (
                             <div className="m-4 space-y-2">
-                                <div className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]">
+                                <div
+                                    className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                    onClick={() =>
+                                        setActiveSection("membersList")
+                                    }
+                                >
                                     <img
                                         src={ListIcon}
                                         alt="List Icon"
@@ -183,8 +189,9 @@ const Sidebar = () => {
                 </div>
             </div>
 
-            {/* Conditionally Rendered Dashboard */}
+            {/* Conditionally Rendered Pages */}
             {activeSection === "dashboard" && <Dashboard />}
+            {activeSection === "membersList" && <MembersList />}
         </section>
     )
 }
