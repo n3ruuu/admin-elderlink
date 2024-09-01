@@ -14,6 +14,7 @@ import SettingsIcon from "./assets/icons/settings.svg"
 import LogoutIcon from "./assets/icons/logout.svg"
 import Dashboard from "./pages/Dashboard"
 import MembersList from "./pages/MembersList"
+import HealthRecords from "./pages/HealthRecords" // Import HealthRecords
 
 const Sidebar = () => {
     const [activeSection, setActiveSection] = useState("dashboard")
@@ -92,11 +93,24 @@ const Sidebar = () => {
                                     />
                                     <p>Members List</p>
                                 </div>
-                                <div className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]">
+                                <div
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                        activeSection === "healthRecords"
+                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
+                                            : ""
+                                    } hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]`}
+                                    onClick={() =>
+                                        setActiveSection("healthRecords")
+                                    }
+                                >
                                     <img
                                         src={HealthIcon}
                                         alt="Health Icon"
-                                        className="group-hover:filter group-hover:brightness-0 group-hover:invert"
+                                        className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                            activeSection === "healthRecords"
+                                                ? "filter brightness-0 invert"
+                                                : ""
+                                        }`}
                                     />
                                     <p>Health Records</p>
                                 </div>
@@ -196,10 +210,11 @@ const Sidebar = () => {
                     </div>
                 </div>
             </div>
-
             {/* Conditionally Rendered Pages */}
             {activeSection === "dashboard" && <Dashboard />}
             {activeSection === "membersList" && <MembersList />}
+            {activeSection === "healthRecords" && <HealthRecords />}{" "}
+            {/* Added HealthRecords */}
         </section>
     )
 }

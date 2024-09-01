@@ -164,7 +164,7 @@ const MembersList = () => {
                     </div>
 
                     <div>
-                        <table className="min-w-full bg-[#FFFFFF] rounded-xl ">
+                        <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
                             <thead className="text-[#767171CC]">
                                 <tr>
                                     <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
@@ -195,9 +195,13 @@ const MembersList = () => {
                             </thead>
 
                             <tbody>
-                                {membersData.map((row) => (
+                                {membersData.map((row, index) => (
                                     <tr
-                                        className="text-[#333333] font-[500]"
+                                        className={`text-[#333333] font-[500] ${
+                                            index % 2 === 0
+                                                ? "bg-white"
+                                                : "bg-[#F5F5FA]"
+                                        }`}
                                         key={row.id}
                                     >
                                         <td className="px-16 py-4 whitespace-nowrap">

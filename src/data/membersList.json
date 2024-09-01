@@ -7,7 +7,12 @@
         "gender": "Male",
         "address": "123 Main St, Anytown, USA",
         "phone": "(555) 123-4567",
-        "email": "john.doe@example.com"
+        "email": "john.doe@example.com",
+        "medical_conditions": "Hypertension, Diabetes",
+        "medications": "Lisinopril, Metformin",
+        "allergies": "Penicillin",
+        "emergency_contact": "Jane Doe - (555) 234-5678",
+        "last_updated": "2024-08-01"
     },
     {
         "id": 2,
@@ -17,7 +22,12 @@
         "gender": "Female",
         "address": "456 Elm St, Othertown, USA",
         "phone": "(555) 987-6543",
-        "email": "jane.smith@example.com"
+        "email": "jane.smith@example.com",
+        "medical_conditions": "Asthma",
+        "medications": "Albuterol",
+        "allergies": "None",
+        "emergency_contact": "John Smith - (555) 543-2109",
+        "last_updated": "2024-08-05"
     },
     {
         "id": 3,
@@ -27,6 +37,11 @@
         "gender": "Female",
         "address": "789 Maple St, Somewhere, USA",
         "phone": "(555) 456-7890",
-        "email": "alice.johnson@example.com"
+        "email": "alice.johnson@example.com",
+        "medical_conditions": "Cholesterol",
+        "medications": "Atorvastatin",
+        "allergies": "Shellfish",
+        "emergency_contact": "Robert Johnson - (555) 678-9012",
+        "last_updated": "2024-08-10"
     }
 ]
