@@ -1,12 +1,29 @@
+import { useState } from "react"
 import SearchIcon from "../assets/icons/search.svg"
 import TotalNumberIcon from "../assets/icons/total-senior.svg"
 import BirthdayIcon from "../assets/icons/birthday.svg"
 import RegisteredIcon from "../assets/icons/registered.svg"
 import EditIcon from "../assets/icons/edit.svg"
 import ArchiveIcon from "../assets/icons/archive2.svg"
-import MembersListData from "../data/membersList.json" // Adjust the path as necessary
+import MembersListData from "../data/membersList.json"
+import Modal from "./Modal" // Import the Modal component
 
 const MembersList = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true)
+    }
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false)
+    }
+
+    const handleSave = () => {
+        // Add your save logic here
+        handleCloseModal()
+    }
+
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
             {/* Header */}
@@ -51,7 +68,10 @@ const MembersList = () => {
                         </option>
                     </select>
                 </div>
-                <button className="text-[#F5F5FA] bg-[#219EBC] h-fit px-8 text-[24px] py-2 rounded-xl">
+                <button
+                    className="text-[#F5F5FA] bg-[#219EBC] h-fit px-8 text-[24px] py-2 rounded-xl"
+                    onClick={handleOpenModal} // Open modal on click
+                >
                     &#43; Add New Member
                 </button>
             </div>
@@ -133,7 +153,10 @@ const MembersList = () => {
 
                             <tbody>
                                 {MembersListData.map((row) => (
-                                    <tr className="text-[#333333]" key={row.id}>
+                                    <tr
+                                        className="text-[#333333] font-[500]"
+                                        key={row.id}
+                                    >
                                         <td className="px-16 py-4 whitespace-nowrap ">
                                             {row.name}
                                         </td>
@@ -143,16 +166,16 @@ const MembersList = () => {
                                         <td className="whitespace-nowrap ">
                                             {row.age}
                                         </td>
-                                        <td className="wwhitespace-nowrap ">
+                                        <td className="whitespace-nowrap ">
                                             {row.gender}
                                         </td>
                                         <td className="whitespace-nowrap">
                                             {row.address}
                                         </td>
-                                        <td className="wwhitespace-nowrap ">
+                                        <td className="whitespace-nowrap ">
                                             {row.phone}
                                         </td>
-                                        <td className="px-8 whitespace-nowrap flex gap-5">
+                                        <td className="px-8 py-4 whitespace-nowrap flex gap-5 items">
                                             <button aria-label="Edit">
                                                 <img
                                                     src={EditIcon}
@@ -173,6 +196,13 @@ const MembersList = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Modal */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onSave={handleSave}
+            />
         </section>
     )
 }

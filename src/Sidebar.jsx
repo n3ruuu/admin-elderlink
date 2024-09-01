@@ -72,7 +72,11 @@ const Sidebar = () => {
                         {openSubSection === "members" && (
                             <div className="m-4 space-y-2">
                                 <div
-                                    className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                        activeSection === "membersList"
+                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
+                                            : ""
+                                    } hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]`}
                                     onClick={() =>
                                         setActiveSection("membersList")
                                     }
@@ -80,7 +84,11 @@ const Sidebar = () => {
                                     <img
                                         src={ListIcon}
                                         alt="List Icon"
-                                        className="group-hover:filter group-hover:brightness-0 group-hover:invert"
+                                        className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                            activeSection === "membersList"
+                                                ? "filter brightness-0 invert"
+                                                : ""
+                                        }`}
                                     />
                                     <p>Members List</p>
                                 </div>
