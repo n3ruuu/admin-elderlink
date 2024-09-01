@@ -6,7 +6,8 @@
         "age": 44,
         "gender": "Male",
         "address": "123 Main St, Anytown, USA",
-        "phone": "(555) 123-4567"
+        "phone": "(555) 123-4567",
+        "email": "john.doe@example.com"
     },
     {
         "id": 2,
@@ -15,7 +16,8 @@
         "age": 49,
         "gender": "Female",
         "address": "456 Elm St, Othertown, USA",
-        "phone": "(555) 987-6543"
+        "phone": "(555) 987-6543",
+        "email": "jane.smith@example.com"
     },
     {
         "id": 3,
@@ -24,6 +26,7 @@
         "age": 55,
         "gender": "Female",
         "address": "789 Maple St, Somewhere, USA",
-        "phone": "(555) 456-7890"
+        "phone": "(555) 456-7890",
+        "email": "alice.johnson@example.com"
     }
 ]

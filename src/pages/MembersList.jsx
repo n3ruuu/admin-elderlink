@@ -6,22 +6,60 @@ import RegisteredIcon from "../assets/icons/registered.svg"
 import EditIcon from "../assets/icons/edit.svg"
 import ArchiveIcon from "../assets/icons/archive2.svg"
 import MembersListData from "../data/membersList.json"
-import Modal from "./Modal" // Import the Modal component
+import Modal from "./Modal"
+import ArchiveConfirmModal from "./ArchiveConfirmModal"
 
 const MembersList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+    const [currentMember, setCurrentMember] = useState(null)
+    const [memberToArchive, setMemberToArchive] = useState(null)
+    const [membersData, setMembersData] = useState(MembersListData)
 
-    const handleOpenModal = () => {
+    const handleOpenModal = (member) => {
+        setCurrentMember(member)
         setIsModalOpen(true)
     }
 
     const handleCloseModal = () => {
         setIsModalOpen(false)
+        setCurrentMember(null)
     }
 
-    const handleSave = () => {
-        // Add your save logic here
+    const handleSave = (updatedMember) => {
+        if (currentMember) {
+            // Editing existing member
+            setMembersData((prevData) =>
+                prevData.map((member) =>
+                    member.id === updatedMember.id ? updatedMember : member,
+                ),
+            )
+        } else {
+            // Adding new member
+            setMembersData((prevData) => [
+                ...prevData,
+                { ...updatedMember, id: prevData.length + 1 }, // Simple ID generation
+            ])
+        }
         handleCloseModal()
+    }
+
+    const handleArchiveClick = (member) => {
+        setMemberToArchive(member)
+        setIsConfirmModalOpen(true)
+    }
+
+    const handleConfirmArchive = () => {
+        setMembersData((prevData) =>
+            prevData.filter((member) => member.id !== memberToArchive.id),
+        )
+        setIsConfirmModalOpen(false)
+        setMemberToArchive(null)
+    }
+
+    const handleCloseConfirmModal = () => {
+        setIsConfirmModalOpen(false)
+        setMemberToArchive(null)
     }
 
     return (
@@ -70,7 +108,7 @@ const MembersList = () => {
                 </div>
                 <button
                     className="text-[#F5F5FA] bg-[#219EBC] h-fit px-8 text-[24px] py-2 rounded-xl"
-                    onClick={handleOpenModal} // Open modal on click
+                    onClick={() => handleOpenModal(null)} // Open modal for new member
                 >
                     &#43; Add New Member
                 </button>
@@ -90,7 +128,9 @@ const MembersList = () => {
                                 />
                             </div>
                             <div className="flex flex-col">
-                                <h3 className="font-bold text-5xl">967</h3>
+                                <h3 className="font-bold text-5xl">
+                                    {membersData.length}
+                                </h3>
                                 <p className="text-[24px]">
                                     Total Senior Citizens
                                 </p>
@@ -145,6 +185,9 @@ const MembersList = () => {
                                     <th className="text-left font-medium whitespace-nowrap">
                                         Phone Number
                                     </th>
+                                    <th className="text-left font-medium whitespace-nowrap">
+                                        Email
+                                    </th>
                                     <th className="px-8 text-left font-medium whitespace-nowrap">
                                         Actions
                                     </th>
@@ -152,37 +195,50 @@ const MembersList = () => {
                             </thead>
 
                             <tbody>
-                                {MembersListData.map((row) => (
+                                {membersData.map((row) => (
                                     <tr
                                         className="text-[#333333] font-[500]"
                                         key={row.id}
                                     >
-                                        <td className="px-16 py-4 whitespace-nowrap ">
+                                        <td className="px-16 py-4 whitespace-nowrap">
                                             {row.name}
                                         </td>
                                         <td className="whitespace-nowrap">
                                             {row.dob}
                                         </td>
-                                        <td className="whitespace-nowrap ">
+                                        <td className="whitespace-nowrap">
                                             {row.age}
                                         </td>
-                                        <td className="whitespace-nowrap ">
+                                        <td className="whitespace-nowrap">
                                             {row.gender}
                                         </td>
                                         <td className="whitespace-nowrap">
                                             {row.address}
                                         </td>
-                                        <td className="whitespace-nowrap ">
+                                        <td className="whitespace-nowrap">
                                             {row.phone}
                                         </td>
-                                        <td className="px-8 py-4 whitespace-nowrap flex gap-5 items">
-                                            <button aria-label="Edit">
+                                        <td className="whitespace-nowrap">
+                                            {row.email}
+                                        </td>
+                                        <td className="px-8 py-4 whitespace-nowrap flex gap-5 items-center">
+                                            <button
+                                                aria-label="Edit"
+                                                onClick={() =>
+                                                    handleOpenModal(row)
+                                                } // Pass member data to modal
+                                            >
                                                 <img
                                                     src={EditIcon}
                                                     alt="Edit"
                                                 />
                                             </button>
-                                            <button aria-label="Archive">
+                                            <button
+                                                aria-label="Archive"
+                                                onClick={() =>
+                                                    handleArchiveClick(row)
+                                                }
+                                            >
                                                 <img
                                                     src={ArchiveIcon}
                                                     alt="Archive"
@@ -197,12 +253,23 @@ const MembersList = () => {
                 </div>
             </div>
 
-            {/* Modal */}
-            <Modal
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                onSave={handleSave}
-            />
+            {/* Modals */}
+            {isModalOpen && (
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    onSave={handleSave}
+                    member={currentMember} // Pass member data to the modal
+                />
+            )}
+            {isConfirmModalOpen && (
+                <ArchiveConfirmModal
+                    isOpen={isConfirmModalOpen}
+                    onClose={handleCloseConfirmModal}
+                    onConfirm={handleConfirmArchive}
+                    memberName={memberToArchive ? memberToArchive.name : ""}
+                />
+            )}
         </section>
     )
 }

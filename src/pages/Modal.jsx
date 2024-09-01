@@ -1,11 +1,60 @@
 /* eslint-disable react/prop-types */
-const Modal = ({ isOpen, onClose, onSave }) => {
+import { useState, useEffect } from "react"
+
+const Modal = ({ isOpen, onClose, onSave, member }) => {
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        dob: "",
+        gender: "male",
+        address: "",
+        phone: "",
+        email: "",
+    })
+
+    useEffect(() => {
+        if (member) {
+            setFormData({
+                firstName: member.name.split(" ")[0] || "",
+                lastName: member.name.split(" ")[1] || "",
+                dob: member.dob || "",
+                gender: member.gender || "male",
+                address: member.address || "",
+                phone: member.phone || "",
+                email: member.email || "",
+            })
+        }
+    }, [member])
+
     if (!isOpen) return null
+
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }))
+    }
+
+    const handleSave = () => {
+        onSave(formData)
+        setFormData({
+            firstName: "",
+            lastName: "",
+            dob: "",
+            gender: "male",
+            address: "",
+            phone: "",
+            email: "",
+        })
+    }
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg w-[40%]">
-                <h2 className="text-3xl font-bold mb-6">Add New Member</h2>
+                <h2 className="text-3xl font-bold mb-6">
+                    {member ? "Edit Member" : "Add New Member"}
+                </h2>
                 <form>
                     {/* First Name and Last Name */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
@@ -21,6 +70,8 @@ const Modal = ({ isOpen, onClose, onSave }) => {
                                 type="text"
                                 id="firstName"
                                 name="firstName"
+                                value={formData.firstName}
+                                onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 placeholder="Juan"
                                 required
@@ -38,6 +89,8 @@ const Modal = ({ isOpen, onClose, onSave }) => {
                                 type="text"
                                 id="lastName"
                                 name="lastName"
+                                value={formData.lastName}
+                                onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 placeholder="Dela Cruz"
                                 required
@@ -59,6 +112,8 @@ const Modal = ({ isOpen, onClose, onSave }) => {
                                 type="date"
                                 id="dob"
                                 name="dob"
+                                value={formData.dob}
+                                onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 required
                             />
@@ -73,6 +128,8 @@ const Modal = ({ isOpen, onClose, onSave }) => {
                             <select
                                 id="gender"
                                 name="gender"
+                                value={formData.gender}
+                                onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 required
                             >
@@ -94,6 +151,8 @@ const Modal = ({ isOpen, onClose, onSave }) => {
                             type="text"
                             id="address"
                             name="address"
+                            value={formData.address}
+                            onChange={handleChange}
                             className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             placeholder="123 Main St."
                             required
@@ -114,6 +173,8 @@ const Modal = ({ isOpen, onClose, onSave }) => {
                                 type="tel"
                                 id="phone"
                                 name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 placeholder="+63 912 345 6789"
                                 required
@@ -131,6 +192,8 @@ const Modal = ({ isOpen, onClose, onSave }) => {
                                 type="email"
                                 id="email"
                                 name="email"
+                                value={formData.email}
+                                onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 placeholder="example@email.com"
                                 required
@@ -158,7 +221,7 @@ const Modal = ({ isOpen, onClose, onSave }) => {
                             <button
                                 type="button"
                                 className="text-[#FFFFFF] bg-[#219EBC] px-6 py-2 rounded-xl"
-                                onClick={onSave}
+                                onClick={handleSave}
                             >
                                 Save
                             </button>
