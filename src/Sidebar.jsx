@@ -14,7 +14,8 @@ import SettingsIcon from "./assets/icons/settings.svg"
 import LogoutIcon from "./assets/icons/logout.svg"
 import Dashboard from "./pages/Dashboard"
 import MembersList from "./pages/MembersList"
-import HealthRecords from "./pages/HealthRecords" // Import HealthRecords
+import HealthRecords from "./pages/HealthRecords"
+import FinancialAssistance from "./pages/FinancialAssistance" // Import FinancialAssistance
 
 const Sidebar = () => {
     const [activeSection, setActiveSection] = useState("dashboard")
@@ -114,11 +115,25 @@ const Sidebar = () => {
                                     />
                                     <p>Health Records</p>
                                 </div>
-                                <div className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]">
+                                <div
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                        activeSection === "financialAssistance"
+                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
+                                            : ""
+                                    } hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]`}
+                                    onClick={() =>
+                                        setActiveSection("financialAssistance")
+                                    }
+                                >
                                     <img
                                         src={FinancialIcon}
                                         alt="Financial Icon"
-                                        className="group-hover:filter group-hover:brightness-0 group-hover:invert"
+                                        className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                            activeSection ===
+                                            "financialAssistance"
+                                                ? "filter brightness-0 invert"
+                                                : ""
+                                        }`}
                                     />
                                     <p>Financial Assistance</p>
                                 </div>
@@ -213,8 +228,11 @@ const Sidebar = () => {
             {/* Conditionally Rendered Pages */}
             {activeSection === "dashboard" && <Dashboard />}
             {activeSection === "membersList" && <MembersList />}
-            {activeSection === "healthRecords" && <HealthRecords />}{" "}
-            {/* Added HealthRecords */}
+            {activeSection === "healthRecords" && <HealthRecords />}
+            {activeSection === "financialAssistance" && (
+                <FinancialAssistance />
+            )}{" "}
+            {/* Added FinancialAssistance */}
         </section>
     )
 }

@@ -13,7 +13,6 @@ const HealthRecords = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
     const [currentMember, setCurrentMember] = useState(null)
-    const [memberToArchive, setMemberToArchive] = useState(null)
     const [membersData, setMembersData] = useState(MembersListData)
 
     const handleOpenModal = (member) => {
@@ -44,22 +43,8 @@ const HealthRecords = () => {
         handleCloseModal()
     }
 
-    const handleArchiveClick = (member) => {
-        setMemberToArchive(member)
+    const handleArchiveClick = () => {
         setIsConfirmModalOpen(true)
-    }
-
-    const handleConfirmArchive = () => {
-        setMembersData((prevData) =>
-            prevData.filter((member) => member.id !== memberToArchive.id),
-        )
-        setIsConfirmModalOpen(false)
-        setMemberToArchive(null)
-    }
-
-    const handleCloseConfirmModal = () => {
-        setIsConfirmModalOpen(false)
-        setMemberToArchive(null)
     }
 
     return (
@@ -260,14 +245,7 @@ const HealthRecords = () => {
                     member={currentMember} // Pass member data to the modal
                 />
             )}
-            {isConfirmModalOpen && (
-                <ArchiveConfirmModal
-                    isOpen={isConfirmModalOpen}
-                    onClose={handleCloseConfirmModal}
-                    onConfirm={handleConfirmArchive}
-                    memberName={memberToArchive ? memberToArchive.name : ""}
-                />
-            )}
+            {isConfirmModalOpen && <ArchiveConfirmModal />}
         </section>
     )
 }
