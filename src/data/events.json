@@ -1,0 +1,51 @@
+[
+    {
+        "title": "OSCA Social Gathering",
+        "date": "05-03-2024",
+        "location": "OSCA Center",
+        "organizer": "OSCA",
+        "category": "Social Gathering"
+    },
+    {
+        "title": "Workshop on Financial Planning",
+        "date": "04-27-2024",
+        "location": "Mojon Community Center",
+        "organizer": "Barangay Finance Office",
+        "category": "Workshop"
+    },
+    {
+        "title": "Seminar on Healthy Aging",
+        "date": "04-15-2024",
+        "location": "Barangay Hall, Mojon",
+        "organizer": "Barangay Health Office",
+        "category": "Seminar"
+    },
+    {
+        "title": "Zumba Session",
+        "date": "03-22-2024",
+        "location": "Mojon Basketball Court",
+        "organizer": "OSCA Mojon",
+        "category": "Fitness"
+    },
+    {
+        "title": "Senior Fitness Walk",
+        "date": "03-03-2024",
+        "location": "Malolos Capitol",
+        "organizer": "City of Malolos",
+        "category": "Fitness"
+    },
+    {
+        "title": "Heart-to-Heart (Hearts Day)",
+        "date": "02-14-2024",
+        "location": "Mojon Community Center",
+        "organizer": "Barangay Mojon",
+        "category": "Social Gathering"
+    },
+    {
+        "title": "Year-End Party",
+        "date": "12-20-2024",
+        "location": "Mojon Community Center",
+        "organizer": "Barangay Mojon",
+        "category": "Social Gathering"
+    }
+]

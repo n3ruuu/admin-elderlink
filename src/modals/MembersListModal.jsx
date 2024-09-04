@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
+import moment from "moment"
 
 const Modal = ({ isOpen, onClose, onSave, member }) => {
     const [formData, setFormData] = useState({
@@ -17,7 +18,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
             setFormData({
                 firstName: member.name.split(" ")[0] || "",
                 lastName: member.name.split(" ")[1] || "",
-                dob: member.dob || "",
+                dob: member.dob ? moment(member.dob).format("YYYY-MM-DD") : "",
                 gender: member.gender || "male",
                 address: member.address || "",
                 phone: member.phone || "",
@@ -37,7 +38,11 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
     }
 
     const handleSave = () => {
-        onSave(formData)
+        const formattedData = {
+            ...formData,
+            dob: formData.dob ? moment(formData.dob).format("YYYY-MM-DD") : "",
+        }
+        onSave(formattedData)
         setFormData({
             firstName: "",
             lastName: "",
