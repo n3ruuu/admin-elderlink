@@ -50,9 +50,7 @@ const FinancialAssistanceModal = ({ isOpen, onClose, onSave, member }) => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg w-[40%]">
                 <h2 className="text-3xl font-bold mb-6">
-                    {member
-                        ? "Edit Financial Assistance"
-                        : "Add Financial Assistance"}
+                    {member ? "Edit Beneficiary" : "Add Beneficiary"}
                 </h2>
                 <form>
                     {/* First Name and Last Name */}

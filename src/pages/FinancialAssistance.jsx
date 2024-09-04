@@ -65,20 +65,20 @@ const FinancialAssistance = () => {
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
             {/* Header */}
-            <div className="p-16 pb-8 flex justify-between items-center">
-                <div>
+            <div className="p-16 w-full pb-8 flex items-start">
+                <div className="w-1/2">
                     <h1 className="text-6xl font-bold">Financial Assistance</h1>
                     <p className="text-[#767171CC] mt-3">
                         Manage finances and benefits
                     </p>
                 </div>
-                <div className="ml-auto mr-[20px] flex space-x-4 max-w-md h-fit text-[#76717180]">
+                <div className="flex items-start w-1/2 text-[#76717180]">
                     <div className="relative w-full">
                         <input
                             type="search"
                             name="search"
                             id="search"
-                            className="p-3 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
+                            className="p-3 pr-12 border border-gray-300 border-r-0 rounded-l-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full"
                             placeholder="Search..."
                         />
                         <img
@@ -90,7 +90,7 @@ const FinancialAssistance = () => {
                     <select
                         name="category"
                         id="category"
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                        className="p-3 border h-[50px] border-gray-300 rounded-r-xl border-l-1 focus:outline-none"
                     >
                         <option className="text-[#000000]" value="all">
                             All Categories
@@ -105,13 +105,13 @@ const FinancialAssistance = () => {
                             Category 3
                         </option>
                     </select>
+                    <button
+                        className="text-[#F5F5FA] bg-[#219EBC] w-full px-8 ml-4 text-[24px] py-2 rounded-xl"
+                        onClick={() => handleOpenModal(null)} // Open modal for new member
+                    >
+                        &#43; Add Beneficiary
+                    </button>
                 </div>
-                <button
-                    className="text-[#F5F5FA] bg-[#219EBC] h-fit px-8 text-[24px] py-2 rounded-xl"
-                    onClick={() => handleOpenModal(null)} // Open modal for new member
-                >
-                    &#43; Add Beneficiary
-                </button>
             </div>
 
             {/* Content */}
