@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useState } from "react"
 import SearchIcon from "../assets/icons/search.svg"
 import EditIcon from "../assets/icons/edit.svg"
@@ -8,6 +7,8 @@ import SendIcon from "../assets/icons/send-icon.svg"
 import EventsData from "../data/events.json"
 import Modal from "../modals/EventsModal"
 import ArchiveConfirmModal from "./ArchiveConfirmModal"
+import Calendar from "../Calendar"
+import moment from "moment"
 
 const Events = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -16,7 +17,7 @@ const Events = () => {
     const [eventToArchive, setEventToArchive] = useState(null)
     const [eventsData, setEventsData] = useState(EventsData)
     const [filter, setFilter] = useState("all")
-    const [viewMode, setViewMode] = useState("list") // Add state for view mode
+    const [viewMode, setViewMode] = useState("list") // State for view mode
 
     const handleOpenModal = (event) => {
         setCurrentEvent(event)
@@ -95,6 +96,7 @@ const Events = () => {
                             className="absolute right-3 top-6 transform -translate-y-1/2 w-5 h-5 pointer-events-none"
                         />
                     </div>
+
                     <select
                         name="category"
                         id="category"
@@ -133,48 +135,63 @@ const Events = () => {
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <div className="flex text-[20px] gap-5 justify-between">
                         <div className="flex gap-2 items-center">
-                            <img
-                                className="h-5"
-                                src={FilterIcon}
-                                alt="Filter Icon"
-                            />
-                            <p className="text-[#219EBC]">Filter:</p>
-                            <div className="flex border border-[#219EBC] rounded-2xl">
-                                <button
-                                    className={`border-1 border-[#219EBC] text-[#219EBC] border-r border-r-[#219EBC] rounded-l-xl px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
-                                        filter === "all"
-                                            ? "bg-[#219EBC] text-white"
-                                            : ""
-                                    }`}
-                                    onClick={() => handleFilterChange("all")}
-                                >
-                                    All
-                                </button>
-                                <button
-                                    className={`border-1 border-[#219EBC] text-[#219EBC] px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
-                                        filter === "ongoing"
-                                            ? "bg-[#219EBC] text-white"
-                                            : ""
-                                    }`}
-                                    onClick={() =>
-                                        handleFilterChange("ongoing")
-                                    }
-                                >
-                                    Ongoing
-                                </button>
-                                <button
-                                    className={`border-1 border-[#219EBC] text-[#219EBC] border-l border-l-[#219EBC] rounded-r-xl px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
-                                        filter === "archived"
-                                            ? "bg-[#219EBC] text-white"
-                                            : ""
-                                    }`}
-                                    onClick={() =>
-                                        handleFilterChange("archived")
-                                    }
-                                >
-                                    Archived
-                                </button>
-                            </div>
+                            {/* Conditional rendering of the header or filter */}
+                            {viewMode === "calendar" ? (
+                                <div className="flex items-center">
+                                    <p className="text-[#219EBC] text-lg font-semibold">
+                                        {moment().format("MMMM YYYY")}
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="flex items-center">
+                                    <img
+                                        className="h-5"
+                                        src={FilterIcon}
+                                        alt="Filter Icon"
+                                    />
+                                    <p className="text-[#219EBC] ml-2">
+                                        Filter:
+                                    </p>
+                                    <div className="flex border border-[#219EBC] rounded-2xl ml-2">
+                                        <button
+                                            className={`border-1 border-[#219EBC] text-[#219EBC] border-r border-r-[#219EBC] rounded-l-xl px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
+                                                filter === "all"
+                                                    ? "bg-[#219EBC] text-white"
+                                                    : ""
+                                            }`}
+                                            onClick={() =>
+                                                handleFilterChange("all")
+                                            }
+                                        >
+                                            All
+                                        </button>
+                                        <button
+                                            className={`border-1 border-[#219EBC] text-[#219EBC] px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
+                                                filter === "ongoing"
+                                                    ? "bg-[#219EBC] text-white"
+                                                    : ""
+                                            }`}
+                                            onClick={() =>
+                                                handleFilterChange("ongoing")
+                                            }
+                                        >
+                                            Ongoing
+                                        </button>
+                                        <button
+                                            className={`border-1 border-[#219EBC] text-[#219EBC] border-l border-l-[#219EBC] rounded-r-xl px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
+                                                filter === "archived"
+                                                    ? "bg-[#219EBC] text-white"
+                                                    : ""
+                                            }`}
+                                            onClick={() =>
+                                                handleFilterChange("archived")
+                                            }
+                                        >
+                                            Archived
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <div className="flex">
                             <div>
@@ -240,29 +257,28 @@ const Events = () => {
                                             filter === "all"
                                                 ? true
                                                 : filter === "ongoing"
-                                                  ? event.status === "ongoing"
-                                                  : event.status === "archived",
+                                                  ? event.status === "Ongoing"
+                                                  : event.status === "Archived",
                                         )
                                         .map((event) => (
                                             <tr key={event.id}>
-                                                <td className="px-16 py-4 whitespace-nowrap">
+                                                <td className="px-16 py-4 text-left whitespace-nowrap">
                                                     {event.title}
                                                 </td>
-                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                <td className="text-left whitespace-nowrap">
                                                     {event.date}
                                                 </td>
-                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                <td className="text-left whitespace-nowrap">
                                                     {event.location}
                                                 </td>
-                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                <td className="text-left whitespace-nowrap">
                                                     {event.organizer}
                                                 </td>
-                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                <td className="text-left whitespace-nowrap">
                                                     {event.category}
                                                 </td>
-                                                <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">
+                                                <td className="px-8 text-left whitespace-nowrap">
                                                     <button
-                                                        aria-label="Edit"
                                                         onClick={() =>
                                                             handleOpenModal(
                                                                 event,
@@ -271,33 +287,36 @@ const Events = () => {
                                                     >
                                                         <img
                                                             src={EditIcon}
-                                                            alt="Edit"
+                                                            alt="Edit Icon"
+                                                            className="h-5"
                                                         />
                                                     </button>
                                                     <button
-                                                        aria-label="Archive"
                                                         onClick={() =>
                                                             handleArchiveClick(
                                                                 event,
                                                             )
                                                         }
+                                                        className="ml-2"
                                                     >
                                                         <img
                                                             src={ArchiveIcon}
-                                                            alt="Archive"
+                                                            alt="Archive Icon"
+                                                            className="h-5"
                                                         />
                                                     </button>
                                                     <button
-                                                        aria-label="Send"
                                                         onClick={() =>
                                                             handleArchiveClick(
                                                                 event,
                                                             )
                                                         }
+                                                        className="ml-2"
                                                     >
                                                         <img
                                                             src={SendIcon}
-                                                            alt="Send"
+                                                            alt="Send Icon"
+                                                            className="h-5"
                                                         />
                                                     </button>
                                                 </td>
@@ -310,8 +329,7 @@ const Events = () => {
 
                     {viewMode === "calendar" && (
                         <div className="mt-8">
-                            {/* Placeholder for Calendar */}
-                            <p>Select "List" to view events in table format.</p>
+                            <Calendar events={eventsData} />
                         </div>
                     )}
                 </div>
@@ -320,17 +338,17 @@ const Events = () => {
             {/* Modals */}
             {isModalOpen && (
                 <Modal
-                    isOpen={isModalOpen}
+                    event={currentEvent}
                     onClose={handleCloseModal}
                     onSave={handleSave}
-                    event={currentEvent}
                 />
             )}
+
             {isConfirmModalOpen && (
                 <ArchiveConfirmModal
-                    isOpen={isConfirmModalOpen}
-                    onClose={handleCloseConfirmModal}
+                    event={eventToArchive}
                     onConfirm={handleConfirmArchive}
+                    onClose={handleCloseConfirmModal}
                 />
             )}
         </section>

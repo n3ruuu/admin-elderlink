@@ -1,0 +1,86 @@
+/* Container for calendar */
+.calendar-container {
+    height: 620px; /* Fixed height for the container */
+    width: 100%; /* Full width of the parent */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Hide overflow */
+}
+
+/* Wrapper for calendar */
+.calendar-wrapper {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background-color: white;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    overflow: hidden; /* Hide scrollbars */
+}
+
+/* FullCalendar styling */
+.fc {
+    font-family: Inter, sans-serif; /* Font family */
+}
+
+/* Style for day grid day cells */
+.fc .fc-daygrid-day {
+    background: transparent;
+    border: 1px solid #76717133;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    position: relative; /* For positioning event titles */
+}
+
+/* Style for column header cells */
+.fc .fc-col-header-cell-cushion {
+    color: #004365;
+    background: #219ebc54;
+    text-transform: uppercase;
+    width: 100%;
+    font-weight: 700;
+    font-size: 1.2rem;
+    padding: 8px;
+}
+
+/* Style for day grid day top area */
+.fc .fc-daygrid-day-top {
+    border: none;
+    background: transparent;
+}
+
+/* Style for day grid day content */
+.fc .fc-daygrid-day-content {
+    border: none;
+    position: relative; /* To handle positioning of date numbers */
+}
+
+/* Style for day numbers */
+.fc-daygrid-day-number {
+    color: #333333;
+    font-size: 1.2rem;
+    text-align: end;
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px;
+    width: 100%; /* Full width */
+    position: relative; /* Position it at the bottom of the cell */
+}
+
+.fc-daygrid-day-top {
+    height: 50px;
+}
+
+/* Style for event titles */
+.fc-daygrid-day-events {
+    width: fit-content;
+    position: absolute;
+    top: 5px; /* Position events at the top */
+    left: 5px; /* Add some space from the left */
+    right: 5px; /* Add some space from the right */
+    bottom: 30px; /* Avoid overlap with the date number */
+    overflow: hidden; /* Hide overflow to ensure titles don't spill out */
+    font-size: 0.8rem; /* Adjust font size as needed */
+    color: #333; /* Adjust color as needed */
+    text-align: left; /* Align text to the left */
+    z-index: 1; /* Ensure event titles are above date numbers */
+}

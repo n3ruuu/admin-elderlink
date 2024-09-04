@@ -11,6 +11,10 @@
         "deploy": "git subtree push --prefix dist origin gh-pages"
     },
     "dependencies": {
+        "@fullcalendar/daygrid": "^6.1.15",
+        "@fullcalendar/interaction": "^6.1.15",
+        "@fullcalendar/react": "^6.1.15",
+        "@fullcalendar/timegrid": "^6.1.15",
         "moment": "^2.30.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
