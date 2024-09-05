@@ -138,7 +138,7 @@ const Events = () => {
                             {/* Conditional rendering of the header or filter */}
                             {viewMode === "calendar" ? (
                                 <div className="flex items-center">
-                                    <p className="text-[#219EBC] text-lg font-semibold">
+                                    <p className="text-[#219EBC] text-[36px] font-bold">
                                         {moment().format("MMMM YYYY")}
                                     </p>
                                 </div>
