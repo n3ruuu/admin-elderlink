@@ -338,9 +338,10 @@ const Events = () => {
             {/* Modals */}
             {isModalOpen && (
                 <Modal
-                    event={currentEvent}
+                    isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     onSave={handleSave}
+                    event={currentEvent}
                 />
             )}
 

@@ -19,8 +19,8 @@ const FinancialAssistanceModal = ({ isOpen, onClose, onSave, member }) => {
                 lastName: member.name.split(" ")[1] || "",
                 dob: member.dob ? moment(member.dob).format("YYYY-MM-DD") : "",
                 age: member.age || "",
-                benefitStatus: member.benefitStatus || "",
-                benefitType: member.benefitType || "",
+                benefitStatus: member.benefit_status || "",
+                benefitType: member.benefit_type || "",
             })
         }
     }, [member])

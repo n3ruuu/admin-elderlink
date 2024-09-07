@@ -4,7 +4,7 @@ import BeneficiariesIcon from "../assets/icons/beneficiaries-icon.svg"
 import PayoutIcon from "../assets/icons/payout-icon.svg"
 import DisburseIcon from "../assets/icons/disburse-icon.svg"
 import EditIcon from "../assets/icons/edit.svg"
-import ArchiveIcon from "../assets/icons/archive2.svg"
+import ViewIcon from "../assets/icons/view.svg"
 import MembersListData from "../data/membersList.json"
 import Modal from "../modals/FinancialAssistanceModal"
 import ArchiveConfirmModal from "./ArchiveConfirmModal"
@@ -246,7 +246,7 @@ const FinancialAssistance = () => {
                                                 }
                                             >
                                                 <img
-                                                    src={ArchiveIcon}
+                                                    src={ViewIcon}
                                                     alt="Archive"
                                                 />
                                             </button>

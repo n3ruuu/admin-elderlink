@@ -17,6 +17,7 @@ import MembersList from "./pages/MembersList"
 import HealthRecords from "./pages/HealthRecords"
 import FinancialAssistance from "./pages/FinancialAssistance" // Import FinancialAssistance
 import Events from "./pages/Events"
+import Forms from "./pages/Forms"
 
 const Sidebar = () => {
     const [activeSection, setActiveSection] = useState("dashboard")
@@ -176,11 +177,22 @@ const Sidebar = () => {
 
                         {openSubSection === "forms" && (
                             <div className="m-4 ml-10 space-y-2">
-                                <div className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]">
+                                <div
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                        activeSection === "forms"
+                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
+                                            : ""
+                                    } hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]`}
+                                    onClick={() => toggleSection("forms")}
+                                >
                                     <img
                                         src={FormsIcon}
                                         alt="Forms Icon"
-                                        className="group-hover:filter group-hover:brightness-0 group-hover:invert"
+                                        className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                            activeSection === "forms"
+                                                ? "filter brightness-0 invert"
+                                                : ""
+                                        }`}
                                     />
                                     <p>Forms</p>
                                 </div>
@@ -243,6 +255,7 @@ const Sidebar = () => {
             {activeSection === "financialAssistance" && <FinancialAssistance />}
             {/* Added FinancialAssistance */}
             {activeSection === "events" && <Events />}
+            {activeSection === "forms" && <Forms />}
         </section>
     )
 }
