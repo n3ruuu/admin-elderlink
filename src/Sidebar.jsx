@@ -19,6 +19,7 @@ import FinancialAssistance from "./pages/FinancialAssistance" // Import Financia
 import Events from "./pages/Events"
 import Forms from "./pages/Forms"
 import Applications from "./pages/Applications"
+import Archives from "./pages/Archives"
 
 const Sidebar = () => {
     const [activeSection, setActiveSection] = useState("dashboard")
@@ -227,6 +228,7 @@ const Sidebar = () => {
                                 ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
                                 : ""
                         } hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]`}
+                        onClick={() => toggleSection("archive")}
                     >
                         <img
                             src={ArchiveIcon}
@@ -270,6 +272,7 @@ const Sidebar = () => {
             {activeSection === "events" && <Events />}
             {activeSection === "forms" && <Forms />}
             {activeSection === "applications" && <Applications />}
+            {activeSection === "archive" && <Archives />}
         </section>
     )
 }

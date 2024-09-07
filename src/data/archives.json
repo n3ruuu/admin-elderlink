@@ -1,0 +1,65 @@
+[
+    {
+        "name": "Juan Dela Cruz",
+        "dob": "01-05-1950",
+        "gender": "Male",
+        "address": "123 Main Street, Manila",
+        "status": "Deceased"
+    },
+    {
+        "name": "Maria Santos",
+        "dob": "03-20-1948",
+        "gender": "Female",
+        "address": "456 Elm Avenue, Quezon City",
+        "status": "Deceased"
+    },
+    {
+        "name": "Pedro Gonzales",
+        "dob": "07-10-1945",
+        "gender": "Male",
+        "address": "789 Oak Street, Makati",
+        "status": "Deceased"
+    },
+    {
+        "name": "Luz Reyes",
+        "dob": "12-15-1942",
+        "gender": "Female",
+        "address": "101 Pine Road, Pasig",
+        "status": "Deceased"
+    },
+    {
+        "name": "Antonio Rodriguez",
+        "dob": "02-28-1947",
+        "gender": "Male",
+        "address": "222 Maple Lane, Taguig",
+        "status": "Deceased"
+    },
+    {
+        "name": "Rosa Lim",
+        "dob": "10-08-1944",
+        "gender": "Female",
+        "address": "222 Maple Lane, Taguig",
+        "status": "Deceased"
+    },
+    {
+        "name": "Ernesto Cruz",
+        "dob": "05-12-1943",
+        "gender": "Male",
+        "address": "333 Cherry Avenue, Mandaluyong",
+        "status": "Deceased"
+    },
+    {
+        "name": "Teresa Reyes",
+        "dob": "08-30-1949",
+        "gender": "Female",
+        "address": "444 Birch Street, Caloocan",
+        "status": "Deceased"
+    },
+    {
+        "name": "Ricardo Santos",
+        "dob": "04-18-1946",
+        "gender": "Male",
+        "address": "555 Palm Road, Marikina",
+        "status": "Deceased"
+    }
+]
