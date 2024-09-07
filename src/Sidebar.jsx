@@ -18,6 +18,7 @@ import HealthRecords from "./pages/HealthRecords"
 import FinancialAssistance from "./pages/FinancialAssistance" // Import FinancialAssistance
 import Events from "./pages/Events"
 import Forms from "./pages/Forms"
+import Applications from "./pages/Applications"
 
 const Sidebar = () => {
     const [activeSection, setActiveSection] = useState("dashboard")
@@ -196,18 +197,30 @@ const Sidebar = () => {
                                     />
                                     <p>Forms</p>
                                 </div>
-                                <div className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]">
+                                <div
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                        activeSection === "applications"
+                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
+                                            : ""
+                                    } hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]`}
+                                    onClick={() =>
+                                        toggleSection("applications")
+                                    }
+                                >
                                     <img
                                         src={ApplicationIcon}
                                         alt="Applications Icon"
-                                        className="group-hover:filter group-hover:brightness-0 group-hover:invert"
+                                        className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                            activeSection === "applications"
+                                                ? "filter brightness-0 invert"
+                                                : ""
+                                        }`}
                                     />
                                     <p>Applications</p>
                                 </div>
                             </div>
                         )}
                     </div>
-
                     <div
                         className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
                             activeSection === "archive"
@@ -256,6 +269,7 @@ const Sidebar = () => {
             {/* Added FinancialAssistance */}
             {activeSection === "events" && <Events />}
             {activeSection === "forms" && <Forms />}
+            {activeSection === "applications" && <Applications />}
         </section>
     )
 }

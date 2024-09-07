@@ -1,0 +1,62 @@
+[
+    {
+        "applicant_name": "Juan Dela Cruz",
+        "date_submitted": "2024-03-25",
+        "form_type": "Senior Citizen Registration",
+        "status": "Pending"
+    },
+    {
+        "applicant_name": "Maria Santos",
+        "date_submitted": "2024-03-25",
+        "form_type": "Medical Assistance",
+        "status": "Incomplete"
+    },
+    {
+        "applicant_name": "Pedro Gonzales",
+        "date_submitted": "2024-04-01",
+        "form_type": "Cleanliness Program Participation",
+        "status": "Approved"
+    },
+    {
+        "applicant_name": "Luz Reyes",
+        "date_submitted": "2024-04-01",
+        "form_type": "Food Assistance",
+        "status": "Pending"
+    },
+    {
+        "applicant_name": "Antonio Rodriguez",
+        "date_submitted": "2024-04-02",
+        "form_type": "Social Pension",
+        "status": "Pending"
+    },
+    {
+        "applicant_name": "Rosa Lim",
+        "date_submitted": "2024-04-02",
+        "form_type": "Volunteer Sign-up",
+        "status": "Approved"
+    },
+    {
+        "applicant_name": "Ernesto Cruz",
+        "date_submitted": "2024-04-02",
+        "form_type": "Feedback Survey",
+        "status": "Approved"
+    },
+    {
+        "applicant_name": "Teresa Reyes",
+        "date_submitted": "2024-04-02",
+        "form_type": "Community Event Registration",
+        "status": "Pending"
+    },
+    {
+        "applicant_name": "Ricardo Santos",
+        "date_submitted": "2024-04-02",
+        "form_type": "Legal Aid Inquiry",
+        "status": "Pending"
+    },
+    {
+        "applicant_name": "Roberto Bautista",
+        "date_submitted": "2024-04-02",
+        "form_type": "Food Assistance",
+        "status": "Pending"
+    }
+]
