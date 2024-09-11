@@ -1,15 +1,14 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
-import moment from "moment"
 
-const FinancialAssistanceModal = ({ isOpen, onClose, onSave, member }) => {
+const Modal = ({ isOpen, onClose, onSave, member }) => {
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
-        dob: "",
-        age: "",
-        benefitStatus: "",
-        benefitType: "",
+        medicalConditions: "",
+        medications: "",
+        allergies: "",
+        emergencyContact: "",
     })
 
     useEffect(() => {
@@ -17,10 +16,10 @@ const FinancialAssistanceModal = ({ isOpen, onClose, onSave, member }) => {
             setFormData({
                 firstName: member.name.split(" ")[0] || "",
                 lastName: member.name.split(" ")[1] || "",
-                dob: member.dob ? moment(member.dob).format("YYYY-MM-DD") : "",
-                age: member.age || "",
-                benefitStatus: member.benefit_status || "",
-                benefitType: member.benefit_type || "",
+                medicalConditions: member.medical_conditions || "",
+                medications: member.medications || "",
+                allergies: member.allergies || "",
+                emergencyContact: member.emergency_contact || "",
             })
         }
     }, [member])
@@ -36,19 +35,14 @@ const FinancialAssistanceModal = ({ isOpen, onClose, onSave, member }) => {
     }
 
     const handleSave = () => {
-        // Convert date back to the original format
-        const formattedData = {
-            ...formData,
-            dob: formData.dob ? moment(formData.dob).format("YYYY-MM-DD") : "",
-        }
-        onSave(formattedData)
+        onSave(formData)
         setFormData({
             firstName: "",
             lastName: "",
-            dob: "",
-            age: "",
-            benefitStatus: "",
-            benefitType: "",
+            medicalConditions: "",
+            medications: "",
+            allergies: "",
+            emergencyContact: "",
         })
     }
 
@@ -56,7 +50,7 @@ const FinancialAssistanceModal = ({ isOpen, onClose, onSave, member }) => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg w-[40%]">
                 <h2 className="text-3xl font-bold mb-6">
-                    {member ? "Edit Beneficiary" : "Add Beneficiary"}
+                    {member ? "Edit Record" : "Add New Record"}
                 </h2>
                 <form>
                     {/* First Name and Last Name */}
@@ -101,95 +95,87 @@ const FinancialAssistanceModal = ({ isOpen, onClose, onSave, member }) => {
                         </div>
                     </div>
 
-                    {/* Date of Birth and Age */}
+                    {/* Medical Conditions and Medications */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div>
+                        <div className="col-span-2">
                             <label
-                                htmlFor="dob"
+                                htmlFor="medicalConditions"
                                 className="block text-lg font-medium text-gray-700 mb-1"
                             >
-                                Date of Birth{" "}
+                                Medical Conditions{" "}
                                 <span className="text-red-500">*</span>
                             </label>
                             <input
-                                type="date"
-                                id="dob"
-                                name="dob"
-                                value={formData.dob}
+                                type="text"
+                                id="medicalConditions"
+                                name="medicalConditions"
+                                value={formData.medicalConditions}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Hypertension, Diabetes"
                                 required
                             />
                         </div>
-                        <div>
+                        <div className="col-span-2">
                             <label
-                                htmlFor="age"
+                                htmlFor="medications"
                                 className="block text-lg font-medium text-gray-700 mb-1"
                             >
-                                Age <span className="text-red-500">*</span>
+                                Medications{" "}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
-                                type="number"
-                                id="age"
-                                name="age"
-                                value={formData.age}
+                                type="text"
+                                id="medications"
+                                name="medications"
+                                value={formData.medications}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="65"
+                                placeholder="Insulin, Lisinopril"
                                 required
                             />
                         </div>
                     </div>
 
-                    {/* Benefit Status and Benefit Type */}
+                    {/* Allergies and Emergency Contact */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <label
-                                htmlFor="benefitStatus"
+                                htmlFor="allergies"
                                 className="block text-lg font-medium text-gray-700 mb-1"
                             >
-                                Benefit Status{" "}
+                                Allergies{" "}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <select
-                                id="benefitStatus"
-                                name="benefitStatus"
-                                value={formData.benefitStatus}
+                            <input
+                                type="text"
+                                id="allergies"
+                                name="allergies"
+                                value={formData.allergies}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Penicillin, Nuts"
                                 required
-                            >
-                                <option value="" disabled>
-                                    Select Status
-                                </option>
-                                <option value="claimed">Claimed</option>
-                                <option value="unclaimed">Unclaimed</option>
-                            </select>
+                            />
                         </div>
                         <div>
                             <label
-                                htmlFor="benefitType"
+                                htmlFor="emergencyContact"
                                 className="block text-lg font-medium text-gray-700 mb-1"
                             >
-                                Benefit Type{" "}
+                                Emergency Contact{" "}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <select
-                                id="benefitType"
-                                name="benefitType"
-                                value={formData.benefitType}
+                            <input
+                                type="text"
+                                id="emergencyContact"
+                                name="emergencyContact"
+                                value={formData.emergencyContact}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="John Doe, +63 912 345 6789"
                                 required
-                            >
-                                <option value="" disabled>
-                                    Select Type
-                                </option>
-                                <option value="SSS">
-                                    Social Pension Program (SSS)
-                                </option>
-                                <option value="GSIS">GSIS Pension</option>
-                            </select>
+                            />
                         </div>
                     </div>
 
@@ -225,4 +211,4 @@ const FinancialAssistanceModal = ({ isOpen, onClose, onSave, member }) => {
     )
 }
 
-export default FinancialAssistanceModal
+export default Modal

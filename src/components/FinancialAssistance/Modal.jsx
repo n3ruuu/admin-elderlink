@@ -1,14 +1,15 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
+import moment from "moment"
 
-const HealthRecordsModal = ({ isOpen, onClose, onSave, member }) => {
+const Modal = ({ isOpen, onClose, onSave, member }) => {
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
-        medicalConditions: "",
-        medications: "",
-        allergies: "",
-        emergencyContact: "",
+        dob: "",
+        age: "",
+        benefitStatus: "",
+        benefitType: "",
     })
 
     useEffect(() => {
@@ -16,10 +17,10 @@ const HealthRecordsModal = ({ isOpen, onClose, onSave, member }) => {
             setFormData({
                 firstName: member.name.split(" ")[0] || "",
                 lastName: member.name.split(" ")[1] || "",
-                medicalConditions: member.medical_conditions || "",
-                medications: member.medications || "",
-                allergies: member.allergies || "",
-                emergencyContact: member.emergency_contact || "",
+                dob: member.dob ? moment(member.dob).format("YYYY-MM-DD") : "",
+                age: member.age || "",
+                benefitStatus: member.benefit_status || "",
+                benefitType: member.benefit_type || "",
             })
         }
     }, [member])
@@ -35,14 +36,19 @@ const HealthRecordsModal = ({ isOpen, onClose, onSave, member }) => {
     }
 
     const handleSave = () => {
-        onSave(formData)
+        // Convert date back to the original format
+        const formattedData = {
+            ...formData,
+            dob: formData.dob ? moment(formData.dob).format("YYYY-MM-DD") : "",
+        }
+        onSave(formattedData)
         setFormData({
             firstName: "",
             lastName: "",
-            medicalConditions: "",
-            medications: "",
-            allergies: "",
-            emergencyContact: "",
+            dob: "",
+            age: "",
+            benefitStatus: "",
+            benefitType: "",
         })
     }
 
@@ -50,7 +56,7 @@ const HealthRecordsModal = ({ isOpen, onClose, onSave, member }) => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg w-[40%]">
                 <h2 className="text-3xl font-bold mb-6">
-                    {member ? "Edit Record" : "Add New Record"}
+                    {member ? "Edit Beneficiary" : "Add Beneficiary"}
                 </h2>
                 <form>
                     {/* First Name and Last Name */}
@@ -95,87 +101,95 @@ const HealthRecordsModal = ({ isOpen, onClose, onSave, member }) => {
                         </div>
                     </div>
 
-                    {/* Medical Conditions and Medications */}
+                    {/* Date of Birth and Age */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="col-span-2">
+                        <div>
                             <label
-                                htmlFor="medicalConditions"
+                                htmlFor="dob"
                                 className="block text-lg font-medium text-gray-700 mb-1"
                             >
-                                Medical Conditions{" "}
+                                Date of Birth{" "}
                                 <span className="text-red-500">*</span>
                             </label>
                             <input
-                                type="text"
-                                id="medicalConditions"
-                                name="medicalConditions"
-                                value={formData.medicalConditions}
+                                type="date"
+                                id="dob"
+                                name="dob"
+                                value={formData.dob}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="Hypertension, Diabetes"
                                 required
                             />
                         </div>
-                        <div className="col-span-2">
+                        <div>
                             <label
-                                htmlFor="medications"
+                                htmlFor="age"
                                 className="block text-lg font-medium text-gray-700 mb-1"
                             >
-                                Medications{" "}
-                                <span className="text-red-500">*</span>
+                                Age <span className="text-red-500">*</span>
                             </label>
                             <input
-                                type="text"
-                                id="medications"
-                                name="medications"
-                                value={formData.medications}
+                                type="number"
+                                id="age"
+                                name="age"
+                                value={formData.age}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="Insulin, Lisinopril"
+                                placeholder="65"
                                 required
                             />
                         </div>
                     </div>
 
-                    {/* Allergies and Emergency Contact */}
+                    {/* Benefit Status and Benefit Type */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <label
-                                htmlFor="allergies"
+                                htmlFor="benefitStatus"
                                 className="block text-lg font-medium text-gray-700 mb-1"
                             >
-                                Allergies{" "}
+                                Benefit Status{" "}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <input
-                                type="text"
-                                id="allergies"
-                                name="allergies"
-                                value={formData.allergies}
+                            <select
+                                id="benefitStatus"
+                                name="benefitStatus"
+                                value={formData.benefitStatus}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="Penicillin, Nuts"
                                 required
-                            />
+                            >
+                                <option value="" disabled>
+                                    Select Status
+                                </option>
+                                <option value="claimed">Claimed</option>
+                                <option value="unclaimed">Unclaimed</option>
+                            </select>
                         </div>
                         <div>
                             <label
-                                htmlFor="emergencyContact"
+                                htmlFor="benefitType"
                                 className="block text-lg font-medium text-gray-700 mb-1"
                             >
-                                Emergency Contact{" "}
+                                Benefit Type{" "}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <input
-                                type="text"
-                                id="emergencyContact"
-                                name="emergencyContact"
-                                value={formData.emergencyContact}
+                            <select
+                                id="benefitType"
+                                name="benefitType"
+                                value={formData.benefitType}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="John Doe, +63 912 345 6789"
                                 required
-                            />
+                            >
+                                <option value="" disabled>
+                                    Select Type
+                                </option>
+                                <option value="SSS">
+                                    Social Pension Program (SSS)
+                                </option>
+                                <option value="GSIS">GSIS Pension</option>
+                            </select>
                         </div>
                     </div>
 
@@ -211,4 +225,4 @@ const HealthRecordsModal = ({ isOpen, onClose, onSave, member }) => {
     )
 }
 
-export default HealthRecordsModal
+export default Modal

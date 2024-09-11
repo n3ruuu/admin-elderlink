@@ -6,7 +6,7 @@ import ArchiveIcon from "../assets/icons/archive2.svg"
 import SendIcon from "../assets/icons/send-icon.svg"
 import EventsData from "../data/events.json"
 import Modal from "../modals/EventsModal"
-import ArchiveConfirmModal from "./ArchiveConfirmModal"
+import ArchiveConfirmModal from "../components/ArchiveConfirmModal"
 import Calendar from "../Calendar"
 import moment from "moment"
 
