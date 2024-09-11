@@ -3,8 +3,8 @@ import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
 import interactionPlugin from "@fullcalendar/interaction"
-import EventsData from "./data/events.json"
-import "./css/calendar.css" // Import the external CSS file
+import EventsData from "../../data/events.json"
+import "../../css/calendar.css" // Import the external CSS file
 
 const Calendar = () => {
     const [events, setEvents] = useState([])

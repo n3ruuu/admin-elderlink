@@ -15,11 +15,11 @@ import LogoutIcon from "./assets/icons/logout.svg"
 import Dashboard from "./components/Dashboard/Dashboard"
 import MembersList from "./components/MembersList/MembersList"
 import HealthRecords from "./components/HealthRecords/HealthRecords"
-import FinancialAssistance from "./components/FinancialAssistance/FinancialAssistance" // Import FinancialAssistance
-import Events from "./pages/Events"
-import Forms from "./pages/Forms"
-import Applications from "./pages/Applications"
-import Archives from "./pages/Archives"
+import FinancialAssistance from "./components/FinancialAssistance/FinancialAssistance" 
+import Events from "./components/Events/Events"
+import Forms from "./components/Forms/Forms"
+import Applications from "./components/Applications/Applications"
+import Archives from "./components/Archives/Archives"
 
 const Sidebar = () => {
     const [activeSection, setActiveSection] = useState("dashboard")

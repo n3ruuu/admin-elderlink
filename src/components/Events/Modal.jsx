@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react"
 import moment from "moment"
 
-const EventsModal = ({ isOpen, onClose, onSave, event }) => {
+const Modal = ({ isOpen, onClose, onSave, event }) => {
     const [formData, setFormData] = useState({
         eventTitle: "",
         date: "",
@@ -187,4 +187,4 @@ const EventsModal = ({ isOpen, onClose, onSave, event }) => {
     )
 }
 
-export default EventsModal
+export default Modal

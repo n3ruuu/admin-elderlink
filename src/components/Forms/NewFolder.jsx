@@ -12,7 +12,7 @@ const NewFolder = ({ onClose }) => {
                 <div className="flex justify-end gap-4">
                     <button
                         onClick={onClose}
-                        className="bg-white border-[#219EBC] text-[#219EBC] border border-[1px] px-4 py-2 rounded-md"
+                        className="bg-white border-[#219EBC] text-[#219EBC] border-[1px] px-4 py-2 rounded-md"
                     >
                         Cancel
                     </button>
