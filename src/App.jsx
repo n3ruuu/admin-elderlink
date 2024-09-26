@@ -1,8 +1,10 @@
 import Sidebar from "./Sidebar"
-// import Login from "./Login"
+import { BrowserRouter as Router } from "react-router-dom"
 
-const App = () => {
-    return <Sidebar />
-}
+const App = () => (
+    <Router>
+        <Sidebar />
+    </Router>
+)
 
 export default App
