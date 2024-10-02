@@ -61,7 +61,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         const formattedData = {
             ...formData,
             dob: formData.dob
-                ? moment(formData.dob, "MM/DD/YYYY").format("MM/DD/YYYY")
+                ? moment(formData.dob, "MM/DD/YYYY").format("YYYY-MM-DD") // Format as needed for your DB
                 : "",
         }
         onSave(formattedData) // Save the edited data
@@ -266,17 +266,17 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                         <div className="flex space-x-4">
                             <button
                                 type="button"
-                                className="bg-[#FFFFFF] border-[#219EBC] text-[#219EBC] border-2 px-6 py-2 rounded-xl"
+                                className="bg-red-500 text-white px-6 py-2 rounded-xl hover:bg-red-600"
                                 onClick={onClose}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="button"
-                                className="text-[#FFFFFF] bg-[#219EBC] px-6 py-2 rounded-xl"
+                                className="bg-[#219EBC] text-white px-6 py-2 rounded-xl hover:bg-[#1A7D92]"
                                 onClick={handleSave}
                             >
-                                Save
+                                {member ? "Save Changes" : "Add Member"}
                             </button>
                         </div>
                     </div>

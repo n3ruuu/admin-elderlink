@@ -11,22 +11,22 @@ const MembersList = () => {
     const [currentMember, setCurrentMember] = useState(null)
     const [memberToArchive, setMemberToArchive] = useState(null)
     const [membersData, setMembersData] = useState([])
-    const [loading, setLoading] = useState(true) // Add loading state
-    const [error, setError] = useState(null) // Add error state
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
 
     useEffect(() => {
         const fetchMembersData = async () => {
             try {
-                const response = await fetch("http://localhost:5000/members") // Adjust the URL to match your backend
+                const response = await fetch("http://localhost:5000/members")
                 if (!response.ok) {
                     throw new Error("Network response was not ok")
                 }
                 const data = await response.json()
-                setMembersData(data) // Set the fetched data
+                setMembersData(data)
             } catch (err) {
-                setError(err.message) // Set error message
+                setError(err.message)
             } finally {
-                setLoading(false) // Set loading to false
+                setLoading(false)
             }
         }
 
@@ -43,18 +43,43 @@ const MembersList = () => {
         setCurrentMember(null)
     }
 
-    const handleSave = (updatedMember) => {
+    const handleSave = async (updatedMember) => {
         if (currentMember) {
+            // Editing an existing member
             setMembersData((prevData) =>
                 prevData.map((member) =>
                     member.id === updatedMember.id ? updatedMember : member,
                 ),
             )
         } else {
-            setMembersData((prevData) => [
-                ...prevData,
-                { ...updatedMember, id: prevData.length + 1 },
-            ])
+            // Adding a new member
+            const newMember = {
+                ...updatedMember,
+                id: membersData.length
+                    ? membersData[membersData.length - 1].id + 1
+                    : 1, // Assign a new ID
+            }
+
+            // Send the new member data to your backend
+            try {
+                const response = await fetch("http://localhost:5000/members", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newMember),
+                })
+
+                if (!response.ok) {
+                    throw new Error("Failed to add member")
+                }
+
+                // If successful, update the local state
+                setMembersData((prevData) => [...prevData, newMember])
+            } catch (error) {
+                console.error("Error adding member:", error)
+                // Optionally, handle error state
+            }
         }
         handleCloseModal()
     }
@@ -79,13 +104,14 @@ const MembersList = () => {
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header handleOpenModal={handleOpenModal} />
+            <Header handleOpenModal={() => handleOpenModal(null)} />{" "}
+            {/* Pass null to open modal for adding a member */}
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards membersData={membersData} />
-                    {loading ? ( // Show loading indicator
+                    {loading ? (
                         <div>Loading...</div>
-                    ) : error ? ( // Show error message
+                    ) : error ? (
                         <div>Error: {error}</div>
                     ) : (
                         <Table
@@ -96,14 +122,13 @@ const MembersList = () => {
                     )}
                 </div>
             </div>
-
             {/* Modals */}
             {isModalOpen && (
                 <Modal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     onSave={handleSave}
-                    member={currentMember}
+                    member={currentMember} // Pass current member for editing or null for adding
                 />
             )}
             {isConfirmModalOpen && (
