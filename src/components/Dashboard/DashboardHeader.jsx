@@ -1,6 +1,20 @@
 import SearchIcon from "../../assets/icons/search.svg"
+import { useState } from "react"
 
 const DashboardHeader = () => {
+    const [searchQuery, setSearchQuery] = useState("")
+    const [selectedCategory, setSelectedCategory] = useState("all")
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value)
+        // Implement search logic, such as filtering results based on searchQuery and selectedCategory
+    }
+
+    const handleCategoryChange = (e) => {
+        setSelectedCategory(e.target.value)
+        // Implement category filter logic
+    }
+
     return (
         <div className="p-16 w-full pb-8 flex items-start">
             <div className="w-1/2">
@@ -15,6 +29,8 @@ const DashboardHeader = () => {
                         type="search"
                         name="search"
                         id="search"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
                         className="p-3 pr-12 border border-gray-300 border-r-0 rounded-l-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full"
                         placeholder="Search..."
                     />
@@ -27,6 +43,8 @@ const DashboardHeader = () => {
                 <select
                     name="category"
                     id="category"
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
                     className="p-3 border h-[50px] border-gray-300 rounded-r-xl border-l-1 focus:outline-none"
                 >
                     <option className="text-[#000000]" value="all">

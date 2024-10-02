@@ -1,33 +1,53 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
 import moment from "moment"
+import Papa from "papaparse"
 
 const Modal = ({ isOpen, onClose, onSave, member }) => {
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
+        name: "",
         dob: "",
         gender: "male",
         address: "",
         phone: "",
         email: "",
+        age: "",
     })
 
     useEffect(() => {
         if (member) {
+            // Set form data when editing a member
             setFormData({
-                firstName: member.name.split(" ")[0] || "",
-                lastName: member.name.split(" ")[1] || "",
-                dob: member.dob ? moment(member.dob).format("YYYY-MM-DD") : "",
+                name: member.name || "",
+                dob: member.dob ? moment(member.dob).format("MM/DD/YYYY") : "",
                 gender: member.gender || "male",
                 address: member.address || "",
                 phone: member.phone || "",
                 email: member.email || "",
+                age: member.age || "",
             })
         }
-    }, [member])
+    }, [member]) // Re-run when the member prop changes
 
-    if (!isOpen) return null
+    useEffect(() => {
+        // Calculate age when date of birth changes
+        if (formData.dob) {
+            const birthDate = moment(formData.dob, "MM/DD/YYYY")
+            const calculatedAge = moment().diff(birthDate, "years")
+            setFormData((prevData) => ({
+                ...prevData,
+                age: calculatedAge,
+            }))
+        } else {
+            // Reset age if dob is empty
+            setFormData((prevData) => ({
+                ...prevData,
+                age: "",
+            }))
+        }
+    }, [formData.dob]) // Run when dob changes
+
+    if (!isOpen) return null // Do not render if modal is not open
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -40,17 +60,59 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
     const handleSave = () => {
         const formattedData = {
             ...formData,
-            dob: formData.dob ? moment(formData.dob).format("YYYY-MM-DD") : "",
+            dob: formData.dob
+                ? moment(formData.dob, "MM/DD/YYYY").format("MM/DD/YYYY")
+                : "",
         }
-        onSave(formattedData)
+        onSave(formattedData) // Save the edited data
+        resetForm() // Reset form after save
+    }
+
+    const resetForm = () => {
         setFormData({
-            firstName: "",
-            lastName: "",
+            name: "",
             dob: "",
             gender: "male",
             address: "",
             phone: "",
             email: "",
+            age: "",
+        })
+    }
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onload = (event) => {
+                const csvData = event.target.result
+                parseCSV(csvData)
+            }
+            reader.readAsText(file)
+        }
+    }
+
+    const parseCSV = (csvData) => {
+        Papa.parse(csvData, {
+            header: true,
+            complete: (results) => {
+                const memberData = results.data[0] // Get the first member from the CSV
+                if (memberData) {
+                    setFormData({
+                        name: memberData.name || "",
+                        dob: memberData.dob
+                            ? moment(memberData.dob, "MM/DD/YYYY").format(
+                                  "MM/DD/YYYY",
+                              )
+                            : "",
+                        gender: memberData.gender || "male",
+                        address: memberData.address || "",
+                        phone: memberData.phone || "",
+                        email: memberData.email || "",
+                        age: memberData.age || "",
+                    })
+                }
+            },
         })
     }
 
@@ -61,46 +123,24 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                     {member ? "Edit Member" : "Add New Member"}
                 </h2>
                 <form>
-                    {/* First Name and Last Name */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label
-                                htmlFor="firstName"
-                                className="block text-lg font-medium text-gray-700 mb-1"
-                            >
-                                First Name{" "}
-                                <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                id="firstName"
-                                name="firstName"
-                                value={formData.firstName}
-                                onChange={handleChange}
-                                className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="Juan"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label
-                                htmlFor="lastName"
-                                className="block text-lg font-medium text-gray-700 mb-1"
-                            >
-                                Last Name{" "}
-                                <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                id="lastName"
-                                name="lastName"
-                                value={formData.lastName}
-                                onChange={handleChange}
-                                className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="Dela Cruz"
-                                required
-                            />
-                        </div>
+                    {/* Full Name */}
+                    <div className="mb-4">
+                        <label
+                            htmlFor="name"
+                            className="block text-lg font-medium text-gray-700 mb-1"
+                        >
+                            Full Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Juan Dela Cruz"
+                            required
+                        />
                     </div>
 
                     {/* Date of Birth and Gender */}
@@ -114,12 +154,13 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                                 <span className="text-red-500">*</span>
                             </label>
                             <input
-                                type="date"
+                                type="text"
                                 id="dob"
                                 name="dob"
                                 value={formData.dob}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="MM/DD/YYYY"
                                 required
                             />
                         </div>
@@ -206,14 +247,21 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                         </div>
                     </div>
 
-                    {/* Export CSV and Buttons */}
+                    {/* Import CSV and Buttons */}
                     <div className="flex justify-between items-center mt-8">
-                        <button
-                            type="button"
-                            className="bg-[#FFFFFF] border-[#219EBC] text-[#219EBC] border-2 px-6 py-2 rounded-xl hover:bg-[#219EBC] hover:text-[#FFFFFF] hover:border-[#219EBC]"
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleFileChange}
+                            className="hidden"
+                            id="csvInput"
+                        />
+                        <label
+                            htmlFor="csvInput"
+                            className="bg-[#FFFFFF] border-[#219EBC] text-[#219EBC] border-2 px-6 py-2 rounded-xl cursor-pointer hover:bg-[#219EBC] hover:text-[#FFFFFF] hover:border-[#219EBC]"
                         >
-                            Export .CSV File
-                        </button>
+                            Import .CSV File
+                        </label>
 
                         <div className="flex space-x-4">
                             <button

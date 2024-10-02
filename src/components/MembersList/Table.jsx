@@ -38,10 +38,17 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                     {membersData.map((member) => (
                         <tr key={member.id} className="border-b">
                             <td className="px-16 py-4 text-left">
-                                {member.name}
+                                {member.name}{" "}
+                                {/* Ensure you are using fullName */}
                             </td>
-                            <td className="text-left">{member.dob}</td>
-                            <td className="text-left">{member.age}</td>
+                            <td className="text-left">
+                                {member.dob}{" "}
+                                {/* Assuming dob is correctly formatted */}
+                            </td>
+                            <td className="text-left">
+                                {member.age}{" "}
+                                {/* Ensure age is being passed correctly */}
+                            </td>
                             <td className="text-left">{member.gender}</td>
                             <td className="text-left">{member.address}</td>
                             <td className="text-left">{member.phone}</td>

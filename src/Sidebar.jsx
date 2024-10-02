@@ -46,8 +46,8 @@ const Sidebar = () => {
                         to="admin-elderlink/dashboard"
                         className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
                             isActive("/admin-elderlink/dashboard")
-                                ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
-                                : "hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                ? "bg-[#219EBC] text-[#F5F5FA]"
+                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                         }`}
                     >
                         <img
@@ -64,7 +64,7 @@ const Sidebar = () => {
                     {/* Members Section */}
                     <div>
                         <div
-                            className={`group flex items-center space-x-7 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]`}
+                            className={`group flex items-center space-x-7 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:text-[#F5F5FA]`}
                             onClick={() => toggleSubSection("members")}
                         >
                             <img
@@ -84,8 +84,8 @@ const Sidebar = () => {
                                         isActive(
                                             "/admin-elderlink/members-list",
                                         )
-                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
-                                            : "hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                            ? "bg-[#219EBC] text-[#F5F5FA]"
+                                            : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                                     }`}
                                 >
                                     <img
@@ -107,8 +107,8 @@ const Sidebar = () => {
                                         isActive(
                                             "/admin-elderlink/health-records",
                                         )
-                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
-                                            : "hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                            ? "bg-[#219EBC] text-[#F5F5FA]"
+                                            : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                                     }`}
                                 >
                                     <img
@@ -130,8 +130,8 @@ const Sidebar = () => {
                                         isActive(
                                             "/admin-elderlink/financial-assistance",
                                         )
-                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
-                                            : "hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                            ? "bg-[#219EBC] text-[#F5F5FA]"
+                                            : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                                     }`}
                                 >
                                     <img
@@ -154,8 +154,8 @@ const Sidebar = () => {
                         to="admin-elderlink/events"
                         className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
                             isActive("/admin-elderlink/events")
-                                ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
-                                : "hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                ? "bg-[#219EBC] text-[#F5F5FA]"
+                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                         }`}
                     >
                         <img
@@ -172,7 +172,7 @@ const Sidebar = () => {
                     {/* Forms & Applications */}
                     <div>
                         <div
-                            className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                            className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC]  hover:text-[#F5F5FA]"
                             onClick={() => toggleSubSection("forms")}
                         >
                             <img
@@ -189,8 +189,8 @@ const Sidebar = () => {
                                     to="admin-elderlink/forms"
                                     className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
                                         isActive("/admin-elderlink/forms")
-                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
-                                            : "hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                            ? "bg-[#219EBC] text-[#F5F5FA]"
+                                            : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                                     }`}
                                 >
                                     <img
@@ -211,8 +211,8 @@ const Sidebar = () => {
                                         isActive(
                                             "/admin-elderlink/applications",
                                         )
-                                            ? "bg-[#219EBC] text-[#F5F5FA] font-normal"
-                                            : "hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                            ? "bg-[#219EBC] text-[#F5F5FA]"
+                                            : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                                     }`}
                                 >
                                     <img
@@ -236,7 +236,7 @@ const Sidebar = () => {
                         className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
                             isActive("/admin-elderlink/archives")
                                 ? "bg-[#219EBC] text-[#F5F5FA]"
-                                : "hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                         }`}
                     >
                         <img
@@ -256,7 +256,7 @@ const Sidebar = () => {
                         className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
                             isActive("/admin-elderlink/settings")
                                 ? "bg-[#219EBC] text-[#F5F5FA]"
-                                : "hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA]"
+                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                         } absolute bottom-20 w-[95%]`}
                     >
                         <img
