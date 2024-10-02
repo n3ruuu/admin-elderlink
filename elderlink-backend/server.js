@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 // server.js
 const express = require("express")
@@ -96,6 +97,17 @@ app.put("/members/:id", (req, res) => {
             console.error("Error updating member in the database:", error)
             res.status(500).send("Internal Server Error")
         })
+})
+
+// In your server code (e.g., Node.js with Express)
+app.delete("/members/:id", async (req, res) => {
+    const memberId = req.params.id
+    try {
+        await db.query("DELETE FROM members WHERE id = ?", [memberId])
+        res.status(204).send() // No Content
+    } catch (error) {
+        res.status(500).send("Error deleting member")
+    }
 })
 
 // Start the server

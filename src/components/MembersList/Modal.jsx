@@ -96,20 +96,20 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         Papa.parse(csvData, {
             header: true,
             complete: (results) => {
-                const memberData = results.data[0] // Get the first member from the CSV
-                if (memberData) {
-                    setFormData({
-                        name: memberData.name || "",
-                        dob: memberData.dob
-                            ? moment(memberData.dob, "MM/DD/YYYY").format(
-                                  "MM/DD/YYYY",
-                              )
-                            : "",
-                        gender: memberData.gender || "male",
-                        address: memberData.address || "",
-                        phone: memberData.phone || "",
-                        email: memberData.email || "",
-                        age: memberData.age || "",
+                const memberData = results.data // Get all members from the CSV
+                if (memberData.length > 0) {
+                    // Directly save each member to the database
+                    memberData.forEach((member) => {
+                        const formattedMember = {
+                            ...member,
+                            dob: member.dob
+                                ? moment(member.dob, "MM/DD/YYYY").format(
+                                      "YYYY-MM-DD",
+                                  )
+                                : "",
+                        }
+                        // Call the onSave function to add member to the database
+                        onSave(formattedMember)
                     })
                 }
             },

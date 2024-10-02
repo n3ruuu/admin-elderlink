@@ -15,23 +15,23 @@ const MembersList = () => {
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        const fetchMembersData = async () => {
-            try {
-                const response = await fetch("http://localhost:5000/members")
-                if (!response.ok) {
-                    throw new Error("Network response was not ok")
-                }
-                const data = await response.json()
-                setMembersData(data)
-            } catch (err) {
-                setError(err.message)
-            } finally {
-                setLoading(false)
-            }
-        }
-
         fetchMembersData()
     }, [])
+
+    const fetchMembersData = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/members")
+            if (!response.ok) {
+                throw new Error("Network response was not ok")
+            }
+            const data = await response.json()
+            setMembersData(data)
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleOpenModal = (member) => {
         setCurrentMember(member)
@@ -91,17 +91,9 @@ const MembersList = () => {
         handleCloseModal() // Close the modal after saving
     }
 
-    const fetchMembersData = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/members")
-            if (!response.ok) {
-                throw new Error("Failed to fetch members")
-            }
-            const data = await response.json()
-            setMembersData(data) // Update local state with fetched data
-        } catch (error) {
-            console.error("Error fetching members data:", error)
-        }
+    const handleImportCSV = (newMembers) => {
+        // Update the members data with new members
+        setMembersData((prevMembers) => [...prevMembers, ...newMembers])
     }
 
     const handleArchiveClick = (member) => {
@@ -147,7 +139,8 @@ const MembersList = () => {
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     onSave={handleSave}
-                    member={currentMember} // Pass current member for editing or null for adding
+                    onImportCSV={handleImportCSV} // Pass the import function
+                    member={currentMember}
                 />
             )}
             {isConfirmModalOpen && (
