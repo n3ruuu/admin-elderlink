@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
+import moment from "moment" // Import Moment.js
 
 const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
     return (
@@ -42,8 +43,8 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                                 {/* Ensure you are using fullName */}
                             </td>
                             <td className="text-left">
-                                {member.dob}{" "}
-                                {/* Assuming dob is correctly formatted */}
+                                {moment(member.dob).format("YYYY-MM-DD")}{" "}
+                                {/* Format the date of birth */}
                             </td>
                             <td className="text-left">
                                 {member.age}{" "}

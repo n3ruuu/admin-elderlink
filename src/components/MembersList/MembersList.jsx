@@ -1,17 +1,37 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Modal from "./Modal"
 import ArchiveConfirmModal from "../ArchiveConfirmModal"
 import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
-import MembersListData from "../../data/membersList.json"
 
 const MembersList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
     const [currentMember, setCurrentMember] = useState(null)
     const [memberToArchive, setMemberToArchive] = useState(null)
-    const [membersData, setMembersData] = useState(MembersListData)
+    const [membersData, setMembersData] = useState([])
+    const [loading, setLoading] = useState(true) // Add loading state
+    const [error, setError] = useState(null) // Add error state
+
+    useEffect(() => {
+        const fetchMembersData = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/members") // Adjust the URL to match your backend
+                if (!response.ok) {
+                    throw new Error("Network response was not ok")
+                }
+                const data = await response.json()
+                setMembersData(data) // Set the fetched data
+            } catch (err) {
+                setError(err.message) // Set error message
+            } finally {
+                setLoading(false) // Set loading to false
+            }
+        }
+
+        fetchMembersData()
+    }, [])
 
     const handleOpenModal = (member) => {
         setCurrentMember(member)
@@ -63,11 +83,17 @@ const MembersList = () => {
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards membersData={membersData} />
-                    <Table
-                        membersData={membersData}
-                        handleOpenModal={handleOpenModal}
-                        handleArchiveClick={handleArchiveClick}
-                    />
+                    {loading ? ( // Show loading indicator
+                        <div>Loading...</div>
+                    ) : error ? ( // Show error message
+                        <div>Error: {error}</div>
+                    ) : (
+                        <Table
+                            membersData={membersData}
+                            handleOpenModal={handleOpenModal}
+                            handleArchiveClick={handleArchiveClick}
+                        />
+                    )}
                 </div>
             </div>
 
