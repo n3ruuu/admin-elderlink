@@ -46,42 +46,62 @@ const MembersList = () => {
     const handleSave = async (updatedMember) => {
         if (currentMember) {
             // Editing an existing member
-            setMembersData((prevData) =>
-                prevData.map((member) =>
-                    member.id === updatedMember.id ? updatedMember : member,
-                ),
-            )
+            try {
+                const response = await fetch(
+                    `http://localhost:5000/members/${currentMember.id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(updatedMember),
+                    },
+                )
+
+                if (!response.ok) {
+                    throw new Error("Failed to update member")
+                }
+
+                // Re-fetch members data to get updated list
+                fetchMembersData()
+            } catch (error) {
+                console.error("Error updating member:", error)
+            }
         } else {
             // Adding a new member
-            const newMember = {
-                ...updatedMember,
-                id: membersData.length
-                    ? membersData[membersData.length - 1].id + 1
-                    : 1, // Assign a new ID
-            }
-
-            // Send the new member data to your backend
             try {
                 const response = await fetch("http://localhost:5000/members", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(newMember),
+                    body: JSON.stringify(updatedMember),
                 })
 
                 if (!response.ok) {
                     throw new Error("Failed to add member")
                 }
 
-                // If successful, update the local state
-                setMembersData((prevData) => [...prevData, newMember])
+                // Re-fetch members data to get updated list
+                fetchMembersData()
             } catch (error) {
                 console.error("Error adding member:", error)
-                // Optionally, handle error state
             }
         }
-        handleCloseModal()
+        handleCloseModal() // Close the modal after saving
+    }
+
+    const fetchMembersData = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/members")
+            if (!response.ok) {
+                throw new Error("Failed to fetch members")
+            }
+            const data = await response.json()
+            setMembersData(data) // Update local state with fetched data
+        } catch (error) {
+            console.error("Error fetching members data:", error)
+        }
     }
 
     const handleArchiveClick = (member) => {
@@ -104,8 +124,7 @@ const MembersList = () => {
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header handleOpenModal={() => handleOpenModal(null)} />{" "}
-            {/* Pass null to open modal for adding a member */}
+            <Header handleOpenModal={() => handleOpenModal(null)} />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards membersData={membersData} />
