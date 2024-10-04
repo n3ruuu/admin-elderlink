@@ -1,10 +1,13 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
 import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import moment from "moment" // Import Moment.js
 import { useState } from "react"
+import ArchiveConfirmModal from "./ArchiveConfirmModal" // Import the modal
 
-const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
+const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
+    // Pass the setArchivedMembers function
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
 
@@ -21,6 +24,35 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
     // Change page
     const handlePageChange = (page) => {
         setCurrentPage(page)
+    }
+
+    // Archive Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [selectedMember, setSelectedMember] = useState(null)
+    const [archiveReason, setArchiveReason] = useState("")
+
+    const handleArchiveClickWithModal = (member) => {
+        setSelectedMember(member)
+        setIsModalOpen(true)
+    }
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false)
+        setSelectedMember(null)
+        setArchiveReason("")
+    }
+
+    const handleConfirmArchive = (reason) => {
+        if (selectedMember) {
+            // Archive the member here
+            const archivedMember = {
+                ...selectedMember,
+                status: reason, // Add the reason to the archived member
+            }
+            // Update the state of archived members
+            setArchivedMembers((prev) => [...prev, archivedMember])
+        }
+        handleCloseModal()
     }
 
     return (
@@ -64,7 +96,9 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                                 {moment(member.dob).format("YYYY-MM-DD")}
                             </td>
                             <td className="text-left">{member.age}</td>
-                            <td className="text-left">{member.gender}</td>
+                            <td className="text-left">
+                                {member.gender === "male" ? "Male" : "Female"}
+                            </td>
                             <td className="text-left">{member.address}</td>
                             <td className="text-left">{member.phone}</td>
                             <td className="text-left">{member.email}</td>
@@ -80,7 +114,9 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                                     />
                                 </button>
                                 <button
-                                    onClick={() => handleArchiveClick(member)}
+                                    onClick={() =>
+                                        handleArchiveClickWithModal(member)
+                                    }
                                     className="text-red-500 hover:text-red-700"
                                 >
                                     <img
@@ -121,6 +157,16 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                     Next
                 </button>
             </div>
+
+            {/* Archive Modal */}
+            <ArchiveConfirmModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onConfirm={handleConfirmArchive} // Use onConfirm instead of onArchive
+                memberName={selectedMember ? selectedMember.name : ""} // Pass member name
+                archiveReason={archiveReason} // Pass archive reason
+                setArchiveReason={setArchiveReason} // Pass the state updater
+            />
         </div>
     )
 }

@@ -6,7 +6,7 @@ import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
 import Modal from "./Modal"
-import ArchiveConfirmModal from "../ArchiveConfirmModal"
+import ArchiveConfirmModal from "./ArchiveConfirmModal"
 
 const HealthRecords = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)

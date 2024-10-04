@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import Modal from "./Modal"
-import ArchiveConfirmModal from "../ArchiveConfirmModal"
+import ArchiveConfirmModal from "./ArchiveConfirmModal"
 import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"

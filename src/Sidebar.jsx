@@ -286,6 +286,7 @@ const Sidebar = () => {
             </div>
 
             <Routes>
+                <Route path="admin-elderlink/" element={<Dashboard />} />
                 <Route
                     path="admin-elderlink/dashboard"
                     element={<Dashboard />}

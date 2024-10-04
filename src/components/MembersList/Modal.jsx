@@ -19,7 +19,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
             // Set form data when editing a member
             setFormData({
                 name: member.name || "",
-                dob: member.dob ? moment(member.dob).format("MM/DD/YYYY") : "",
+                dob: member.dob ? moment(member.dob).format("YYYY-MM-DD") : "", // Changed format to YYYY-MM-DD for date input
                 gender: member.gender || "male",
                 address: member.address || "",
                 phone: member.phone || "",
@@ -32,7 +32,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
     useEffect(() => {
         // Calculate age when date of birth changes
         if (formData.dob) {
-            const birthDate = moment(formData.dob, "MM/DD/YYYY")
+            const birthDate = moment(formData.dob)
             const calculatedAge = moment().diff(birthDate, "years")
             setFormData((prevData) => ({
                 ...prevData,
@@ -60,9 +60,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
     const handleSave = () => {
         const formattedData = {
             ...formData,
-            dob: formData.dob
-                ? moment(formData.dob, "MM/DD/YYYY").format("YYYY-MM-DD") // Format as needed for your DB
-                : "",
+            dob: formData.dob, // Already in YYYY-MM-DD format for your DB
         }
         onSave(formattedData) // Save the edited data
         resetForm() // Reset form after save
@@ -154,13 +152,12 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                                 <span className="text-red-500">*</span>
                             </label>
                             <input
-                                type="text"
+                                type="date" // Changed to date input
                                 id="dob"
                                 name="dob"
                                 value={formData.dob}
                                 onChange={handleChange}
                                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="MM/DD/YYYY"
                                 required
                             />
                         </div>

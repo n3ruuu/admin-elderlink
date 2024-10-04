@@ -1,7 +1,7 @@
 import { useState } from "react"
 import EventsData from "../../data/events.json"
 import Modal from "./Modal"
-import ArchiveConfirmModal from "../ArchiveConfirmModal"
+import ArchiveConfirmModal from "./ArchiveConfirmModal"
 import Calendar from "./Calendar"
 import Header from "./Header"
 import Table from "./Table"
