@@ -133,7 +133,7 @@ const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#1A7A8A] hover:bg-[#168B99]"} text-white rounded-md`}
+                    className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-[#219EBC] hover:bg-[#168B99]"} text-white rounded-md`}
                 >
                     Previous
                 </button>
@@ -141,7 +141,7 @@ const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
                     <button
                         key={index + 1}
                         onClick={() => handlePageChange(index + 1)}
-                        className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-[#1A7A8A] hover:bg-[#168B99]"} text-white rounded-md mx-1`}
+                        className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#1A7A8A] text-white" : "bg-[#219EBC] hover:bg-[#168B99] text-white"} rounded-md mx-1`}
                     >
                         {index + 1}
                     </button>
@@ -149,7 +149,7 @@ const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#1A7A8A] hover:bg-[#168B99]"} text-white rounded-md`}
+                    className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-[#219EBC] hover:bg-[#168B99]"} text-white rounded-md`}
                 >
                     Next
                 </button>

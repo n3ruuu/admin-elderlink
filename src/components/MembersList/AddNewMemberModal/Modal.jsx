@@ -141,11 +141,14 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                 {/* Show error message */}
                 <form>
                     <Form formData={formData} onChange={handleChange} />
-                    <FileUpload
-                        fileName={fileName}
-                        setFileName={setFileName}
-                        setImportedMembers={setImportedMembers}
-                    />
+                    {/* Render FileUpload only when adding a new member */}
+                    {!member && (
+                        <FileUpload
+                            fileName={fileName}
+                            setFileName={setFileName}
+                            setImportedMembers={setImportedMembers}
+                        />
+                    )}
                     <Buttons
                         onClose={onClose}
                         handleSave={handleSave}
