@@ -21,6 +21,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
     const [fileName, setFileName] = useState("") // State for file name
     const [importedMembers, setImportedMembers] = useState([]) // State to hold imported member data
     const [duplicateError, setDuplicateError] = useState("") // State for duplicate error message
+    const [inputError, setInputError] = useState("") // State for input validation error message
 
     useEffect(() => {
         if (member) {
@@ -77,7 +78,45 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
         return isDuplicate
     }
 
+    const isAgeValid = (age) => {
+        return age >= 60
+    }
+
+    const validateFields = () => {
+        // Only validate fields if no CSV is uploaded
+        if (importedMembers.length === 0) {
+            const { firstName, lastName, dob, address, phone, email } = formData
+            if (
+                !firstName ||
+                !lastName ||
+                !dob ||
+                !address ||
+                !phone ||
+                !email
+            ) {
+                setInputError("All fields are required.")
+                return false
+            }
+
+            const age = moment().diff(moment(dob), "years")
+            if (!isAgeValid(age)) {
+                setInputError(
+                    "Invalid age. Age must be 60 or older to be considered a senior citizen.",
+                )
+
+                return false
+            }
+
+            setInputError("") // Clear any previous input error
+        }
+        return true
+    }
+
     const handleSave = () => {
+        if (!validateFields()) {
+            return // Stop if validation fails
+        }
+
         const formattedData = {
             ...formData,
             name: `${formData.firstName} ${formData.lastName}`,
@@ -110,6 +149,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
         setFileName("No file chosen") // Reset the file name after save
         setImportedMembers([]) // Reset imported members after save
         setDuplicateError("") // Reset the duplicate error message
+        setInputError("") // Reset the input error message
     }
 
     const handleImportSave = () => {
@@ -124,7 +164,19 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
             return
         }
 
-        // Save all members if no duplicates
+        // Validate age for imported members
+        const invalidAgeMembers = importedMembers.filter(
+            (member) => !isAgeValid(member.age),
+        )
+        if (invalidAgeMembers.length > 0) {
+            const invalidNames = invalidAgeMembers
+                .map((member) => member.name)
+                .join(", ")
+            setDuplicateError(`Members with invalid age: ${invalidNames}`)
+            return
+        }
+
+        // Save all members if no duplicates and valid ages
         importedMembers.forEach((member) => onSave(member))
         resetForm() // Reset the form after saving imported members
     }
@@ -137,19 +189,21 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                 </h2>
                 {duplicateError && (
                     <p className="text-red-600">{duplicateError}</p>
-                )}{" "}
-                {/* Show error message */}
+                )}
+                {inputError &&
+                    importedMembers.length === 0 && ( // Only show input error if no CSV is uploaded
+                        <p className="text-red-600">{inputError}</p>
+                    )}
                 <form>
                     <Form formData={formData} onChange={handleChange} />
                     {/* Render FileUpload only when adding a new member */}
                     {!member && (
-                        // Inside Modal Component's return
                         <FileUpload
                             fileName={fileName}
                             setFileName={setFileName}
                             setImportedMembers={setImportedMembers}
-                            existingMembers={existingMembers} // Pass existingMembers to FileUpload
-                            setDuplicateError={setDuplicateError} // Pass setDuplicateError to FileUpload
+                            existingMembers={existingMembers}
+                            setDuplicateError={setDuplicateError}
                         />
                     )}
                     <Buttons
