@@ -6,7 +6,7 @@ import Form from "./Form"
 import FileUpload from "./FileUpload"
 import Buttons from "./Buttons"
 
-const Modal = ({ isOpen, onClose, onSave, member }) => {
+const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -18,8 +18,9 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         age: "",
     })
 
-    const [fileName, setFileName] = useState("No file chosen") // State for file name
+    const [fileName, setFileName] = useState("") // State for file name
     const [importedMembers, setImportedMembers] = useState([]) // State to hold imported member data
+    const [duplicateError, setDuplicateError] = useState("") // State for duplicate error message
 
     useEffect(() => {
         if (member) {
@@ -66,12 +67,31 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         }))
     }
 
+    const checkForDuplicates = (newMember) => {
+        const newName =
+            `${newMember.firstName} ${newMember.lastName}`.toLowerCase() // Combine first and last name
+        const isDuplicate = existingMembers.some((member) => {
+            const existingName = member.name.toLowerCase() // Ensure case-insensitivity
+            return existingName === newName
+        })
+        return isDuplicate
+    }
+
     const handleSave = () => {
         const formattedData = {
             ...formData,
             name: `${formData.firstName} ${formData.lastName}`,
             dob: formData.dob,
         }
+
+        // Check for duplicates before saving
+        if (checkForDuplicates(formattedData)) {
+            setDuplicateError("A member with the same name already exists.")
+            return
+        } else {
+            setDuplicateError("") // Clear error if no duplicates
+        }
+
         onSave(formattedData)
         resetForm()
     }
@@ -89,12 +109,23 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         })
         setFileName("No file chosen") // Reset the file name after save
         setImportedMembers([]) // Reset imported members after save
+        setDuplicateError("") // Reset the duplicate error message
     }
 
     const handleImportSave = () => {
-        importedMembers.forEach((member) => {
-            onSave(member) // Save each imported member
-        })
+        const duplicateFound = importedMembers.some((member) =>
+            checkForDuplicates(member),
+        )
+
+        if (duplicateFound) {
+            setDuplicateError(
+                "One or more members in the import already exist.",
+            )
+            return
+        }
+
+        // Save all members if no duplicates
+        importedMembers.forEach((member) => onSave(member))
         resetForm() // Reset the form after saving imported members
     }
 
@@ -104,6 +135,10 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                 <h2 className="text-3xl font-bold mb-6">
                     {member ? "Edit Member" : "Add New Member"}
                 </h2>
+                {duplicateError && (
+                    <p className="text-red-600">{duplicateError}</p>
+                )}{" "}
+                {/* Show error message */}
                 <form>
                     <Form formData={formData} onChange={handleChange} />
                     <FileUpload

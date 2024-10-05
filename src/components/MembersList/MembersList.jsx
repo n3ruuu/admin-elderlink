@@ -92,7 +92,22 @@ const MembersList = () => {
     }
 
     const handleImportCSV = (newMembers) => {
-        // Update the members data with new members
+        // Check for duplicates before adding new members
+        const duplicates = newMembers.filter((newMember) =>
+            membersData.some(
+                (existingMember) =>
+                    `${existingMember.firstName} ${existingMember.lastName}`.toLowerCase() ===
+                    `${newMember.firstName} ${newMember.lastName}`.toLowerCase(),
+            ),
+        )
+
+        if (duplicates.length > 0) {
+            console.error("Duplicate members found:", duplicates)
+            // You can set an error state here if you want to notify the user
+            return
+        }
+
+        // Update the members data with new members if no duplicates
         setMembersData((prevMembers) => [...prevMembers, ...newMembers])
     }
 
@@ -107,6 +122,11 @@ const MembersList = () => {
         )
         setIsConfirmModalOpen(false)
         setMemberToArchive(null)
+
+        // Reset the current member if it was the one archived
+        if (currentMember && currentMember.id === memberToArchive.id) {
+            handleCloseModal() // Close the modal if the archived member was being edited
+        }
     }
 
     const handleCloseConfirmModal = () => {
@@ -144,8 +164,9 @@ const MembersList = () => {
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     onSave={handleSave}
-                    onImportCSV={handleImportCSV} // Pass the import function
+                    onImportCSV={handleImportCSV}
                     member={currentMember}
+                    existingMembers={membersData} // Pass existing members here
                 />
             )}
             {isConfirmModalOpen && (
