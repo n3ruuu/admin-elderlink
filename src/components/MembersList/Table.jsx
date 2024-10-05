@@ -7,9 +7,12 @@ import { useState } from "react"
 import ArchiveConfirmModal from "./ArchiveConfirmModal" // Import the modal
 
 const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
-    // Pass the setArchivedMembers function
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
+
+    // Archive Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [selectedMember, setSelectedMember] = useState(null)
 
     // Calculate total pages
     const totalPages = Math.ceil(membersData.length / itemsPerPage)
@@ -26,11 +29,6 @@ const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
         setCurrentPage(page)
     }
 
-    // Archive Modal State
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedMember, setSelectedMember] = useState(null)
-    const [archiveReason, setArchiveReason] = useState("")
-
     const handleArchiveClickWithModal = (member) => {
         setSelectedMember(member)
         setIsModalOpen(true)
@@ -39,7 +37,6 @@ const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setSelectedMember(null)
-        setArchiveReason("")
     }
 
     const handleConfirmArchive = (reason) => {
@@ -162,10 +159,7 @@ const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
             <ArchiveConfirmModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                onConfirm={handleConfirmArchive} // Use onConfirm instead of onArchive
-                memberName={selectedMember ? selectedMember.name : ""} // Pass member name
-                archiveReason={archiveReason} // Pass archive reason
-                setArchiveReason={setArchiveReason} // Pass the state updater
+                onConfirm={handleConfirmArchive} // Handle archive confirmation
             />
         </div>
     )

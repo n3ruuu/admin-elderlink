@@ -1,6 +1,5 @@
-import ArchivesData from "../../data/archives.json"
-
-const Table = () => {
+/* eslint-disable react/prop-types */
+const Table = ({ membersData }) => {
     return (
         <div className="flex-1 flex flex-col pl-16 pr-16">
             <table className="w-full bg-[#FFFFFF] shadow-xl rounded-xl">
@@ -16,7 +15,7 @@ const Table = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {ArchivesData.map((item, index) => (
+                    {membersData.map((item, index) => (
                         <tr
                             className={`text-[#333333] font-[500] ${
                                 index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"

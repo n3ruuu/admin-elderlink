@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import Modal from "./Modal"
+import Modal from "./AddNewMemberModal/Modal"
 import ArchiveConfirmModal from "./ArchiveConfirmModal"
 import Header from "./Header"
 import Cards from "./Cards"
@@ -114,19 +114,24 @@ const MembersList = () => {
         setMemberToArchive(null)
     }
 
+    // Filter members to show only those with "Active" status
+    const activeMembers = membersData.filter(
+        (member) => member.status === "Active",
+    )
+
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
             <Header handleOpenModal={() => handleOpenModal(null)} />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
-                    <Cards membersData={membersData} />
+                    <Cards membersData={activeMembers} />
                     {loading ? (
                         <div>Loading...</div>
                     ) : error ? (
                         <div>Error: {error}</div>
                     ) : (
                         <Table
-                            membersData={membersData}
+                            membersData={activeMembers} // Pass only active members to the Table
                             handleOpenModal={handleOpenModal}
                             handleArchiveClick={handleArchiveClick}
                         />
@@ -148,7 +153,6 @@ const MembersList = () => {
                     isOpen={isConfirmModalOpen}
                     onClose={handleCloseConfirmModal}
                     onConfirm={handleConfirmArchive}
-                    memberName={memberToArchive ? memberToArchive.name : ""}
                 />
             )}
         </section>

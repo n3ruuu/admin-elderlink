@@ -2,7 +2,7 @@
 import { useState } from "react"
 
 const ArchiveConfirmModal = ({ isOpen, onClose, onConfirm, memberName }) => {
-    const [archiveReason, setArchiveReason] = useState("")
+    const [archiveReason, setArchiveReason] = useState("") // Handle locally in the modal
 
     if (!isOpen) return null
 
@@ -11,7 +11,8 @@ const ArchiveConfirmModal = ({ isOpen, onClose, onConfirm, memberName }) => {
             alert("Please select a reason for archiving.")
             return
         }
-        onConfirm(archiveReason) // Pass the selected reason to the confirm handler
+        onConfirm(archiveReason) // Pass the reason back to the parent component
+        onClose() // Close the modal after confirming
     }
 
     return (
