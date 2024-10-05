@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react"
-import Header from "./Header"
-import Table from "./Table"
-import ViewModeSwitcher from "./ViewModeSwitcher"
-import ArchivesData from "../../data/archives.json"
+import Header from "./Header" // Make sure this is the correct path
+import ArchivedMembersTable from "./ArchivedMembersTable" // The name was changed in the implementation
+import ViewModeSwitcher from "./ViewModeSwitcher" // Make sure this is the correct path
+import ArchivesData from "../../data/archives.json" // Your data source
 
 const Archives = () => {
     const [filter, setFilter] = useState("Active") // Filter only active members by default
@@ -25,7 +25,7 @@ const Archives = () => {
                     filter={filter}
                     handleFilterChange={handleFilterChange}
                 />
-                <Table membersData={filteredMembers} />{" "}
+                <ArchivedMembersTable membersData={filteredMembers} />{" "}
                 {/* Pass the filtered members */}
             </div>
         </section>

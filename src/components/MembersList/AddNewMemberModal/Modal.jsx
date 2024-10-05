@@ -143,10 +143,13 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                     <Form formData={formData} onChange={handleChange} />
                     {/* Render FileUpload only when adding a new member */}
                     {!member && (
+                        // Inside Modal Component's return
                         <FileUpload
                             fileName={fileName}
                             setFileName={setFileName}
                             setImportedMembers={setImportedMembers}
+                            existingMembers={existingMembers} // Pass existingMembers to FileUpload
+                            setDuplicateError={setDuplicateError} // Pass setDuplicateError to FileUpload
                         />
                     )}
                     <Buttons

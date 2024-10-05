@@ -171,7 +171,7 @@ const MembersList = () => {
             )}
             {isConfirmModalOpen && (
                 <ArchiveConfirmModal
-                    isOpen={isConfirmModalOpen}
+                    memberId={memberToArchive.id} // Pass memberId for archiving
                     onClose={handleCloseConfirmModal}
                     onConfirm={handleConfirmArchive}
                 />

@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-// server.js
 const express = require("express")
 const mysql = require("mysql2")
 const cors = require("cors")
@@ -55,6 +54,17 @@ app.get("/members", (req, res) => {
     })
 })
 
+// Endpoint to get archived members
+app.get("/members/archived", (req, res) => {
+    const query = "SELECT * FROM members WHERE status = 'Archived'"
+    db.query(query, (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message })
+        }
+        res.status(200).json(results) // Send the archived results back as JSON
+    })
+})
+
 // Function to update a member in the database
 const updateMemberInDatabase = (memberId, updatedMemberData) => {
     return new Promise((resolve, reject) => {
@@ -97,17 +107,6 @@ app.put("/members/:id", (req, res) => {
             console.error("Error updating member in the database:", error)
             res.status(500).send("Internal Server Error")
         })
-})
-
-// In your server code (e.g., Node.js with Express)
-app.delete("/members/:id", async (req, res) => {
-    const memberId = req.params.id
-    try {
-        await db.query("DELETE FROM members WHERE id = ?", [memberId])
-        res.status(204).send() // No Content
-    } catch (error) {
-        res.status(500).send("Error deleting member")
-    }
 })
 
 // Start the server

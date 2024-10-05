@@ -3,7 +3,13 @@ import { useRef } from "react"
 import Papa from "papaparse"
 import moment from "moment"
 
-const FileUpload = ({ fileName, setFileName, setImportedMembers }) => {
+const FileUpload = ({
+    fileName,
+    setFileName,
+    setImportedMembers,
+    existingMembers,
+    setDuplicateError,
+}) => {
     const fileInputRef = useRef(null) // Create a reference for the file input
 
     const handleFileChange = (e) => {
@@ -33,7 +39,27 @@ const FileUpload = ({ fileName, setFileName, setImportedMembers }) => {
                             ),
                         }
                     })
-                    setImportedMembers(members)
+
+                    // Check for duplicates in the imported members against existing members
+                    const duplicates = members.filter((member) =>
+                        checkForDuplicates(member),
+                    )
+
+                    if (duplicates.length > 0) {
+                        // If duplicates found, set the error message
+                        const duplicateNames = duplicates
+                            .map((member) => member.name)
+                            .join(", ")
+                        setDuplicateError(
+                            `Duplicate members found: ${duplicateNames}`,
+                        )
+                        console.error(
+                            "One or more imported members already exist.",
+                        )
+                    } else {
+                        setImportedMembers(members) // Only set members if no duplicates
+                        setDuplicateError("") // Clear any previous duplicate error
+                    }
                 },
                 error: (error) => {
                     console.error("CSV parsing error:", error) // Log any parsing errors
@@ -42,9 +68,19 @@ const FileUpload = ({ fileName, setFileName, setImportedMembers }) => {
         }
     }
 
+    const checkForDuplicates = (newMember) => {
+        const newName = newMember.name.toLowerCase() // Ensure case-insensitivity
+        const isDuplicate = existingMembers.some((member) => {
+            const existingName = member.name.toLowerCase() // Ensure case-insensitivity
+            return existingName === newName
+        })
+        return isDuplicate
+    }
+
     const handleClearFile = () => {
         setFileName("")
         setImportedMembers([]) // Clear imported members if needed
+        setDuplicateError("") // Clear any previous duplicate error
         if (fileInputRef.current) {
             fileInputRef.current.value = "" // Reset the file input value
         }
