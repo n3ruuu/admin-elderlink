@@ -59,8 +59,12 @@ const MembersList = () => {
                     throw new Error("Failed to update member")
                 }
 
-                // Re-fetch members data to get updated list
-                fetchMembersData()
+                // Update the membersData state directly
+                setMembersData((prevMembers) =>
+                    prevMembers.map((member) =>
+                        member.id === currentMember.id ? updatedMember : member,
+                    ),
+                )
             } catch (error) {
                 console.error("Error updating member:", error)
             }
@@ -79,13 +83,22 @@ const MembersList = () => {
                     throw new Error("Failed to add member")
                 }
 
-                // Re-fetch members data to get updated list
-                fetchMembersData()
+                const newMember = await response.json()
+
+                // Update the membersData state directly
+                setMembersData((prevMembers) => [...prevMembers, newMember])
             } catch (error) {
                 console.error("Error adding member:", error)
             }
         }
         handleCloseModal() // Close the modal after saving
+    }
+
+    const handleArchiveMember = (archivedMemberId) => {
+        // Remove archived member from state
+        setMembersData((prevMembers) =>
+            prevMembers.filter((member) => member.id !== archivedMemberId),
+        )
     }
 
     const handleImportCSV = (newMembers) => {
@@ -100,7 +113,6 @@ const MembersList = () => {
 
         if (duplicates.length > 0) {
             console.error("Duplicate members found:", duplicates)
-            // You can set an error state here if you want to notify the user
             return
         }
 
@@ -108,7 +120,6 @@ const MembersList = () => {
         setMembersData((prevMembers) => [...prevMembers, ...newMembers])
     }
 
-    // Filter members to show only those with "Active" status
     const activeMembers = membersData.filter(
         (member) => member.status === "Active",
     )
@@ -125,13 +136,13 @@ const MembersList = () => {
                         <div>Error: {error}</div>
                     ) : (
                         <Table
-                            membersData={activeMembers} // Pass only active members to the Table
+                            membersData={activeMembers}
                             handleOpenModal={handleOpenModal}
+                            handleArchiveMember={handleArchiveMember}
                         />
                     )}
                 </div>
             </div>
-            {/* Modals */}
             {isModalOpen && (
                 <Modal
                     isOpen={isModalOpen}
@@ -139,7 +150,7 @@ const MembersList = () => {
                     onSave={handleSave}
                     onImportCSV={handleImportCSV}
                     member={currentMember}
-                    existingMembers={membersData} // Pass existing members here
+                    existingMembers={membersData}
                 />
             )}
         </section>

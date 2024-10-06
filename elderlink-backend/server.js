@@ -54,17 +54,6 @@ app.get("/members", (req, res) => {
     })
 })
 
-// Endpoint to get archived members
-app.get("/members/archived", (req, res) => {
-    const query = "SELECT * FROM members WHERE status = 'Archived'"
-    db.query(query, (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message })
-        }
-        res.status(200).json(results) // Send the archived results back as JSON
-    })
-})
-
 // Function to update a member in the database
 const updateMemberInDatabase = (memberId, updatedMemberData) => {
     return new Promise((resolve, reject) => {
@@ -110,6 +99,24 @@ app.put("/members/:id", (req, res) => {
             res.status(500).send("Internal Server Error")
         })
 })
+
+// Endpoint to archive a member
+app.put("/members/archive/:id", (req, res) => {
+    const memberId = req.params.id // Get the ID from the URL
+    const query = "UPDATE members SET status = 'Archived' WHERE id = ?"
+
+    db.query(query, [memberId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message })
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Member not found" })
+        }
+        res.status(200).json({ message: "Member archived successfully" })
+    })
+})
+
+
 
 // Start the server
 app.listen(port, () => {

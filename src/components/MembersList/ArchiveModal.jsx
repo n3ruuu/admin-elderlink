@@ -16,7 +16,7 @@ const ArchiveModal = ({ isOpen, onClose, onConfirm, memberName }) => {
                         Cancel
                     </button>
                     <button
-                        onClick={onConfirm}
+                        onClick={onConfirm} // Ensure this is called properly
                         className="bg-red-500 text-white px-4 py-2 rounded"
                     >
                         Yes
