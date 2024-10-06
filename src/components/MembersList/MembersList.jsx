@@ -38,6 +38,7 @@ const MembersList = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setCurrentMember(null)
+        fetchMembersData()
     }
 
     const handleSave = async (updatedMember) => {
