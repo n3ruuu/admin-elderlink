@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
-const Form = ({ formData, onChange, disabled }) => {
-    // Added disabled prop
+const Form = ({ formData, onChange }) => {
     return (
-        <>
+        <div>
             {/* First Name and Last Name */}
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
@@ -18,7 +17,6 @@ const Form = ({ formData, onChange, disabled }) => {
                         name="firstName"
                         value={formData.firstName}
                         onChange={onChange}
-                        disabled={disabled} // Set disabled state
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="Juan"
                         required
@@ -37,7 +35,6 @@ const Form = ({ formData, onChange, disabled }) => {
                         name="lastName"
                         value={formData.lastName}
                         onChange={onChange}
-                        disabled={disabled} // Set disabled state
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="Dela Cruz"
                         required
@@ -60,7 +57,6 @@ const Form = ({ formData, onChange, disabled }) => {
                         name="dob"
                         value={formData.dob}
                         onChange={onChange}
-                        disabled={disabled} // Set disabled state
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         required
                     />
@@ -77,7 +73,6 @@ const Form = ({ formData, onChange, disabled }) => {
                         name="gender"
                         value={formData.gender}
                         onChange={onChange}
-                        disabled={disabled} // Set disabled state
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         required
                     >
@@ -101,7 +96,6 @@ const Form = ({ formData, onChange, disabled }) => {
                     name="address"
                     value={formData.address}
                     onChange={onChange}
-                    disabled={disabled} // Set disabled state
                     className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="123 Main St."
                     required
@@ -123,7 +117,6 @@ const Form = ({ formData, onChange, disabled }) => {
                         name="phone"
                         value={formData.phone}
                         onChange={onChange}
-                        disabled={disabled} // Set disabled state
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="+63 912 345 6789"
                         required
@@ -142,14 +135,13 @@ const Form = ({ formData, onChange, disabled }) => {
                         name="email"
                         value={formData.email}
                         onChange={onChange}
-                        disabled={disabled} // Set disabled state
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="example@email.com"
                         required
                     />
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

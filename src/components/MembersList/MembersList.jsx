@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react"
 import Modal from "./AddNewMemberModal/Modal"
-import ArchiveConfirmModal from "./ArchiveConfirmModal"
 import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
 
 const MembersList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
     const [currentMember, setCurrentMember] = useState(null)
-    const [memberToArchive, setMemberToArchive] = useState(null)
     const [membersData, setMembersData] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -111,29 +108,6 @@ const MembersList = () => {
         setMembersData((prevMembers) => [...prevMembers, ...newMembers])
     }
 
-    const handleArchiveClick = (member) => {
-        setMemberToArchive(member)
-        setIsConfirmModalOpen(true)
-    }
-
-    const handleConfirmArchive = () => {
-        setMembersData((prevData) =>
-            prevData.filter((member) => member.id !== memberToArchive.id),
-        )
-        setIsConfirmModalOpen(false)
-        setMemberToArchive(null)
-
-        // Reset the current member if it was the one archived
-        if (currentMember && currentMember.id === memberToArchive.id) {
-            handleCloseModal() // Close the modal if the archived member was being edited
-        }
-    }
-
-    const handleCloseConfirmModal = () => {
-        setIsConfirmModalOpen(false)
-        setMemberToArchive(null)
-    }
-
     // Filter members to show only those with "Active" status
     const activeMembers = membersData.filter(
         (member) => member.status === "Active",
@@ -153,7 +127,6 @@ const MembersList = () => {
                         <Table
                             membersData={activeMembers} // Pass only active members to the Table
                             handleOpenModal={handleOpenModal}
-                            handleArchiveClick={handleArchiveClick}
                         />
                     )}
                 </div>
@@ -167,13 +140,6 @@ const MembersList = () => {
                     onImportCSV={handleImportCSV}
                     member={currentMember}
                     existingMembers={membersData} // Pass existing members here
-                />
-            )}
-            {isConfirmModalOpen && (
-                <ArchiveConfirmModal
-                    memberId={memberToArchive.id} // Pass memberId for archiving
-                    onClose={handleCloseConfirmModal}
-                    onConfirm={handleConfirmArchive}
                 />
             )}
         </section>

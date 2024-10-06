@@ -21,7 +21,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
     const [fileName, setFileName] = useState("") // State for file name
     const [importedMembers, setImportedMembers] = useState([]) // State to hold imported member data
     const [duplicateError, setDuplicateError] = useState("") // State for duplicate error message
-    const [inputError, setInputError] = useState("") // State for input validation error message
+    const [ageError, setAgeError] = useState("") // State for age-related error message
 
     useEffect(() => {
         if (member) {
@@ -83,33 +83,24 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
     }
 
     const validateFields = () => {
-        // Only validate fields if no CSV is uploaded
-        if (importedMembers.length === 0) {
-            const { firstName, lastName, dob, address, phone, email } = formData
-            if (
-                !firstName ||
-                !lastName ||
-                !dob ||
-                !address ||
-                !phone ||
-                !email
-            ) {
-                setInputError("All fields are required.")
-                return false
-            }
+        const errors = {}
+        const { firstName, lastName, dob, address, phone, email, age } =
+            formData
 
-            const age = moment().diff(moment(dob), "years")
-            if (!isAgeValid(age)) {
-                setInputError(
-                    "Invalid age. Age must be 60 or older to be considered a senior citizen.",
-                )
-
-                return false
-            }
-
-            setInputError("") // Clear any previous input error
+        if (!firstName) errors.firstName = "Please fill out this field."
+        if (!lastName) errors.lastName = "Please fill out this field."
+        if (!dob) errors.dob = "Please fill out this field."
+        if (!address) errors.address = "Please fill out this field."
+        if (!phone) errors.phone = "Please fill out this field."
+        if (!email) errors.email = "Please fill out this field."
+        if (dob && !isAgeValid(age)) {
+            setAgeError("Age must be 60 years or older.")
+            errors.age = true // Add a flag to indicate age error
+        } else {
+            setAgeError("") // Clear age error if valid
         }
-        return true
+
+        return Object.keys(errors).length === 0
     }
 
     const handleSave = () => {
@@ -119,7 +110,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
 
         const formattedData = {
             ...formData,
-            name: `${formData.firstName} ${formData.lastName}`,
+            name: `${formData.firstName} ${formData.lastName}`, // Fixed string interpolation
             dob: formData.dob,
         }
 
@@ -149,7 +140,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
         setFileName("No file chosen") // Reset the file name after save
         setImportedMembers([]) // Reset imported members after save
         setDuplicateError("") // Reset the duplicate error message
-        setInputError("") // Reset the input error message
+        setAgeError("") // Reset the age error message
     }
 
     const handleImportSave = () => {
@@ -161,18 +152,6 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
             setDuplicateError(
                 "One or more members in the import already exist.",
             )
-            return
-        }
-
-        // Validate age for imported members
-        const invalidAgeMembers = importedMembers.filter(
-            (member) => !isAgeValid(member.age),
-        )
-        if (invalidAgeMembers.length > 0) {
-            const invalidNames = invalidAgeMembers
-                .map((member) => member.name)
-                .join(", ")
-            setDuplicateError(`Members with invalid age: ${invalidNames}`)
             return
         }
 
@@ -190,13 +169,11 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                 {duplicateError && (
                     <p className="text-red-600">{duplicateError}</p>
                 )}
-                {inputError &&
-                    importedMembers.length === 0 && ( // Only show input error if no CSV is uploaded
-                        <p className="text-red-600">{inputError}</p>
-                    )}
+                {ageError && (
+                    <p className="text-red-600">{ageError}</p> // Display age error message
+                )}
                 <form>
                     <Form formData={formData} onChange={handleChange} />
-                    {/* Render FileUpload only when adding a new member */}
                     {!member && (
                         <FileUpload
                             fileName={fileName}

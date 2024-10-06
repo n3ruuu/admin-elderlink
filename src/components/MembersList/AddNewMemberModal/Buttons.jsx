@@ -7,8 +7,6 @@ const Buttons = ({
 }) => {
     return (
         <div className="flex justify-end mt-6 space-x-4">
-            {" "}
-            {/* Added space between buttons */}
             <button
                 type="button"
                 onClick={onClose}
@@ -20,15 +18,15 @@ const Buttons = ({
                 <button
                     type="button"
                     onClick={handleImportSave}
-                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded" // Adjusted hover color
+                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded"
                 >
                     Import Members
                 </button>
             ) : (
                 <button
-                    type="button"
-                    onClick={handleSave}
-                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded" // Adjusted hover color
+                    type="submit"
+                    onClick={handleSave} // This will handle saving
+                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded"
                 >
                     Save
                 </button>

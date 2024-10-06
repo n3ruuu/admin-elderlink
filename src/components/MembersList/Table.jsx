@@ -4,15 +4,10 @@ import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import moment from "moment" // Import Moment.js
 import { useState } from "react"
-import ArchiveConfirmModal from "./ArchiveConfirmModal" // Import the modal
 
-const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
+const Table = ({ membersData, handleOpenModal }) => {
     const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 7
-
-    // Archive Modal State
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedMember, setSelectedMember] = useState(null)
+    const itemsPerPage = 6
 
     // Calculate total pages
     const totalPages = Math.ceil(membersData.length / itemsPerPage)
@@ -27,29 +22,6 @@ const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
     // Change page
     const handlePageChange = (page) => {
         setCurrentPage(page)
-    }
-
-    const handleArchiveClickWithModal = (member) => {
-        setSelectedMember(member)
-        setIsModalOpen(true)
-    }
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false)
-        setSelectedMember(null)
-    }
-
-    const handleConfirmArchive = (reason) => {
-        if (selectedMember) {
-            // Archive the member here
-            const archivedMember = {
-                ...selectedMember,
-                status: reason, // Add the reason to the archived member
-            }
-            // Update the state of archived members
-            setArchivedMembers((prev) => [...prev, archivedMember])
-        }
-        handleCloseModal()
     }
 
     return (
@@ -110,12 +82,7 @@ const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
                                         className="w-5 h-5"
                                     />
                                 </button>
-                                <button
-                                    onClick={() =>
-                                        handleArchiveClickWithModal(member)
-                                    }
-                                    className="text-red-500 hover:text-red-700"
-                                >
+                                <button className="text-red-500 hover:text-red-700">
                                     <img
                                         src={ArchiveIcon}
                                         alt="Archive Icon"
@@ -154,13 +121,6 @@ const Table = ({ membersData, handleOpenModal, setArchivedMembers }) => {
                     Next
                 </button>
             </div>
-
-            {/* Archive Modal */}
-            <ArchiveConfirmModal
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                onConfirm={handleConfirmArchive} // Handle archive confirmation
-            />
         </div>
     )
 }
