@@ -103,7 +103,8 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
         return Object.keys(errors).length === 0
     }
 
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.preventDefault()
         if (!validateFields()) {
             return // Stop if validation fails
         }
