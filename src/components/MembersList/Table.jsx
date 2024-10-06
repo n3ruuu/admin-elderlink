@@ -1,13 +1,19 @@
-/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+import React, { useState } from "react"
 import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import moment from "moment" // Import Moment.js
-import { useState } from "react"
+import ArchiveModal from "./ArchiveModal" // Import the Confirmation Modal
 
 const Table = ({ membersData, handleOpenModal }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6
+
+    // State for the confirmation modal
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+    const [memberToArchive, setMemberToArchive] = useState(null)
 
     // Calculate total pages
     const totalPages = Math.ceil(membersData.length / itemsPerPage)
@@ -22,6 +28,18 @@ const Table = ({ membersData, handleOpenModal }) => {
     // Change page
     const handlePageChange = (page) => {
         setCurrentPage(page)
+    }
+
+    // Handle archive button click
+    const handleArchiveClick = (member) => {
+        setMemberToArchive(member)
+        setIsConfirmModalOpen(true)
+    }
+
+    // Handle confirm archiving
+    const handleConfirmArchive = async () => {
+        setIsConfirmModalOpen(false)
+        setMemberToArchive(null)
     }
 
     return (
@@ -82,7 +100,10 @@ const Table = ({ membersData, handleOpenModal }) => {
                                         className="w-5 h-5"
                                     />
                                 </button>
-                                <button className="text-red-500 hover:text-red-700">
+                                <button
+                                    onClick={() => handleArchiveClick(member)} // Open confirmation modal
+                                    className="text-red-500 hover:text-red-700"
+                                >
                                     <img
                                         src={ArchiveIcon}
                                         alt="Archive Icon"
@@ -121,6 +142,14 @@ const Table = ({ membersData, handleOpenModal }) => {
                     Next
                 </button>
             </div>
+
+            {/* Confirmation Modal */}
+            <ArchiveModal
+                isOpen={isConfirmModalOpen}
+                onClose={() => setIsConfirmModalOpen(false)}
+                onConfirm={handleConfirmArchive}
+                memberName={memberToArchive?.name}
+            />
         </div>
     )
 }
