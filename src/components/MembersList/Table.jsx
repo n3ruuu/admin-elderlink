@@ -30,12 +30,13 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
         setIsConfirmModalOpen(true)
     }
 
-    const handleConfirmArchive = async () => {
+    const handleConfirmArchive = async (selectedReason) => {
         if (!memberToArchive) return
 
         try {
             await axios.put(
                 `http://localhost:5000/members/archive/${memberToArchive.id}`,
+                { status: selectedReason }, // Pass the selected reason in the request body
             )
 
             // Call the parent function to update membersData in the parent component
@@ -166,7 +167,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
             <ArchiveModal
                 isOpen={isConfirmModalOpen}
                 onClose={() => setIsConfirmModalOpen(false)}
-                onConfirm={handleConfirmArchive}
+                onConfirm={handleConfirmArchive} // Pass the handleConfirmArchive function
                 memberName={memberToArchive?.name}
             />
         </div>
