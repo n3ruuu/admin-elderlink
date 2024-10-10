@@ -12,7 +12,7 @@ const Buttons = ({
             <button
                 type="button"
                 onClick={onClose}
-                className="border border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
+                className="border w-[100px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
             >
                 Cancel
             </button>
@@ -31,8 +31,8 @@ const Buttons = ({
                     disabled={!formValid} // Disable if form is not valid
                     className={`${
                         !formValid
-                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                            : "bg-[#219EBC] hover:bg-[#1A7A8A] text-white"
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed w-[100px]"
+                            : "bg-[#219EBC] hover:bg-[#1A7A8A] text-white w-[100px]"
                     } font-bold py-2 px-4 rounded transition-colors duration-300`}
                 >
                     {isEditing ? "Edit" : "Add"}
