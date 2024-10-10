@@ -4,13 +4,15 @@ const Buttons = ({
     handleSave,
     importedMembers,
     handleImportSave,
+    formValid, // Add formValid prop to control button state
+    isEditing, // Add isEditing prop to determine if editing mode is active
 }) => {
     return (
         <div className="flex justify-end mt-6 space-x-4">
             <button
                 type="button"
                 onClick={onClose}
-                className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+                className="border border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
             >
                 Cancel
             </button>
@@ -18,17 +20,22 @@ const Buttons = ({
                 <button
                     type="button"
                     onClick={handleImportSave}
-                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded"
+                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300"
                 >
-                    Import Members
+                    Add
                 </button>
             ) : (
                 <button
                     type="submit"
-                    onClick={handleSave} // This will handle saving
-                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded"
+                    onClick={handleSave}
+                    disabled={!formValid} // Disable if form is not valid
+                    className={`${
+                        !formValid
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-[#219EBC] hover:bg-[#1A7A8A] text-white"
+                    } font-bold py-2 px-4 rounded transition-colors duration-300`}
                 >
-                    Save
+                    {isEditing ? "Edit" : "Add"}
                 </button>
             )}
         </div>

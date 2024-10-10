@@ -22,6 +22,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
     const [importedMembers, setImportedMembers] = useState([]) // State to hold imported member data
     const [duplicateError, setDuplicateError] = useState("") // State for duplicate error message
     const [ageError, setAgeError] = useState("") // State for age-related error message
+    const [formValid, setFormValid] = useState(false) // New state for form validation
 
     useEffect(() => {
         if (member) {
@@ -57,6 +58,11 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
             }))
         }
     }, [formData.dob])
+
+    useEffect(() => {
+        // Re-validate form whenever formData changes
+        setFormValid(validateFields())
+    }, [formData])
 
     if (!isOpen) return null
 
@@ -100,12 +106,12 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
             setAgeError("") // Clear age error if valid
         }
 
-        return Object.keys(errors).length === 0
+        return Object.keys(errors).length === 0 // Form is valid if no errors
     }
 
     const handleSave = (e) => {
         e.preventDefault()
-        if (!validateFields()) {
+        if (!formValid) {
             return // Stop if validation fails
         }
 
@@ -189,6 +195,8 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                         handleSave={handleSave}
                         importedMembers={importedMembers}
                         handleImportSave={handleImportSave}
+                        formValid={formValid} // Pass form validation status to Buttons component
+                        isEditing={!!member} // Pass isEditing prop to determine if editing mode is active
                     />
                 </form>
             </div>
