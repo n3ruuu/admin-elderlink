@@ -103,9 +103,10 @@ app.put("/members/:id", (req, res) => {
 // Endpoint to archive a member
 app.put("/members/archive/:id", (req, res) => {
     const memberId = req.params.id // Get the ID from the URL
-    const query = "UPDATE members SET status = 'Archived' WHERE id = ?"
+    const { status } = req.body // Get the status (reason) from the request body
+    const query = "UPDATE members SET status = ? WHERE id = ?" // Update the query to use the status
 
-    db.query(query, [memberId], (err, result) => {
+    db.query(query, [status, memberId], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message })
         }
@@ -115,8 +116,6 @@ app.put("/members/archive/:id", (req, res) => {
         res.status(200).json({ message: "Member archived successfully" })
     })
 })
-
-
 
 // Start the server
 app.listen(port, () => {
