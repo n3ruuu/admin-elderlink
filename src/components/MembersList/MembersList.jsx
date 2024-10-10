@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react"
-import Modal from "./AddNewMemberModal/Modal"
-import Header from "./Header"
-import Cards from "./Cards"
-import Table from "./Table"
+import Modal from "./AddNewMemberModal/Modal" // Import your AddNewMemberModal
+import SuccessModal from "./AddNewMemberModal/SuccessModal" // Import your SuccessModal
+import Header from "./Header" // Import your Header component
+import Cards from "./Cards" // Import your Cards component
+import Table from "./Table" // Import your Table component
 
 const MembersList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // State for SuccessModal
     const [currentMember, setCurrentMember] = useState(null)
     const [membersData, setMembersData] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [successModalMessage, setSuccessModalMessage] = useState("") // State to hold success message
+    const [successModalTitle, setSuccessModalTitle] = useState("") // State to hold success modal title
 
     useEffect(() => {
         fetchMembersData()
@@ -60,12 +64,14 @@ const MembersList = () => {
                     throw new Error("Failed to update member")
                 }
 
-                // Update the membersData state directly
                 setMembersData((prevMembers) =>
                     prevMembers.map((member) =>
                         member.id === currentMember.id ? updatedMember : member,
                     ),
                 )
+
+                setSuccessModalTitle("Update Completed!") // Set title for editing
+                setSuccessModalMessage("Member updated successfully!") // Update message for edit
             } catch (error) {
                 console.error("Error updating member:", error)
             }
@@ -85,14 +91,17 @@ const MembersList = () => {
                 }
 
                 const newMember = await response.json()
-
-                // Update the membersData state directly
                 setMembersData((prevMembers) => [...prevMembers, newMember])
+
+                setSuccessModalTitle("Member Added!") // Set title for adding
+                setSuccessModalMessage("Member has been successfully added!") // Message for adding
             } catch (error) {
                 console.error("Error adding member:", error)
             }
         }
-        handleCloseModal() // Close the modal after saving
+
+        setIsSuccessModalOpen(true)
+        handleCloseModal()
     }
 
     const handleArchiveMember = (archivedMemberId) => {
@@ -152,6 +161,14 @@ const MembersList = () => {
                     onImportCSV={handleImportCSV}
                     member={currentMember}
                     existingMembers={membersData}
+                />
+            )}
+            {isSuccessModalOpen && (
+                <SuccessModal
+                    isOpen={isSuccessModalOpen}
+                    onClose={() => setIsSuccessModalOpen(false)}
+                    title={successModalTitle} // Pass the dynamic title
+                    message={successModalMessage} // Pass the dynamic message
                 />
             )}
         </section>

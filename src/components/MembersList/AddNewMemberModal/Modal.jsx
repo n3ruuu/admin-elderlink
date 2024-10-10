@@ -122,7 +122,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
         }
 
         // Check for duplicates before saving
-        if (checkForDuplicates(formattedData)) {
+        if (!member && checkForDuplicates(formattedData)) {
             setDuplicateError("A member with the same name already exists.")
             return
         } else {

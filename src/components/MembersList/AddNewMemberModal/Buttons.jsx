@@ -20,7 +20,7 @@ const Buttons = ({
                 <button
                     type="button"
                     onClick={handleImportSave}
-                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300"
+                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px]"
                 >
                     Add
                 </button>
