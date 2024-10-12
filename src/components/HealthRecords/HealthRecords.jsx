@@ -87,6 +87,7 @@ const HealthRecords = () => {
                     onClose={handleCloseModal}
                     onSave={handleSave}
                     member={currentMember} // Pass member data to the modal
+                    membersList={membersData} // Pass the list of members for dropdown and search
                 />
             )}
             {isConfirmModalOpen && <ArchiveConfirmModal />}
