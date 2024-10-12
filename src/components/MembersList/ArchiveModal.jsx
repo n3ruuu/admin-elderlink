@@ -16,9 +16,9 @@ const ArchiveModal = ({ isOpen, onClose, onConfirm }) => {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-5 rounded shadow-lg w-96">
-                <h2 className="text-lg font-bold">Archive Member Data</h2>
-                <p className="text-sm text-gray-600">
+            <div className="bg-white p-5 rounded shadow-lg w-[500px]">
+                <h2 className="text-2xl font-bold mb-4">Archive Member Data</h2>
+                <p className="text-[#767171CC]">
                     Please select a reason for archiving this senior citizen's
                     membership information.
                 </p>
@@ -39,13 +39,18 @@ const ArchiveModal = ({ isOpen, onClose, onConfirm }) => {
                 <div className="flex justify-end mt-4">
                     <button
                         onClick={onClose}
-                        className="mr-2 bg-gray-300 px-4 py-2 rounded"
+                        className="mr-2 border border-[#219EBC] text-[#219EBC] hover:bg-[#219EBC] hover:text-white font-bold px-4 py-2 rounded transition-colors duration-300"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleConfirm}
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                        disabled={!selectedReason} // Disable if no reason selected
+                        className={`${
+                            selectedReason
+                                ? "bg-[#219EBC] hover:bg-[#168B99] text-white"
+                                : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                        } font-bold px-4 py-2 rounded transition-colors duration-300`}
                     >
                         Confirm
                     </button>
