@@ -31,9 +31,7 @@ const ArchiveModal = ({ isOpen, onClose, onConfirm }) => {
                         <option value="" disabled>
                             Select a reason
                         </option>
-                        <option value="Deceased" className="text-red-500">
-                            Deceased
-                        </option>
+                        <option value="Deceased">Deceased</option>
                         <option value="Relocated">Relocated</option>
                         <option value="Inactive">Inactive</option>
                     </select>

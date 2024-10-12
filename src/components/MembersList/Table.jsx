@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react"
 import axios from "axios"
+import moment from "moment"
 import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
-import moment from "moment"
 import ArchiveModal from "./ArchiveModal"
+import SuccessModal from "./SuccessModal" // Import SuccessModal
 
 const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
     const [currentPage, setCurrentPage] = useState(1)
@@ -13,8 +14,10 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
     const [memberToArchive, setMemberToArchive] = useState(null)
 
-    const totalPages = Math.ceil(membersData.length / itemsPerPage)
+    // State for SuccessModal
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
+    const totalPages = Math.ceil(membersData.length / itemsPerPage)
     const startIndex = (currentPage - 1) * itemsPerPage
     const currentMembers = membersData.slice(
         startIndex,
@@ -41,6 +44,9 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
 
             // Call the parent function to update membersData in the parent component
             handleArchiveMember(memberToArchive.id)
+
+            // Open SuccessModal after successful archiving
+            setIsSuccessModalOpen(true)
         } catch (error) {
             console.error(
                 "Error archiving member:",
@@ -55,6 +61,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
+                {/* Table header and body */}
                 <thead className="text-[#767171CC]">
                     <tr>
                         <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
@@ -127,6 +134,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
             </table>
 
             <div className="flex fixed bottom-5 mt-4">
+                {/* Pagination controls */}
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
@@ -164,11 +172,25 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
                 </button>
             </div>
 
+            {/* Archive modal */}
             <ArchiveModal
                 isOpen={isConfirmModalOpen}
                 onClose={() => setIsConfirmModalOpen(false)}
-                onConfirm={handleConfirmArchive} // Pass the handleConfirmArchive function
+                onConfirm={handleConfirmArchive}
                 memberName={memberToArchive?.name}
+            />
+
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                onGoToArchives={() => {
+                    // Logic for "Go to Archives"
+                    setIsSuccessModalOpen(false)
+                    // Navigate to archives
+                }}
+                isArchiving={true} // Set this to true for archiving
+                title="Member Archived!"
+                message="The member’s information has been successfully archived."
             />
         </div>
     )

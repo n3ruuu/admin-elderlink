@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import Modal from "./AddNewMemberModal/Modal" // Import your AddNewMemberModal
-import SuccessModal from "./AddNewMemberModal/SuccessModal" // Import your SuccessModal
+import SuccessModal from "./SuccessModal" // Import your SuccessModal
 import Header from "./Header" // Import your Header component
 import Cards from "./Cards" // Import your Cards component
 import Table from "./Table" // Import your Table component
@@ -71,7 +71,9 @@ const MembersList = () => {
                 )
 
                 setSuccessModalTitle("Update Completed!") // Set title for editing
-                setSuccessModalMessage("Member updated successfully!") // Update message for edit
+                setSuccessModalMessage(
+                    "Member information has been successfully updated.",
+                ) // Update message for edit
             } catch (error) {
                 console.error("Error updating member:", error)
             }
@@ -94,7 +96,9 @@ const MembersList = () => {
                 setMembersData((prevMembers) => [...prevMembers, newMember])
 
                 setSuccessModalTitle("Member Added!") // Set title for adding
-                setSuccessModalMessage("Member has been successfully added!") // Message for adding
+                setSuccessModalMessage(
+                    "Member has been successfully added to the member list.",
+                ) // Message for adding
             } catch (error) {
                 console.error("Error adding member:", error)
             }
@@ -167,6 +171,7 @@ const MembersList = () => {
                 <SuccessModal
                     isOpen={isSuccessModalOpen}
                     onClose={() => setIsSuccessModalOpen(false)}
+                    isArchiving={false}
                     title={successModalTitle} // Pass the dynamic title
                     message={successModalMessage} // Pass the dynamic message
                 />
