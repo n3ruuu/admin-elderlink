@@ -3,6 +3,7 @@
 const express = require("express")
 const mysql = require("mysql2")
 const cors = require("cors")
+const healthRecordsRouter = require("./healthRecords") // Import the health records router
 
 const app = express()
 const port = 5000
@@ -116,6 +117,9 @@ app.put("/members/archive/:id", (req, res) => {
         res.status(200).json({ message: "Member archived successfully" })
     })
 })
+
+// Use health records routes
+app.use("/health-records", healthRecordsRouter) // Connect health records routes
 
 // Start the server
 app.listen(port, () => {

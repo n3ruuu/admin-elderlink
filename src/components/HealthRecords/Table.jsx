@@ -46,19 +46,19 @@ const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
                                 {row.name}
                             </td>
                             <td className="whitespace-nowrap">
-                                {row.medicalConditions}
+                                {row.medical_conditions}
                             </td>
                             <td className="whitespace-nowrap">
                                 {row.medications}
                             </td>
                             <td className="whitespace-nowrap">
-                                {row.guardian}
+                                {row.guardian_name}
                             </td>
                             <td className="whitespace-nowrap">
                                 {row.relationship}
                             </td>
                             <td className="whitespace-nowrap">
-                                {row.emergencyContact}
+                                {row.emergency_contact}
                             </td>
 
                             <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">

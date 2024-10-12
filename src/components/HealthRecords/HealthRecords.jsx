@@ -1,7 +1,6 @@
 // src/components/HealthRecords.jsx
 
-import { useState } from "react"
-import MembersListData from "../../data/membersList.json"
+import { useState, useEffect } from "react"
 import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
@@ -12,7 +11,27 @@ const HealthRecords = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
     const [currentMember, setCurrentMember] = useState(null)
-    const [membersData, setMembersData] = useState(MembersListData)
+    const [membersData, setMembersData] = useState([]) // Initialize as empty array
+
+    // Fetch health records from the API
+    useEffect(() => {
+        const fetchMembersData = async () => {
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/health-records",
+                )
+                if (!response.ok) {
+                    throw new Error("Network response was not ok")
+                }
+                const data = await response.json()
+                setMembersData(data) // Set the fetched data
+            } catch (error) {
+                console.error("Error fetching members data:", error)
+            }
+        }
+
+        fetchMembersData()
+    }, []) // Empty dependency array to run once on component mount
 
     const handleOpenModal = (member) => {
         setCurrentMember(member)
@@ -48,12 +67,6 @@ const HealthRecords = () => {
 
     // Calculate statistics
     const totalRecords = membersData.length
-    const priorityCareCount = membersData.filter(
-        (member) => member.priority_care,
-    ).length
-    const recentUpdatesCount = membersData.filter(
-        (member) => member.recent_updates,
-    ).length
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
@@ -65,11 +78,7 @@ const HealthRecords = () => {
                 {/* Left Section: Cards and Service Requests */}
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     {/* Stats Cards */}
-                    <Cards
-                        totalRecords={totalRecords}
-                        priorityCareCount={priorityCareCount}
-                        recentUpdatesCount={recentUpdatesCount}
-                    />
+                    <Cards totalRecords={totalRecords} />
 
                     {/* Health Records Table */}
                     <Table
