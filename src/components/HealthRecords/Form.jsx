@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
 // src/components/Form.jsx
 
-// src/components/Form.jsx
-
 const Form = ({
     formData,
     setFormData,
@@ -18,6 +16,7 @@ const Form = ({
     handleSuggestionClick,
     handleSave,
     onClose,
+    isEditing, // New prop to determine editing state
 }) => {
     // Ensure controlled inputs by handling onChange
     const handleChange = (e) => {
@@ -30,24 +29,33 @@ const Form = ({
 
     return (
         <form className="relative">
-            {/* Search Member */}
+            {/* Search Member / Name Display */}
             <div className="mb-4 relative">
                 <label
                     htmlFor="searchMember"
                     className="block text-lg font-medium text-gray-700 mb-1"
                 >
-                    Search Member
+                    {isEditing ? "Member Name" : "Search Member"}
                 </label>
-                <input
-                    type="text"
-                    id="searchMember"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    disabled={!isEditable}
-                    className="relative p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Search by name"
-                />
-                {searchTerm && (
+                {isEditing ? (
+                    <input
+                        type="text"
+                        value={`${formData.firstName} ${formData.lastName}`}
+                        readOnly
+                        className="border border-gray-300 rounded p-2 w-full"
+                    />
+                ) : (
+                    <input
+                        type="text"
+                        id="searchMember"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        disabled={!isEditable}
+                        className="relative p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="Search by name"
+                    />
+                )}
+                {searchTerm && !isEditing && (
                     <button
                         type="button"
                         onClick={clearSearchTerm}
@@ -57,7 +65,7 @@ const Form = ({
                         &times;
                     </button>
                 )}
-                {suggestions.length > 0 && (
+                {suggestions.length > 0 && !isEditing && (
                     <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-md w-full">
                         {suggestions.map((suggestion) => (
                             <li
@@ -137,19 +145,19 @@ const Form = ({
             {/* Guardian */}
             <div className="mb-4">
                 <label
-                    htmlFor="guardian"
+                    htmlFor="guardian_name"
                     className="block text-lg font-medium text-gray-700 mb-1"
                 >
-                    Guardian
+                    Guardian Name
                 </label>
                 <input
                     type="text"
-                    id="guardian"
-                    name="guardian"
-                    value={formData.guardian || ""} // Ensure value is controlled
+                    id="guardian_name"
+                    name="guardian_name" // Change name to guardian_name
+                    value={formData.guardian_name || ""} // Ensure value is controlled
                     onChange={handleChange}
                     className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Enter guardian"
+                    placeholder="Enter guardian name"
                 />
             </div>
 

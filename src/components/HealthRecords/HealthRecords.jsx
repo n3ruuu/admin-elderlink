@@ -1,5 +1,3 @@
-// src/components/HealthRecords.jsx
-
 import { useState, useEffect } from "react"
 import Header from "./Header"
 import Cards from "./Cards"
@@ -48,7 +46,9 @@ const HealthRecords = () => {
             // Editing existing member
             setMembersData((prevData) =>
                 prevData.map((member) =>
-                    member.id === updatedMember.id ? updatedMember : member,
+                    member.id === updatedMember.member_id
+                        ? updatedMember
+                        : member,
                 ),
             )
         } else {

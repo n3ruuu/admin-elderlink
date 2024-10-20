@@ -9,32 +9,36 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         medicalConditions: [],
         medications: [],
         emergencyContact: "",
-        guardian_name: "", // Ensure this is initialized
+        guardian_name: "",
+        relationship: "",
     })
 
     const [searchTerm, setSearchTerm] = useState("")
     const [suggestions, setSuggestions] = useState([])
     const [isEditable, setIsEditable] = useState(true)
-    const [membersList, setMembersList] = useState([]) // New state for member list
-    const [selectedMemberId, setSelectedMemberId] = useState(null) // New state to store selected member ID
+    const [membersList, setMembersList] = useState([])
+    const [selectedMemberId, setSelectedMemberId] = useState(null)
+    const [isReadOnly, setIsReadOnly] = useState(false)
+
+    // Determine if the modal is in editing mode
+    const isEditing = !!member
 
     useEffect(() => {
-        // Fetch members list from the server
         const fetchMembers = async () => {
             try {
-                const response = await fetch("http://localhost:5000/members") // Adjust URL if necessary
+                const response = await fetch("http://localhost:5000/members")
                 if (!response.ok) {
                     throw new Error("Network response was not ok")
                 }
                 const data = await response.json()
-                setMembersList(data) // Set the members list state
+                setMembersList(data)
             } catch (error) {
                 console.error("Failed to fetch members:", error)
             }
         }
 
         fetchMembers()
-    }, []) // Fetch members when the modal opens
+    }, [])
 
     useEffect(() => {
         if (member) {
@@ -48,11 +52,15 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                     ? member.medications.split(",")
                     : [],
                 emergencyContact: member.emergency_contact || "",
+                guardian_name: member.guardian_name || "",
+                relationship: member.relationship || "",
             })
-            setSelectedMemberId(member.id) // Set selected member ID
-            setIsEditable(false) // Disable search input when a member is selected
+            setSelectedMemberId(member.id)
+            setIsEditable(false) // Make the name fields non-editable
+            setIsReadOnly(true)
         } else {
-            setIsEditable(true) // Enable input if no member is selected
+            setIsEditable(true) // Allow editing when no member is selected
+            setIsReadOnly(false)
         }
     }, [member])
 
@@ -106,10 +114,11 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
             lastName: lastName,
         }))
         setSearchTerm(suggestion.name)
-        setSelectedMemberId(suggestion.id) // Capture the member ID when a suggestion is clicked
-        setIsEditable(false)
+        setSelectedMemberId(suggestion.id)
+        setIsEditable(false) // Disable input when a suggestion is clicked
+        setIsReadOnly(true)
         setTimeout(() => {
-            setSuggestions([]) // Clear suggestions after selecting
+            setSuggestions([])
         }, 0)
     }
 
@@ -118,21 +127,20 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
             const response = await fetch(
                 "http://localhost:5000/health-records",
                 {
-                    method: "POST",
+                    method: isEditing ? "PUT" : "POST", // Use PUT for editing
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        member_id: selectedMemberId, // Use the selected member's ID here
+                        member_id: selectedMemberId,
                         member_name:
-                            formData.firstName + " " + formData.lastName, // Include member name
-                        record_date: new Date().toISOString().split("T")[0], // Current date
+                            formData.firstName + " " + formData.lastName,
+                        record_date: new Date().toISOString().split("T")[0],
                         medical_conditions:
                             formData.medicalConditions.join(","),
                         medications: formData.medications.join(","),
-                        guardian_name:
-                            formData.firstName + " " + formData.lastName, // Assuming guardian's name is the member's name
-                        relationship: formData.guardian_name, // Modify this as needed
+                        guardian_name: formData.guardian_name,
+                        relationship: formData.relationship,
                         emergency_contact: formData.emergencyContact,
                     }),
                 },
@@ -143,10 +151,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
             }
 
             const data = await response.json()
-            console.log(data.message) // Handle success notifications here
-
-            // Call the onSave callback to update the parent component state
-            onSave(data)
+            console.log(data.message)
 
             // Reset the form
             setFormData({
@@ -155,10 +160,19 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                 medicalConditions: [],
                 medications: [],
                 emergencyContact: "",
+                guardian_name: "",
+                relationship: "",
             })
             setSearchTerm("")
             setSuggestions([])
             setIsEditable(true)
+            setIsReadOnly(false)
+
+            // Notify parent component about the saved record
+            onSave({ ...data, id: selectedMemberId }) // Pass the updated member data
+
+            // Reset selected member ID after save to allow adding new records again
+            setSelectedMemberId(null)
         } catch (error) {
             console.error("Error saving health record:", error)
         }
@@ -181,9 +195,10 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
     }
 
     const clearSearchTerm = () => {
-        setSearchTerm("") // Clear search term
-        setSuggestions([]) // Clear suggestions
+        setSearchTerm("")
+        setSuggestions([])
         setIsEditable(true) // Make input editable again
+        setIsReadOnly(false) // Reset read-only status
     }
 
     useEffect(() => {
@@ -191,6 +206,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
             setIsEditable(true)
             setSearchTerm("")
             setSuggestions([])
+            setIsReadOnly(false)
         }
     }, [isOpen])
 
@@ -200,10 +216,9 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg w-[40%]">
                 <h2 className="text-3xl font-bold mb-6">
-                    {member ? "Edit Record" : "Add New Record"}
+                    {isEditing ? "Edit Record" : "Add New Record"}
                 </h2>
 
-                {/* Pass necessary props to the Form component */}
                 <Form
                     formData={formData}
                     setFormData={setFormData}
@@ -213,12 +228,14 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                     removeMedication={removeMedication}
                     clearSearchTerm={clearSearchTerm}
                     isEditable={isEditable}
+                    isReadOnly={isReadOnly}
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
                     suggestions={suggestions}
                     handleSuggestionClick={handleSuggestionClick}
                     handleSave={handleSave}
                     onClose={onClose}
+                    isEditing={isEditing} // Pass the isEditing prop to Form
                 />
             </div>
         </div>

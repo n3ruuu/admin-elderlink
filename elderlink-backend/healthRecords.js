@@ -11,6 +11,7 @@ const db = mysql.createConnection({
     database: "elderlinkdb",
 })
 
+// POST: Add a new health record
 router.post("/", (req, res) => {
     const {
         member_id,
