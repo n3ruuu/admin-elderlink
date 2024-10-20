@@ -118,6 +118,19 @@ app.put("/members/archive/:id", (req, res) => {
     })
 })
 
+// Endpoint to search members by name
+app.get("/members/search", (req, res) => {
+    const searchTerm = req.query.q || "" // Get the search term from query parameters
+    const query = "SELECT id, name FROM members WHERE name LIKE ?"
+
+    db.query(query, [`%${searchTerm}%`], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message })
+        }
+        res.status(200).json(results) // Return the results as JSON
+    })
+})
+
 // Use health records routes
 app.use("/health-records", healthRecordsRouter) // Connect health records routes
 

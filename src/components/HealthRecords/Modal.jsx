@@ -1,10 +1,8 @@
 /* eslint-disable react/prop-types */
-// src/components/Modal.jsx
-
 import { useState, useEffect } from "react"
 import Form from "./Form"
 
-const Modal = ({ isOpen, onClose, onSave, member, membersList }) => {
+const Modal = ({ isOpen, onClose, onSave, member }) => {
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -17,6 +15,25 @@ const Modal = ({ isOpen, onClose, onSave, member, membersList }) => {
     const [searchTerm, setSearchTerm] = useState("")
     const [suggestions, setSuggestions] = useState([])
     const [isEditable, setIsEditable] = useState(true)
+    const [membersList, setMembersList] = useState([]) // New state for member list
+
+    useEffect(() => {
+        // Fetch members list from the server
+        const fetchMembers = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/members") // Adjust URL if necessary
+                if (!response.ok) {
+                    throw new Error("Network response was not ok")
+                }
+                const data = await response.json()
+                setMembersList(data) // Set the members list state
+            } catch (error) {
+                console.error("Failed to fetch members:", error)
+            }
+        }
+
+        fetchMembers()
+    }, []) // Fetch members when the modal opens
 
     useEffect(() => {
         if (member) {
@@ -90,7 +107,7 @@ const Modal = ({ isOpen, onClose, onSave, member, membersList }) => {
         setSearchTerm(suggestion.name)
         setIsEditable(false)
         setTimeout(() => {
-            setSuggestions([])
+            setSuggestions([]) // Clear suggestions after selecting
         }, 0)
     }
 
