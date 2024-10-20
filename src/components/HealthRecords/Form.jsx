@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 // src/components/Form.jsx
 
+// src/components/Form.jsx
+
 const Form = ({
     formData,
     setFormData,
@@ -17,11 +19,12 @@ const Form = ({
     handleSave,
     onClose,
 }) => {
+    // Ensure controlled inputs by handling onChange
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value,
+            [name]: value || "", // Ensure no undefined values
         }))
     }
 
@@ -40,11 +43,10 @@ const Form = ({
                     id="searchMember"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    disabled={!isEditable} // Disable input based on state
+                    disabled={!isEditable}
                     className="relative p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="Search by name"
                 />
-                {/* Add the clear button (x) */}
                 {searchTerm && (
                     <button
                         type="button"
@@ -52,7 +54,7 @@ const Form = ({
                         className="absolute right-3 top-10 text-2xl text-gray-500 hover:text-gray-800"
                         title="Clear search"
                     >
-                        &times; {/* Use × as the clear button */}
+                        &times;
                     </button>
                 )}
                 {suggestions.length > 0 && (
@@ -144,7 +146,7 @@ const Form = ({
                     type="text"
                     id="guardian"
                     name="guardian"
-                    value={formData.guardian}
+                    value={formData.guardian || ""} // Ensure value is controlled
                     onChange={handleChange}
                     className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="Enter guardian"
@@ -164,7 +166,7 @@ const Form = ({
                         type="text"
                         id="relationship"
                         name="relationship"
-                        value={formData.relationship}
+                        value={formData.relationship || ""} // Ensure value is controlled
                         onChange={handleChange}
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="Enter relationship"
@@ -182,7 +184,7 @@ const Form = ({
                         type="text"
                         id="emergencyContact"
                         name="emergencyContact"
-                        value={formData.emergencyContact}
+                        value={formData.emergencyContact || ""} // Ensure value is controlled
                         onChange={handleChange}
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="Enter emergency contact"

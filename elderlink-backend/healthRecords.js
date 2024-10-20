@@ -11,29 +11,32 @@ const db = mysql.createConnection({
     database: "elderlinkdb",
 })
 
-// Endpoint to add health records
 router.post("/", (req, res) => {
     const {
         member_id,
+        member_name, // New field for member name
         record_date,
         medical_conditions,
         medications,
-        allergies,
         guardian_name,
         relationship,
         emergency_contact,
     } = req.body
 
-    const query =
-        "INSERT INTO health_records (member_id, record_date, medical_conditions, medications, allergies, guardian_name, relationship, emergency_contact) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    const query = `
+        INSERT INTO health_records 
+        (member_id, member_name, record_date, medical_conditions, medications, guardian_name, relationship, emergency_contact) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `
+
     db.query(
         query,
         [
             member_id,
+            member_name, // Include member name in the query
             record_date,
             medical_conditions,
             medications,
-            allergies,
             guardian_name,
             relationship,
             emergency_contact,
@@ -50,7 +53,7 @@ router.post("/", (req, res) => {
     )
 })
 
-// Endpoint to get all health records with member names
+// GET: Fetch all health records (with member names, removed 'allergies')
 router.get("/", (req, res) => {
     const query = `
         SELECT hr.*, m.name 
@@ -62,7 +65,7 @@ router.get("/", (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message })
         }
-        res.status(200).json(results) // Send the health records back as JSON
+        res.status(200).json(results)
     })
 })
 

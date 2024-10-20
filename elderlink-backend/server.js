@@ -89,8 +89,6 @@ app.put("/members/:id", (req, res) => {
     const memberId = req.params.id // This should be the ID passed in the URL
     const updatedMemberData = req.body
 
-    console.log("Updating member with ID:", memberId) // Add this line to check the memberId
-
     updateMemberInDatabase(memberId, updatedMemberData)
         .then((updatedMember) => {
             res.status(200).json(updatedMember) // Return the updated member

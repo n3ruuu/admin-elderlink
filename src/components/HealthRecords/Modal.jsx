@@ -8,14 +8,15 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         lastName: "",
         medicalConditions: [],
         medications: [],
-        allergies: "",
         emergencyContact: "",
+        guardian_name: "", // Ensure this is initialized
     })
 
     const [searchTerm, setSearchTerm] = useState("")
     const [suggestions, setSuggestions] = useState([])
     const [isEditable, setIsEditable] = useState(true)
     const [membersList, setMembersList] = useState([]) // New state for member list
+    const [selectedMemberId, setSelectedMemberId] = useState(null) // New state to store selected member ID
 
     useEffect(() => {
         // Fetch members list from the server
@@ -46,9 +47,9 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                 medications: member.medications
                     ? member.medications.split(",")
                     : [],
-                allergies: member.allergies || "",
                 emergencyContact: member.emergency_contact || "",
             })
+            setSelectedMemberId(member.id) // Set selected member ID
             setIsEditable(false) // Disable search input when a member is selected
         } else {
             setIsEditable(true) // Enable input if no member is selected
@@ -105,29 +106,62 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
             lastName: lastName,
         }))
         setSearchTerm(suggestion.name)
+        setSelectedMemberId(suggestion.id) // Capture the member ID when a suggestion is clicked
         setIsEditable(false)
         setTimeout(() => {
             setSuggestions([]) // Clear suggestions after selecting
         }, 0)
     }
 
-    const handleSave = () => {
-        onSave({
-            ...formData,
-            medicalConditions: formData.medicalConditions.join(","),
-            medications: formData.medications.join(","),
-        })
-        setFormData({
-            firstName: "",
-            lastName: "",
-            medicalConditions: [],
-            medications: [],
-            allergies: "",
-            emergencyContact: "",
-        })
-        setSearchTerm("")
-        setSuggestions([])
-        setIsEditable(true)
+    const handleSave = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:5000/health-records",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        member_id: selectedMemberId, // Use the selected member's ID here
+                        member_name:
+                            formData.firstName + " " + formData.lastName, // Include member name
+                        record_date: new Date().toISOString().split("T")[0], // Current date
+                        medical_conditions:
+                            formData.medicalConditions.join(","),
+                        medications: formData.medications.join(","),
+                        guardian_name:
+                            formData.firstName + " " + formData.lastName, // Assuming guardian's name is the member's name
+                        relationship: formData.guardian_name, // Modify this as needed
+                        emergency_contact: formData.emergencyContact,
+                    }),
+                },
+            )
+
+            if (!response.ok) {
+                throw new Error("Failed to save health record")
+            }
+
+            const data = await response.json()
+            console.log(data.message) // Handle success notifications here
+
+            // Call the onSave callback to update the parent component state
+            onSave(data)
+
+            // Reset the form
+            setFormData({
+                firstName: "",
+                lastName: "",
+                medicalConditions: [],
+                medications: [],
+                emergencyContact: "",
+            })
+            setSearchTerm("")
+            setSuggestions([])
+            setIsEditable(true)
+        } catch (error) {
+            console.error("Error saving health record:", error)
+        }
     }
 
     const removeCondition = (condition) => {
