@@ -46,10 +46,22 @@ const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
                                 {row.name}
                             </td>
                             <td className="whitespace-nowrap">
-                                {row.medical_conditions}
+                                {row.medical_conditions
+                                    ? row.medical_conditions
+                                          .split(",")
+                                          .map((condition) => condition.trim())
+                                          .join(", ")
+                                    : ""}
                             </td>
                             <td className="whitespace-nowrap">
-                                {row.medications}
+                                {row.medications
+                                    ? row.medications
+                                          .split(",")
+                                          .map((medication) =>
+                                              medication.trim(),
+                                          )
+                                          .join(", ")
+                                    : ""}
                             </td>
                             <td className="whitespace-nowrap">
                                 {row.guardian_name}

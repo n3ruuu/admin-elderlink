@@ -13,6 +13,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         relationship: "",
     })
 
+    const [initialFormData, setInitialFormData] = useState(formData) // State for initial form data
     const [searchTerm, setSearchTerm] = useState("")
     const [suggestions, setSuggestions] = useState([])
     const [isEditable, setIsEditable] = useState(true)
@@ -20,7 +21,6 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
     const [selectedMemberId, setSelectedMemberId] = useState(null)
     const [isReadOnly, setIsReadOnly] = useState(false)
 
-    // Determine if the modal is in editing mode
     const isEditing = !!member
 
     useEffect(() => {
@@ -43,8 +43,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
 
     useEffect(() => {
         if (member) {
-            // Set form data when editing
-            setFormData({
+            const newFormData = {
                 firstName: member?.name?.split(" ")[0] || "",
                 lastName: member?.name?.split(" ")[1] || "",
                 medicalConditions: member.medical_conditions
@@ -56,16 +55,14 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                 emergencyContact: member.emergency_contact || "",
                 guardian_name: member.guardian_name || "",
                 relationship: member.relationship || "",
-            })
-
-            // Set selectedMemberId to member.id when in editing mode
-            setSelectedMemberId(member.id || null) // Ensure this is set properly
-
-            setIsEditable(false) // Disable editing for name fields when in edit mode
+            }
+            setFormData(newFormData)
+            setInitialFormData(newFormData) // Set initial form data
+            setSelectedMemberId(member.id || null)
+            setIsEditable(false)
             setIsReadOnly(true)
         } else {
-            // Reset form and enable editing if no member is selected
-            setFormData({
+            const resetFormData = {
                 firstName: "",
                 lastName: "",
                 medicalConditions: [],
@@ -73,7 +70,9 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                 emergencyContact: "",
                 guardian_name: "",
                 relationship: "",
-            })
+            }
+            setFormData(resetFormData)
+            setInitialFormData(resetFormData) // Reset initial form data
             setSelectedMemberId(null)
             setIsEditable(true)
             setIsReadOnly(false)
@@ -140,10 +139,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
     }
 
     const handleSave = async () => {
-        // Get health_record_id if editing
         const healthRecordId = isEditing ? member?.health_record_id : null
-
-        // Derive currentMemberId from the member object if in editing mode
         const currentMemberId = isEditing ? member?.member_id : selectedMemberId
 
         const body = {
@@ -158,7 +154,6 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
             emergency_contact: formData.emergencyContact,
         }
 
-        // Log the entire body to the console for debugging
         console.log("Request Body:", body) // Log all values in the body
 
         try {
@@ -192,6 +187,15 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                 guardian_name: "",
                 relationship: "",
             })
+            setInitialFormData({
+                firstName: "",
+                lastName: "",
+                medicalConditions: [],
+                medications: [],
+                emergencyContact: "",
+                guardian_name: "",
+                relationship: "",
+            }) // Reset initial form data
             setSearchTerm("")
             setSuggestions([])
             setIsEditable(true)
@@ -238,6 +242,10 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         }
     }, [isOpen])
 
+    // Check if the form data is unchanged
+    const isFormUnchanged =
+        JSON.stringify(formData) === JSON.stringify(initialFormData)
+
     if (!isOpen) return null // Do not render the modal if it's not open
 
     return (
@@ -263,7 +271,8 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                     handleSuggestionClick={handleSuggestionClick}
                     handleSave={handleSave}
                     onClose={onClose}
-                    isEditing={isEditing} // Pass the isEditing prop to Form
+                    isEditing={isEditing}
+                    isSaveDisabled={isFormUnchanged} // Disable Save button if unchanged
                 />
             </div>
         </div>

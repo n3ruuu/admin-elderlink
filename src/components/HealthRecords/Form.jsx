@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-// src/components/Form.jsx
 
 const Form = ({
     formData,
@@ -17,6 +16,7 @@ const Form = ({
     handleSave,
     onClose,
     isEditing, // New prop to determine editing state
+    isSaveDisabled, // Prop to control the Save button's disabled state
 }) => {
     // Ensure controlled inputs by handling onChange
     const handleChange = (e) => {
@@ -25,6 +25,15 @@ const Form = ({
             ...prevData,
             [name]: value || "", // Ensure no undefined values
         }))
+    }
+
+    // New function to validate form
+    const isFormValid = () => {
+        return (
+            formData.guardian_name.trim() !== "" &&
+            formData.relationship.trim() !== "" &&
+            formData.emergencyContact.trim() !== ""
+        )
     }
 
     return (
@@ -211,8 +220,13 @@ const Form = ({
                 </button>
                 <button
                     type="button"
-                    className="bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px]"
+                    className={`bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px] ${
+                        isSaveDisabled || !isFormValid()
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                    }`}
                     onClick={handleSave}
+                    disabled={isSaveDisabled || !isFormValid()} // Disable the button if the form is invalid or if isSaveDisabled is true
                 >
                     Save
                 </button>
