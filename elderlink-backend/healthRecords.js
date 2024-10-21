@@ -54,6 +54,76 @@ router.post("/", (req, res) => {
     )
 })
 
+router.put("/:id", (req, res) => {
+    const healthRecordId = req.params.id
+    const {
+        member_name,
+        record_date,
+        medical_conditions,
+        medications,
+        guardian_name,
+        relationship,
+        emergency_contact,
+    } = req.body
+
+    console.log("Updating record ID:", healthRecordId) // Debug log
+    console.log("Request Body:", req.body) // Log the request body
+
+    const query = `
+        UPDATE health_records 
+        SET member_name = ?, record_date = ?, medical_conditions = ?, medications = ?, guardian_name = ?, relationship = ?, emergency_contact = ? 
+        WHERE health_record_id = ?;
+    `
+
+    db.query(
+        query,
+        [
+            member_name,
+            record_date,
+            medical_conditions,
+            medications,
+            guardian_name,
+            relationship,
+            emergency_contact,
+            healthRecordId,
+        ],
+        (err, result) => {
+            if (err) {
+                console.error("Database Error:", err) // Log the error
+                return res.status(500).json({ error: err.message })
+            }
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: "Record not found" })
+            }
+            res.status(200).json({
+                message: "Health record updated successfully",
+            })
+        },
+    )
+})
+
+// GET: Fetch a specific health record by ID
+router.get("/:id", (req, res) => {
+    const healthRecordId = req.params.id // Get the ID from the URL
+
+    const query = `
+        SELECT hr.*, m.name 
+        FROM health_records hr 
+        JOIN members m ON hr.member_id = m.id
+        WHERE hr.health_record_id = ?
+    `
+
+    db.query(query, [healthRecordId], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message })
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ message: "Record not found" })
+        }
+        res.status(200).json(results[0]) // Send back the first record found
+    })
+})
+
 // GET: Fetch all health records (with member names, removed 'allergies')
 router.get("/", (req, res) => {
     const query = `

@@ -32,6 +32,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                 }
                 const data = await response.json()
                 setMembersList(data)
+                console.log("Fetched members:", data) // Debug log
             } catch (error) {
                 console.error("Failed to fetch members:", error)
             }
@@ -42,9 +43,10 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
 
     useEffect(() => {
         if (member) {
+            // Set form data when editing
             setFormData({
-                firstName: member.name.split(" ")[0] || "",
-                lastName: member.name.split(" ")[1] || "",
+                firstName: member?.name?.split(" ")[0] || "",
+                lastName: member?.name?.split(" ")[1] || "",
                 medicalConditions: member.medical_conditions
                     ? member.medical_conditions.split(",")
                     : [],
@@ -55,11 +57,25 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
                 guardian_name: member.guardian_name || "",
                 relationship: member.relationship || "",
             })
-            setSelectedMemberId(member.id)
-            setIsEditable(false) // Make the name fields non-editable
+
+            // Set selectedMemberId to member.id when in editing mode
+            setSelectedMemberId(member.id || null) // Ensure this is set properly
+
+            setIsEditable(false) // Disable editing for name fields when in edit mode
             setIsReadOnly(true)
         } else {
-            setIsEditable(true) // Allow editing when no member is selected
+            // Reset form and enable editing if no member is selected
+            setFormData({
+                firstName: "",
+                lastName: "",
+                medicalConditions: [],
+                medications: [],
+                emergencyContact: "",
+                guardian_name: "",
+                relationship: "",
+            })
+            setSelectedMemberId(null)
+            setIsEditable(true)
             setIsReadOnly(false)
         }
     }, [member])
@@ -107,53 +123,66 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
     }
 
     const handleSuggestionClick = (suggestion) => {
+        console.log("Suggestion clicked:", suggestion) // Debug log
         const [firstName, lastName] = suggestion.name.split(" ")
         setFormData((prevData) => ({
             ...prevData,
             firstName: firstName,
-            lastName: lastName,
+            lastName: lastName || "", // Handle case where there's no last name
         }))
         setSearchTerm(suggestion.name)
-        setSelectedMemberId(suggestion.id)
+        setSelectedMemberId(suggestion.id) // Ensure this is a valid ID
         setIsEditable(false) // Disable input when a suggestion is clicked
         setIsReadOnly(true)
         setTimeout(() => {
-            setSuggestions([])
+            setSuggestions([]) // Clear suggestions
         }, 0)
     }
 
     const handleSave = async () => {
+        // Get health_record_id if editing
+        const healthRecordId = isEditing ? member?.health_record_id : null
+
+        // Derive currentMemberId from the member object if in editing mode
+        const currentMemberId = isEditing ? member?.member_id : selectedMemberId
+
+        const body = {
+            health_record_id: healthRecordId, // Include health_record_id in the body
+            member_id: currentMemberId, // Use currentMemberId from member object
+            member_name: formData.firstName + " " + formData.lastName,
+            record_date: new Date().toISOString().split("T")[0], // Current date
+            medical_conditions: formData.medicalConditions.join(","), // Convert to comma-separated string
+            medications: formData.medications.join(","), // Convert to comma-separated string
+            guardian_name: formData.guardian_name,
+            relationship: formData.relationship,
+            emergency_contact: formData.emergencyContact,
+        }
+
+        // Log the entire body to the console for debugging
+        console.log("Request Body:", body) // Log all values in the body
+
         try {
-            const response = await fetch(
-                "http://localhost:5000/health-records",
-                {
-                    method: isEditing ? "PUT" : "POST", // Use PUT for editing
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        member_id: selectedMemberId,
-                        member_name:
-                            formData.firstName + " " + formData.lastName,
-                        record_date: new Date().toISOString().split("T")[0],
-                        medical_conditions:
-                            formData.medicalConditions.join(","),
-                        medications: formData.medications.join(","),
-                        guardian_name: formData.guardian_name,
-                        relationship: formData.relationship,
-                        emergency_contact: formData.emergencyContact,
-                    }),
+            const url = `http://localhost:5000/health-records${
+                isEditing ? `/${healthRecordId}` : "" // Append the ID if editing
+            }`
+            const method = isEditing ? "PUT" : "POST" // Use PUT for editing
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json",
                 },
-            )
+                body: JSON.stringify(body),
+            })
 
             if (!response.ok) {
                 throw new Error("Failed to save health record")
             }
 
             const data = await response.json()
-            console.log(data.message)
+            console.log(data.message) // Log success message
 
-            // Reset the form
+            // Reset the form and update state
             setFormData({
                 firstName: "",
                 lastName: "",
@@ -169,10 +198,9 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
             setIsReadOnly(false)
 
             // Notify parent component about the saved record
-            onSave({ ...data, id: selectedMemberId }) // Pass the updated member data
+            onSave({ ...data, id: currentMemberId })
 
-            // Reset selected member ID after save to allow adding new records again
-            setSelectedMemberId(null)
+            setSelectedMemberId(null) // Reset selected member ID
         } catch (error) {
             console.error("Error saving health record:", error)
         }
@@ -210,7 +238,7 @@ const Modal = ({ isOpen, onClose, onSave, member }) => {
         }
     }, [isOpen])
 
-    if (!isOpen) return null
+    if (!isOpen) return null // Do not render the modal if it's not open
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

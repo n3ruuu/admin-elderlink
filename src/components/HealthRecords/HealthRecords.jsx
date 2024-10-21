@@ -11,23 +11,22 @@ const HealthRecords = () => {
     const [currentMember, setCurrentMember] = useState(null)
     const [membersData, setMembersData] = useState([]) // Initialize as empty array
 
-    // Fetch health records from the API
-    useEffect(() => {
-        const fetchMembersData = async () => {
-            try {
-                const response = await fetch(
-                    "http://localhost:5000/health-records",
-                )
-                if (!response.ok) {
-                    throw new Error("Network response was not ok")
-                }
-                const data = await response.json()
-                setMembersData(data) // Set the fetched data
-            } catch (error) {
-                console.error("Error fetching members data:", error)
+    // Function to fetch health records from the API
+    const fetchMembersData = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/health-records")
+            if (!response.ok) {
+                throw new Error("Network response was not ok")
             }
+            const data = await response.json()
+            setMembersData(data) // Set the fetched data
+        } catch (error) {
+            console.error("Error fetching members data:", error)
         }
+    }
 
+    // Fetch health records when component mounts
+    useEffect(() => {
         fetchMembersData()
     }, []) // Empty dependency array to run once on component mount
 
@@ -41,23 +40,32 @@ const HealthRecords = () => {
         setCurrentMember(null)
     }
 
-    const handleSave = (updatedMember) => {
+    const handleSave = async (updatedMember) => {
         if (currentMember) {
             // Editing existing member
-            setMembersData((prevData) =>
-                prevData.map((member) =>
-                    member.id === updatedMember.member_id
-                        ? updatedMember
-                        : member,
-                ),
+            await fetch(
+                `http://localhost:5000/health-records/${updatedMember.id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedMember),
+                },  
             )
         } else {
             // Adding new member
-            setMembersData((prevData) => [
-                ...prevData,
-                { ...updatedMember, id: prevData.length + 1 }, // Simple ID generation
-            ])
+            await fetch("http://localhost:5000/health-records", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedMember),
+            })
         }
+
+        // Re-fetch the updated members data
+        fetchMembersData()
         handleCloseModal()
     }
 
