@@ -6,6 +6,7 @@ const Buttons = ({
     handleImportSave,
     formValid, // Add formValid prop to control button state
     isEditing, // Add isEditing prop to determine if editing mode is active
+    isChanged, // Add isChanged prop to track if changes were made
 }) => {
     return (
         <div className="flex justify-end mt-6 space-x-4">
@@ -28,9 +29,9 @@ const Buttons = ({
                 <button
                     type="submit"
                     onClick={handleSave}
-                    disabled={!formValid} // Disable if form is not valid
+                    disabled={!formValid || !isChanged} // Disable if form is not valid or no changes made
                     className={`${
-                        !formValid
+                        !formValid || !isChanged
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed w-[100px]"
                             : "bg-[#219EBC] hover:bg-[#1A7A8A] text-white w-[100px]"
                     } font-bold py-2 px-4 rounded transition-colors duration-300`}

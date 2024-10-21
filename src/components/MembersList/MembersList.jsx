@@ -50,7 +50,7 @@ const MembersList = () => {
             // Editing an existing member
             try {
                 const response = await fetch(
-                    ` http://localhost:5000/members/${currentMember.id}`,
+                    `http://localhost:5000/members/${currentMember.id}`,
                     {
                         method: "PUT",
                         headers: {
@@ -120,7 +120,7 @@ const MembersList = () => {
         const duplicates = newMembers.filter((newMember) =>
             membersData.some(
                 (existingMember) =>
-                    ` ${existingMember.firstName} ${existingMember.lastName}`.toLowerCase() ===
+                    `${existingMember.firstName} ${existingMember.lastName}`.toLowerCase() ===
                     `${newMember.firstName} ${newMember.lastName}`.toLowerCase(),
             ),
         )

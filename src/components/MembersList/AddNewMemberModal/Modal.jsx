@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
 import moment from "moment"
@@ -18,11 +17,13 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
         age: "",
     })
 
-    const [fileName, setFileName] = useState("") // State for file name
-    const [importedMembers, setImportedMembers] = useState([]) // State to hold imported member data
-    const [duplicateError, setDuplicateError] = useState("") // State for duplicate error message
-    const [ageError, setAgeError] = useState("") // State for age-related error message
-    const [formValid, setFormValid] = useState(false) // New state for form validation
+    const [initialData, setInitialData] = useState(formData) // Store initial form data
+    const [fileName, setFileName] = useState("")
+    const [importedMembers, setImportedMembers] = useState([])
+    const [duplicateError, setDuplicateError] = useState("")
+    const [ageError, setAgeError] = useState("")
+    const [formValid, setFormValid] = useState(false)
+    const [isChanged, setIsChanged] = useState(false)
 
     useEffect(() => {
         if (member) {
@@ -30,7 +31,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                 ? member.name.split(" ")
                 : []
 
-            setFormData({
+            const newFormData = {
                 firstName,
                 lastName,
                 dob: member.dob ? moment(member.dob).format("YYYY-MM-DD") : "",
@@ -39,7 +40,10 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                 phone: member.phone || "",
                 email: member.email || "",
                 age: member.age || "",
-            })
+            }
+
+            setFormData(newFormData)
+            setInitialData(newFormData) // Store initial data
         }
     }, [member])
 
@@ -60,8 +64,8 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
     }, [formData.dob])
 
     useEffect(() => {
-        // Re-validate form whenever formData changes
         setFormValid(validateFields())
+        setIsChanged(JSON.stringify(formData) !== JSON.stringify(initialData)) // Check if the form data has changed
     }, [formData])
 
     if (!isOpen) return null
@@ -76,9 +80,9 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
 
     const checkForDuplicates = (newMember) => {
         const newName =
-            `${newMember.firstName} ${newMember.lastName}`.toLowerCase() // Combine first and last name
+            `${newMember.firstName} ${newMember.lastName}`.toLowerCase()
         const isDuplicate = existingMembers.some((member) => {
-            const existingName = member.name.toLowerCase() // Ensure case-insensitivity
+            const existingName = member.name.toLowerCase()
             return existingName === newName
         })
         return isDuplicate
@@ -111,17 +115,16 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
 
     const handleSave = (e) => {
         e.preventDefault()
-        if (!formValid) {
-            return // Stop if validation fails
+        if (!formValid || !isChanged) {
+            return // Stop if validation fails or no changes were made
         }
 
         const formattedData = {
             ...formData,
-            name: `${formData.firstName} ${formData.lastName}`, // Fixed string interpolation
+            name: `${formData.firstName} ${formData.lastName}`,
             dob: formData.dob,
         }
 
-        // Check for duplicates before saving
         if (!member && checkForDuplicates(formattedData)) {
             setDuplicateError("A member with the same name already exists.")
             return
@@ -144,10 +147,22 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
             email: "",
             age: "",
         })
-        setFileName("No file chosen") // Reset the file name after save
-        setImportedMembers([]) // Reset imported members after save
-        setDuplicateError("") // Reset the duplicate error message
-        setAgeError("") // Reset the age error message
+        setFileName("No file chosen")
+        setImportedMembers([])
+        setDuplicateError("")
+        setAgeError("")
+        setIsChanged(false) // Reset the change tracking
+        setInitialData({
+            // Reset initial data to match the new empty form data
+            firstName: "",
+            lastName: "",
+            dob: "",
+            gender: "male",
+            address: "",
+            phone: "",
+            email: "",
+            age: "",
+        })
     }
 
     const handleImportSave = () => {
@@ -162,9 +177,8 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
             return
         }
 
-        // Save all members if no duplicates and valid ages
         importedMembers.forEach((member) => onSave(member))
-        resetForm() // Reset the form after saving imported members
+        resetForm()
     }
 
     return (
@@ -176,9 +190,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                 {duplicateError && (
                     <p className="text-red-600">{duplicateError}</p>
                 )}
-                {ageError && (
-                    <p className="text-red-600">{ageError}</p> // Display age error message
-                )}
+                {ageError && <p className="text-red-600">{ageError}</p>}
                 <form>
                     <Form formData={formData} onChange={handleChange} />
                     {!member && (
@@ -195,8 +207,9 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                         handleSave={handleSave}
                         importedMembers={importedMembers}
                         handleImportSave={handleImportSave}
-                        formValid={formValid} // Pass form validation status to Buttons component
-                        isEditing={!!member} // Pass isEditing prop to determine if editing mode is active
+                        formValid={formValid}
+                        isEditing={!!member}
+                        isChanged={isChanged}
                     />
                 </form>
             </div>
