@@ -5,11 +5,10 @@ const Form = ({
     setSearchTerm,
     clearSearchTerm,
     handleSuggestionClick,
-    suggestions,
+    suggestions, // Add suggestions prop
     isSaveDisabled,
     handleSave,
     onClose,
-    isEditable,
 }) => {
     return (
         <form className="relative">
@@ -26,7 +25,6 @@ const Form = ({
                     id="searchMember"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    disabled={!isEditable} // Lock the input field based on isEditable
                     className="relative p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="Search by name"
                 />
@@ -43,7 +41,7 @@ const Form = ({
             </div>
 
             {/* Suggestions */}
-            {suggestions.length > 0 && (
+            {suggestions.length > 0 && ( // Check if there are any suggestions
                 <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-md w-full">
                     {suggestions.map((suggestion) => (
                         <li
