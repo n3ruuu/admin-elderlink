@@ -24,7 +24,7 @@ const Cards = ({
             </div>
             <div className="flex flex-col">
                 <h3 className="font-bold text-5xl">{totalAmountDisbursed}</h3>
-                <p className="text-[24px]">Total Amount Disbursed</p>
+                <p className="text-[24px]">Monthly Total Payouts</p>
             </div>
         </div>
         <div className="bg-white w-1/3 h-[200px] rounded-[12px] p-8 flex gap-4 items-center">

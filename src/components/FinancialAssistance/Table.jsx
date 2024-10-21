@@ -11,18 +11,17 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                         <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
                             Name
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Age
-                        </th>
+
                         <th className="text-left font-medium whitespace-nowrap">
                             Benefit Type
                         </th>
                         <th className="text-left font-medium whitespace-nowrap">
-                            Benefit Status
+                            Latest Date of Claim
                         </th>
                         <th className="text-left font-medium whitespace-nowrap">
-                            Last Claimed
+                            Status
                         </th>
+
                         <th className="text-left font-medium whitespace-nowrap">
                             Claimer
                         </th>

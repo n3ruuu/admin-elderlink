@@ -3,7 +3,7 @@ import MembersListData from "../../data/membersList.json"
 import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
-import Modal from "./Modal"
+import Modal from "./SearchNameModal"
 import ArchiveConfirmModal from "./ArchiveConfirmModal"
 
 const FinancialAssistance = () => {
@@ -13,16 +13,19 @@ const FinancialAssistance = () => {
     const [memberToArchive, setMemberToArchive] = useState(null)
     const [membersData, setMembersData] = useState(MembersListData)
 
+    // Opens modal for adding or editing a member
     const handleOpenModal = (member) => {
         setCurrentMember(member)
         setIsModalOpen(true)
     }
 
+    // Closes the member modal
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setCurrentMember(null)
     }
 
+    // Save or update member
     const handleSave = (updatedMember) => {
         if (currentMember) {
             // Editing existing member
@@ -41,11 +44,13 @@ const FinancialAssistance = () => {
         handleCloseModal()
     }
 
+    // Opens confirmation modal for archiving a member
     const handleArchiveClick = (member) => {
         setMemberToArchive(member)
         setIsConfirmModalOpen(true)
     }
 
+    // Confirms archiving and removes member
     const handleConfirmArchive = () => {
         setMembersData((prevData) =>
             prevData.filter((member) => member.id !== memberToArchive.id),
@@ -53,6 +58,7 @@ const FinancialAssistance = () => {
         handleCloseConfirmModal()
     }
 
+    // Closes the archive confirmation modal
     const handleCloseConfirmModal = () => {
         setIsConfirmModalOpen(false)
         setMemberToArchive(null)
@@ -69,7 +75,7 @@ const FinancialAssistance = () => {
             <Header
                 title="Financial Assistance"
                 subtitle="Manage finances and benefits"
-                onOpenModal={() => handleOpenModal(null)} // Open modal for new member
+                onOpenModal={() => handleOpenModal(null)} // Passing the correct prop name here
             />
 
             {/* Content */}
