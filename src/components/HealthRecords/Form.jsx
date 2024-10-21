@@ -15,8 +15,8 @@ const Form = ({
     handleSuggestionClick,
     handleSave,
     onClose,
-    isEditing, // New prop to determine editing state
-    isSaveDisabled, // Prop to control the Save button's disabled state
+    isEditing,
+    isSaveDisabled,
 }) => {
     // Ensure controlled inputs by handling onChange
     const handleChange = (e) => {
@@ -111,11 +111,13 @@ const Form = ({
                     {formData.medicalConditions.map((condition, index) => (
                         <div
                             key={index}
-                            className="bg-gray-200 px-3 py-1 rounded-full cursor-pointer"
+                            className="bg-[#219EBC] text-white px-3 py-1 rounded-full cursor-pointer hover:bg-[#168B99]" // Change background on hover
                             onClick={() => removeCondition(condition)}
                         >
                             {condition}{" "}
-                            <span className="ml-2 text-red-500">x</span>
+                            <span className="ml-2 font-bold transition-transform duration-300 transform hover:scale-125 hover:text-gray-300">
+                                &times; {/* Change properties on hover */}
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -141,11 +143,11 @@ const Form = ({
                     {formData.medications.map((medication, index) => (
                         <div
                             key={index}
-                            className="bg-gray-200 px-3 py-1 rounded-full cursor-pointer"
+                            className="bg-[#219EBC] text-white px-3 py-1 rounded-full cursor-pointer hover:bg-[#168B99]"
                             onClick={() => removeMedication(medication)}
                         >
                             {medication}{" "}
-                            <span className="ml-2 text-red-500">x</span>
+                            <span className="ml-2 font-bold">&times;</span>
                         </div>
                     ))}
                 </div>
@@ -162,8 +164,8 @@ const Form = ({
                 <input
                     type="text"
                     id="guardian_name"
-                    name="guardian_name" // Change name to guardian_name
-                    value={formData.guardian_name || ""} // Ensure value is controlled
+                    name="guardian_name"
+                    value={formData.guardian_name || ""}
                     onChange={handleChange}
                     className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="Enter guardian name"
@@ -183,7 +185,7 @@ const Form = ({
                         type="text"
                         id="relationship"
                         name="relationship"
-                        value={formData.relationship || ""} // Ensure value is controlled
+                        value={formData.relationship || ""}
                         onChange={handleChange}
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="Enter relationship"
@@ -201,7 +203,7 @@ const Form = ({
                         type="text"
                         id="emergencyContact"
                         name="emergencyContact"
-                        value={formData.emergencyContact || ""} // Ensure value is controlled
+                        value={formData.emergencyContact || ""}
                         onChange={handleChange}
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="Enter emergency contact"
@@ -226,7 +228,7 @@ const Form = ({
                             : ""
                     }`}
                     onClick={handleSave}
-                    disabled={isSaveDisabled || !isFormValid()} // Disable the button if the form is invalid or if isSaveDisabled is true
+                    disabled={isSaveDisabled || !isFormValid()}
                 >
                     Save
                 </button>

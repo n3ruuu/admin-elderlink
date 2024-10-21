@@ -140,4 +140,25 @@ router.get("/", (req, res) => {
     })
 })
 
+// GET: Fetch all health records with optional filtering for recent updates
+router.get("/", (req, res) => {
+    const { since } = req.query // Get the since parameter if provided
+    let query = `
+        SELECT hr.*, m.name 
+        FROM health_records hr 
+        JOIN members m ON hr.member_id = m.id
+    `
+
+    if (since) {
+        query += ` WHERE hr.record_date >= ?` // Filter for records updated since the given date
+    }
+
+    db.query(query, [since ? new Date(since) : null], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message })
+        }
+        res.status(200).json(results)
+    })
+})
+
 module.exports = router
