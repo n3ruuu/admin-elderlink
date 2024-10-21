@@ -3,7 +3,7 @@ import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
 import Modal from "./Modal"
-import ArchiveConfirmModal from "./ArchiveConfirmModal"
+import ArchiveConfirmModal from "./ArchiveModal"
 import SuccessModal from "./SuccessModal"
 
 const HealthRecords = () => {
@@ -16,6 +16,7 @@ const HealthRecords = () => {
     const [successMessage, setSuccessMessage] = useState("")
     const [priorityCareCount, setPriorityCareCount] = useState(0)
     const [recentUpdatesCount, setRecentUpdatesCount] = useState(0)
+    const [recordToArchive, setRecordToArchive] = useState(null)
 
     const fetchMembersData = async () => {
         try {
@@ -77,11 +78,10 @@ const HealthRecords = () => {
 
     const handleSave = async (updatedMember) => {
         try {
-            const now = new Date().toISOString() // Get the current date
-            updatedMember.record_date = now // Set the updated date
+            const now = new Date().toISOString()
+            updatedMember.record_date = now
 
             if (currentMember) {
-                // Editing existing member
                 await fetch(
                     `http://localhost:5000/health-records/${updatedMember.id}`,
                     {
@@ -96,9 +96,8 @@ const HealthRecords = () => {
                 setSuccessMessage(
                     "Member health record has been successfully updated.",
                 )
-                setRecentUpdatesCount((prevCount) => prevCount + 1) // Increment recent updates count
+                setRecentUpdatesCount((prevCount) => prevCount + 1)
             } else {
-                // Adding new member
                 await fetch("http://localhost:5000/health-records", {
                     method: "POST",
                     headers: {
@@ -110,11 +109,11 @@ const HealthRecords = () => {
                 setSuccessMessage(
                     "The health record has been successfully added to the list.",
                 )
-                setRecentUpdatesCount((prevCount) => prevCount + 1) // Increment recent updates count
+                setRecentUpdatesCount((prevCount) => prevCount + 1)
             }
 
             fetchMembersData()
-            fetchPriorityCareCount() // Refresh the priority care count
+            fetchPriorityCareCount()
 
             handleCloseModal()
             setIsSuccessModalOpen(true)
@@ -123,11 +122,45 @@ const HealthRecords = () => {
         }
     }
 
-    const handleArchiveClick = () => {
+    const handleArchiveClick = (member) => {
+        setRecordToArchive(member)
         setIsConfirmModalOpen(true)
     }
 
-    const totalRecords = membersData.length
+    const handleConfirmArchive = async (selectedReason) => {
+        if (!recordToArchive) return
+
+        try {
+            await fetch(
+                `http://localhost:5000/health-records/archive/${recordToArchive.health_record_id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ status: selectedReason }),
+                },
+            )
+
+            setSuccessTitle("Health Record Archived!")
+            setSuccessMessage(
+                "The health record has been successfully archived.",
+            )
+            fetchMembersData()
+            setIsSuccessModalOpen(true)
+        } catch (error) {
+            console.error("Error archiving health record:", error)
+        } finally {
+            setIsConfirmModalOpen(false)
+            setRecordToArchive(null)
+        }
+    }
+
+    const getActiveMembers = () => {
+        return membersData.filter((member) => member.status === "Active")
+    }
+
+    const totalRecords = getActiveMembers().length
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
@@ -140,7 +173,7 @@ const HealthRecords = () => {
                         recentUpdatesCount={recentUpdatesCount}
                     />
                     <Table
-                        membersData={membersData}
+                        membersData={getActiveMembers()}
                         onOpenModal={handleOpenModal}
                         onArchiveClick={handleArchiveClick}
                     />
@@ -159,6 +192,7 @@ const HealthRecords = () => {
                 <ArchiveConfirmModal
                     isOpen={isConfirmModalOpen}
                     onClose={() => setIsConfirmModalOpen(false)}
+                    onConfirm={handleConfirmArchive}
                 />
             )}
             {isSuccessModalOpen && (

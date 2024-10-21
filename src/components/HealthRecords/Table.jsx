@@ -9,12 +9,16 @@ const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
 
-    const totalPages = Math.ceil(membersData.length / itemsPerPage) // Calculate total pages
+    // Filter members to only include those with status 'Active'
+    const activeMembersData = membersData.filter(
+        (member) => member.status === "Active",
+    )
+    const totalPages = Math.ceil(activeMembersData.length / itemsPerPage) // Calculate total pages
     const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
-    const currentMembers = membersData.slice(
+    const currentMembers = activeMembersData.slice(
         startIndex,
         startIndex + itemsPerPage,
-    ) // Get current members for display
+    ) // Get current active members for display
 
     const handlePageChange = (page) => {
         setCurrentPage(page)

@@ -161,4 +161,26 @@ router.get("/", (req, res) => {
     })
 })
 
+// PUT: Archive a health record
+router.put("/archive/:id", (req, res) => {
+    const healthRecordId = req.params.id
+    const { status } = req.body // Get the status reason from the request body
+
+    const query = `
+        UPDATE health_records 
+        SET status = ? 
+        WHERE health_record_id = ?
+    `
+
+    db.query(query, [status, healthRecordId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message })
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Record not found" })
+        }
+        res.status(200).json({ message: "Health record archived successfully" })
+    })
+})
+
 module.exports = router
