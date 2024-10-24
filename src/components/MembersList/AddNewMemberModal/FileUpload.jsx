@@ -25,6 +25,7 @@ const FileUpload = ({
 
                     const members = results.data.map((member) => {
                         return {
+                            idNo: member["id_no"] || "", // Add the ID No.
                             name: member.name || "", // Access fullName directly
                             dob: moment(member.dob, "MM/DD/YYYY").format(
                                 "YYYY-MM-DD",
@@ -32,7 +33,6 @@ const FileUpload = ({
                             gender: member.gender || "male",
                             address: member.address || "",
                             phone: member.phone || "",
-                            email: member.email || "",
                             age: moment().diff(
                                 moment(member.dob, "MM/DD/YYYY"),
                                 "years",
@@ -69,10 +69,10 @@ const FileUpload = ({
     }
 
     const checkForDuplicates = (newMember) => {
-        const newName = newMember.name.toLowerCase() // Ensure case-insensitivity
+        const newIdNo = newMember.idNo.toLowerCase() // Ensure case-insensitivity
         const isDuplicate = existingMembers.some((member) => {
-            const existingName = member.name.toLowerCase() // Ensure case-insensitivity
-            return existingName === newName
+            const existingIdNo = member.idNo.toLowerCase() // Ensure case-insensitivity
+            return existingIdNo === newIdNo
         })
         return isDuplicate
     }

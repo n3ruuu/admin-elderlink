@@ -5,8 +5,8 @@ import moment from "moment"
 import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ArchiveModal from "./ArchiveModal"
-import SuccessModal from "./SuccessModal" // Import SuccessModal
-import ReportIcon from "../../assets/icons/report.svg" // Import the SVG icon
+import SuccessModal from "./SuccessModal"
+import ReportIcon from "../../assets/icons/report.svg"
 
 const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
     const [currentPage, setCurrentPage] = useState(1)
@@ -65,28 +65,29 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
                 {/* Table header and body */}
                 <thead className="text-[#767171CC]">
                     <tr>
-                        <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
+                        {/* Senior Citizen ID No. column */}
+                        <th className="pl-8 py-4 text-left font-medium whitespace-nowrap w-[10%]">
+                            ID No.
+                        </th>
+                        <th className="text-left font-medium whitespace-nowrap w-[20%]">
                             Name
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap">
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
                             Date of Birth
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap">
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
                             Age
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap">
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
                             Gender
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap">
+                        <th className="text-left font-medium whitespace-nowrap w-[20%]">
                             Address
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap">
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
                             Phone Number
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Email
-                        </th>
-                        <th className="px-8 text-left font-medium whitespace-nowrap">
+                        <th className="px-8 text-left font-medium whitespace-nowrap w-[10%]">
                             Actions
                         </th>
                     </tr>
@@ -94,9 +95,12 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
                 <tbody>
                     {currentMembers.map((member) => (
                         <tr key={member.id} className="border-b">
+                            {/* Senior Citizen ID No. column */}
                             <td className="px-16 py-4 text-left">
-                                {member.name}
+                                {member.idNo}{" "}
+                                {/* Make sure this matches the property name from your imported members */}
                             </td>
+                            <td className="text-left">{member.name}</td>
                             <td className="text-left">
                                 {moment(member.dob).format("YYYY-MM-DD")}
                             </td>
@@ -106,7 +110,6 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
                             </td>
                             <td className="text-left">{member.address}</td>
                             <td className="text-left">{member.phone}</td>
-                            <td className="text-left">{member.email}</td>
                             <td className="px-8 py-4 flex gap-2">
                                 <button
                                     onClick={() => handleOpenModal(member)}
@@ -185,11 +188,10 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
                 isOpen={isSuccessModalOpen}
                 onClose={() => setIsSuccessModalOpen(false)}
                 onGoToArchives={() => {
-                    // Logic for "Go to Archives"
                     setIsSuccessModalOpen(false)
                     // Navigate to archives
                 }}
-                isArchiving={true} // Set this to true for archiving
+                isArchiving={true}
                 title="Member Archived!"
                 message="The member’s information has been successfully archived."
             />
@@ -198,7 +200,6 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
             <button
                 className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
                 onClick={() => {
-                    // Logic to generate report
                     console.log("Generating report...")
                 }}
             >

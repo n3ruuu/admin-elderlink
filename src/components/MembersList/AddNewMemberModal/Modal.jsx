@@ -7,18 +7,18 @@ import Buttons from "./Buttons"
 
 const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
     const [formData, setFormData] = useState({
+        idNo: "",
         firstName: "",
         lastName: "",
         dob: "",
         gender: "male",
         address: "",
         phone: "",
-        email: "",
         age: "",
     })
 
-    const [initialData, setInitialData] = useState(formData) // Store initial form data
-    const [fileName, setFileName] = useState("")
+    const [initialData, setInitialData] = useState(formData)
+    const [fileName, setFileName] = useState("No file chosen")
     const [importedMembers, setImportedMembers] = useState([])
     const [duplicateError, setDuplicateError] = useState("")
     const [ageError, setAgeError] = useState("")
@@ -32,18 +32,18 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
                 : []
 
             const newFormData = {
+                idNo: member.idNo || "",
                 firstName,
                 lastName,
                 dob: member.dob ? moment(member.dob).format("YYYY-MM-DD") : "",
                 gender: member.gender || "male",
                 address: member.address || "",
                 phone: member.phone || "",
-                email: member.email || "",
                 age: member.age || "",
             }
 
             setFormData(newFormData)
-            setInitialData(newFormData) // Store initial data
+            setInitialData(newFormData)
         }
     }, [member])
 
@@ -65,7 +65,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
 
     useEffect(() => {
         setFormValid(validateFields())
-        setIsChanged(JSON.stringify(formData) !== JSON.stringify(initialData)) // Check if the form data has changed
+        setIsChanged(JSON.stringify(formData) !== JSON.stringify(initialData))
     }, [formData])
 
     if (!isOpen) return null
@@ -94,29 +94,28 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
 
     const validateFields = () => {
         const errors = {}
-        const { firstName, lastName, dob, address, phone, email, age } =
-            formData
+        const { idNo, firstName, lastName, dob, address, phone, age } = formData
 
+        if (!idNo) errors.idNo = "Please fill out this field."
         if (!firstName) errors.firstName = "Please fill out this field."
         if (!lastName) errors.lastName = "Please fill out this field."
         if (!dob) errors.dob = "Please fill out this field."
         if (!address) errors.address = "Please fill out this field."
         if (!phone) errors.phone = "Please fill out this field."
-        if (!email) errors.email = "Please fill out this field."
         if (dob && !isAgeValid(age)) {
             setAgeError("Age must be 60 years or older.")
-            errors.age = true // Add a flag to indicate age error
+            errors.age = true
         } else {
-            setAgeError("") // Clear age error if valid
+            setAgeError("")
         }
 
-        return Object.keys(errors).length === 0 // Form is valid if no errors
+        return Object.keys(errors).length === 0
     }
 
     const handleSave = (e) => {
         e.preventDefault()
         if (!formValid || !isChanged) {
-            return // Stop if validation fails or no changes were made
+            return
         }
 
         const formattedData = {
@@ -129,7 +128,7 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
             setDuplicateError("A member with the same name already exists.")
             return
         } else {
-            setDuplicateError("") // Clear error if no duplicates
+            setDuplicateError("")
         }
 
         onSave(formattedData)
@@ -138,29 +137,28 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
 
     const resetForm = () => {
         setFormData({
+            idNo: "",
             firstName: "",
             lastName: "",
             dob: "",
             gender: "male",
             address: "",
             phone: "",
-            email: "",
             age: "",
         })
         setFileName("No file chosen")
         setImportedMembers([])
         setDuplicateError("")
         setAgeError("")
-        setIsChanged(false) // Reset the change tracking
+        setIsChanged(false)
         setInitialData({
-            // Reset initial data to match the new empty form data
+            idNo: "",
             firstName: "",
             lastName: "",
             dob: "",
             gender: "male",
             address: "",
             phone: "",
-            email: "",
             age: "",
         })
     }

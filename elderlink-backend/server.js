@@ -26,12 +26,12 @@ db.connect((err) => {
 
 // Endpoint to add a member
 app.post("/members", (req, res) => {
-    const { name, dob, gender, address, phone, email, age } = req.body
+    const { idNo, name, dob, gender, address, phone, age } = req.body // Replacing email with idNo and moving it first
     const query =
-        "INSERT INTO members (name, dob, gender, address, phone, email, age) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO members (idNo, name, dob, gender, address, phone, age) VALUES (?, ?, ?, ?, ?, ?, ?)" // Updated query to remove email and include idNo first
     db.query(
         query,
-        [name, dob, gender, address, phone, email, age],
+        [idNo, name, dob, gender, address, phone, age], // Update the order to reflect idNo first
         (err, result) => {
             if (err) {
                 return res.status(500).json({ error: err.message })
@@ -59,16 +59,16 @@ app.get("/members", (req, res) => {
 const updateMemberInDatabase = (memberId, updatedMemberData) => {
     return new Promise((resolve, reject) => {
         const query =
-            "UPDATE members SET name = ?, dob = ?, gender = ?, address = ?, phone = ?, email = ?, age = ? WHERE id = ?"
+            "UPDATE members SET idNo = ?, name = ?, dob = ?, gender = ?, address = ?, phone = ?, age = ? WHERE id = ?" // Update query to use idNo instead of email
         db.query(
             query,
             [
+                updatedMemberData.idNo, // Update to reflect idNo
                 updatedMemberData.name,
                 updatedMemberData.dob,
                 updatedMemberData.gender,
                 updatedMemberData.address,
                 updatedMemberData.phone,
-                updatedMemberData.email,
                 updatedMemberData.age,
                 memberId,
             ],

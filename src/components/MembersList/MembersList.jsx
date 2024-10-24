@@ -26,6 +26,7 @@ const MembersList = () => {
                 throw new Error("Network response was not ok")
             }
             const data = await response.json()
+            console.log("Fetched members data:", data) // Log the fetched data
             setMembersData(data)
         } catch (err) {
             setError(err.message)
