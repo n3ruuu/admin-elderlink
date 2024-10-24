@@ -6,25 +6,20 @@ import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
 import moment from "moment" // Import Moment.js
 
-const Table = ({
-    membersData,
-    handleOpenModal,
-    handleArchiveClick,
-    financialAssistanceRecords,
-}) => {
+const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
 
-    // Combine membersData and financialAssistanceRecords
-    const combinedData = [...membersData, ...financialAssistanceRecords]
-
-    // Pagination calculations
-    const totalPages = Math.ceil(combinedData.length / itemsPerPage)
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const currentData = combinedData.slice(
+    // Filter members to only include those with status 'Active'
+    const activeMembersData = membersData.filter(
+        (member) => member.status === "Active",
+    )
+    const totalPages = Math.ceil(activeMembersData.length / itemsPerPage) // Calculate total pages
+    const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
+    const currentMembers = activeMembersData.slice(
         startIndex,
         startIndex + itemsPerPage,
-    )
+    ) // Get current active members for display
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
@@ -60,7 +55,7 @@ const Table = ({
                 </thead>
                 <tbody>
                     {/* Render combined data with pagination */}
-                    {currentData.map((row, index) => (
+                    {currentMembers.map((row, index) => (
                         <tr
                             className={`text-[#333333] font-[500] ${
                                 index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"

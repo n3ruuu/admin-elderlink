@@ -16,8 +16,6 @@ const FinancialAssistance = () => {
     const [currentMember, setCurrentMember] = useState(null)
     const [memberToArchive, setMemberToArchive] = useState(null)
     const [membersData, setMembersData] = useState([])
-    const [financialAssistanceRecords, setFinancialAssistanceRecords] =
-        useState([]) // New state for financial records
 
     useEffect(() => {
         fetchMembersData() // Fetch data on mount
@@ -79,10 +77,6 @@ const FinancialAssistance = () => {
 
             // Update membersData state with the newly saved record
             setMembersData((prevData) => [...prevData, savedRecord])
-            setFinancialAssistanceRecords((prevRecords) => [
-                ...prevRecords,
-                savedRecord,
-            ]) // Add to financial assistance records
 
             // Close the modal after saving
             handleCloseModal()
@@ -92,6 +86,8 @@ const FinancialAssistance = () => {
                 "Record Saved",
                 "The financial assistance record has been saved successfully.",
             )
+            fetchMembersData()
+            console.log("Success")
         } catch (error) {
             console.error("Error saving record:", error)
         }
@@ -157,7 +153,6 @@ const FinancialAssistance = () => {
                         membersData={membersData}
                         handleOpenModal={handleOpenModal}
                         handleArchiveClick={handleArchiveClick}
-                        financialAssistanceRecords={financialAssistanceRecords} // Pass the new state to Table
                     />
                 </div>
             </div>
