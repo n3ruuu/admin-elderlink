@@ -1,17 +1,40 @@
-import { useState } from "react"
-import MembersListData from "../../data/membersList.json"
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from "react"
 import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
 import Modal from "./SearchNameModal"
 import ArchiveConfirmModal from "./ArchiveConfirmModal"
+import SuccessModal from "./SuccessModal" // Import the SuccessModal
 
 const FinancialAssistance = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // State for SuccessModal
+    const [successTitle, setSuccessTitle] = useState("") // State for SuccessModal title
+    const [successMessage, setSuccessMessage] = useState("") // State for SuccessModal message
     const [currentMember, setCurrentMember] = useState(null)
     const [memberToArchive, setMemberToArchive] = useState(null)
-    const [membersData, setMembersData] = useState(MembersListData)
+    const [membersData, setMembersData] = useState([])
+
+    // New state for financial records
+    const [financialRecords, setFinancialRecords] = useState([])
+
+    // Fetch members data from the database
+    useEffect(() => {
+        const fetchMembersData = async () => {
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/financial-assistance",
+                ) // Update this endpoint to match your backend
+                const data = await response.json()
+                setMembersData(data) // Set the fetched data to state
+            } catch (error) {
+                console.error("Error fetching members data:", error)
+            }
+        }
+        fetchMembersData()
+    }, [])
 
     // Opens modal for adding or editing a member
     const handleOpenModal = (member) => {
@@ -25,21 +48,55 @@ const FinancialAssistance = () => {
         setCurrentMember(null)
     }
 
-    // Save or update member
-    const handleSave = (updatedMember) => {
+    // Show success modal after saving or archiving
+    const handleShowSuccessModal = (title, message) => {
+        setSuccessTitle(title)
+        setSuccessMessage(message)
+        setIsSuccessModalOpen(true)
+    }
+
+    const handleSave = (updatedRecord) => {
         if (currentMember) {
-            // Editing existing member
+            // Update existing member
             setMembersData((prevData) =>
                 prevData.map((member) =>
-                    member.id === updatedMember.id ? updatedMember : member,
+                    member.id === updatedRecord.id ? updatedRecord : member,
                 ),
             )
+            handleShowSuccessModal(
+                "Member Updated",
+                "The member details have been updated successfully.",
+            )
         } else {
-            // Adding new member
-            setMembersData((prevData) => [
-                ...prevData,
-                { ...updatedMember, id: prevData.length + 1 }, // Simple ID generation
-            ])
+            // Adding new financial record
+            const newRecord = {
+                ...updatedRecord,
+                member_id: currentMember.id, // Reference the ID of the selected member
+                member_name: currentMember.name, // Ensure the member name is included
+                id: financialRecords.length + 1, // Simple ID generation
+            }
+
+            setFinancialRecords((prevRecords) => [...prevRecords, newRecord])
+
+            // Sending POST request to save to your database
+            fetch("http://localhost:5000/financial-assistance", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newRecord),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log("Success:", data)
+                    handleShowSuccessModal(
+                        "Record Added",
+                        "The financial assistance record has been added successfully.",
+                    )
+                })
+                .catch((error) => {
+                    console.error("Error:", error)
+                })
         }
         handleCloseModal()
     }
@@ -55,6 +112,10 @@ const FinancialAssistance = () => {
         setMembersData((prevData) =>
             prevData.filter((member) => member.id !== memberToArchive.id),
         )
+        handleShowSuccessModal(
+            "Member Archived",
+            "The member has been archived successfully.",
+        )
         handleCloseConfirmModal()
     }
 
@@ -62,6 +123,11 @@ const FinancialAssistance = () => {
     const handleCloseConfirmModal = () => {
         setIsConfirmModalOpen(false)
         setMemberToArchive(null)
+    }
+
+    // Closes the success modal
+    const handleCloseSuccessModal = () => {
+        setIsSuccessModalOpen(false)
     }
 
     // Calculate statistics
@@ -113,6 +179,18 @@ const FinancialAssistance = () => {
                     onClose={handleCloseConfirmModal}
                     onConfirm={handleConfirmArchive}
                     memberName={memberToArchive ? memberToArchive.name : ""}
+                />
+            )}
+            {isSuccessModalOpen && (
+                <SuccessModal
+                    isOpen={isSuccessModalOpen}
+                    onClose={handleCloseSuccessModal}
+                    title={successTitle} // Dynamic title for the success modal
+                    message={successMessage} // Dynamic message for the success modal
+                    onGoToArchives={() => {
+                        // Add your navigation logic here if needed
+                    }}
+                    isArchiving={false} // Adjust this based on your logic
                 />
             )}
         </section>

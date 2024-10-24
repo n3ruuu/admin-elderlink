@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import EditIcon from "../../assets/icons/edit.svg"
 import ViewIcon from "../../assets/icons/view.svg"
+import ArchiveIcon from "../../assets/icons/archive2.svg"
+import moment from "moment" // Import Moment.js
 
 const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
     return (
@@ -11,7 +13,6 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                         <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
                             Name
                         </th>
-
                         <th className="text-left font-medium whitespace-nowrap">
                             Benefit Type
                         </th>
@@ -21,7 +22,6 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                         <th className="text-left font-medium whitespace-nowrap">
                             Status
                         </th>
-
                         <th className="text-left font-medium whitespace-nowrap">
                             Claimer
                         </th>
@@ -40,40 +40,42 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                             key={row.id}
                         >
                             <td className="px-16 py-4 whitespace-nowrap">
-                                {row.name}
+                                {row.member_name}
                             </td>
-                            <td className="whitespace-nowrap">{row.age}</td>
                             <td className="whitespace-nowrap">
                                 {row.benefit_type}
                             </td>
-                            <td
-                                className={`whitespace-nowrap font-[500] ${
-                                    row.benefit_status === "Claimed"
-                                        ? "text-green-500"
-                                        : "text-red-500"
-                                }`}
-                            >
-                                {row.benefit_status}
-                            </td>
                             <td className="whitespace-nowrap">
-                                {row.last_claimed}
+                                {moment(row.date_of_claim).format("MM-DD-YYYY")}{" "}
+                                {/* Format the date using Moment.js */}
+                            </td>
+                            <td
+                                className={`whitespace-nowrap font-[500] ${row.benefit_status === "Claimed" ? "text-green-500" : "text-red-500"}`}
+                            >
+                                {row.benefit_status === "Claimed"
+                                    ? "Claimed"
+                                    : "Unclaimed"}{" "}
+                                {/* Update status display */}
                             </td>
                             <td className="whitespace-nowrap">{row.claimer}</td>
                             <td className="whitespace-nowrap">
                                 {row.relationship}
                             </td>
-                            <td className="px-8 py-4 whitespace-nowrap flex gap-5 items-center">
+                            <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">
                                 <button
-                                    aria-label="Edit"
+                                    aria-label="Add"
                                     onClick={() => handleOpenModal(row)}
                                 >
                                     <img src={EditIcon} alt="Edit" />
                                 </button>
                                 <button
-                                    aria-label="Archive"
+                                    aria-label="Edit"
                                     onClick={() => handleArchiveClick(row)}
                                 >
                                     <img src={ViewIcon} alt="Archive" />
+                                </button>
+                                <button aria-label="Archive">
+                                    <img src={ArchiveIcon} alt="Archive" />
                                 </button>
                             </td>
                         </tr>

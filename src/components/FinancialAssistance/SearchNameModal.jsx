@@ -8,8 +8,8 @@ const SearchNameModal = ({ isOpen, onClose }) => {
     const [suggestions, setSuggestions] = useState([])
     const [membersList, setMembersList] = useState([])
     const [isEditable, setIsEditable] = useState(true)
-    const [currentStep, setCurrentStep] = useState(1) // Step state
-    const [selectedMember, setSelectedMember] = useState("") // State for the selected member's name
+    const [currentStep, setCurrentStep] = useState(1)
+    const [selectedMember, setSelectedMember] = useState("")
 
     useEffect(() => {
         const fetchMembers = async () => {
@@ -45,32 +45,64 @@ const SearchNameModal = ({ isOpen, onClose }) => {
     }, [searchTerm, membersList])
 
     const handleSuggestionClick = (suggestion) => {
-        setSearchTerm(suggestion.name) // Set the selected name in the search input
-        setSelectedMember(suggestion.name) // Set the selected member's name
-        setSuggestions([]) // Clear suggestions immediately
-        setIsEditable(false) // Lock the input field
+        setSearchTerm(suggestion.name)
+        setSelectedMember(suggestion) // Store the entire object
+        setSuggestions([])
+        setIsEditable(false)
     }
 
     const clearSearchTerm = () => {
         setSearchTerm("")
         setSuggestions([])
-        setIsEditable(true) // Make input editable again
+        setIsEditable(true)
     }
 
     const handleNext = () => {
-        setCurrentStep(2) // Move to the next step
+        setCurrentStep(2)
     }
 
-    const handleAddRecord = (newRecord) => {
-        // You can implement logic to add the financial assistance record here
-        console.log("New record added:", newRecord)
-        setCurrentStep(1) // Reset to the first step after submission
-        onClose() // Close the modal
+    const handleAddRecord = async (newRecord) => {
+        // Validate benefit_status length
+        if (newRecord.benefit_status && newRecord.benefit_status.length > 10) {
+            console.error(
+                "Benefit status is too long:",
+                newRecord.benefit_status,
+            )
+            return // Prevent the request if validation fails
+        }
+
+        try {
+            const response = await fetch(
+                "http://localhost:5000/financial-assistance",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        member_name: selectedMember.name,
+                        member_id: selectedMember.id, // Ensure selectedMember has id
+                        ...newRecord,
+                    }),
+                },
+            )
+
+            if (!response.ok) {
+                throw new Error("Failed to add record")
+            }
+
+            const result = await response.json()
+            console.log("New record added:", result)
+            setCurrentStep(1) // Reset to the first step
+            onClose() // Close the modal
+        } catch (error) {
+            console.error("Error adding record:", error)
+        }
     }
 
-    const isSaveDisabled = searchTerm.trim() === "" // Disable Save button if search term is empty
+    const isSaveDisabled = searchTerm.trim() === ""
 
-    if (!isOpen) return null // Do not render the modal if it's not open
+    if (!isOpen) return null
 
     return (
         <>
@@ -84,12 +116,12 @@ const SearchNameModal = ({ isOpen, onClose }) => {
                             searchTerm={searchTerm}
                             setSearchTerm={setSearchTerm}
                             clearSearchTerm={clearSearchTerm}
-                            suggestions={suggestions} // Pass suggestions to Form
+                            suggestions={suggestions}
                             handleSuggestionClick={handleSuggestionClick}
-                            handleSave={handleNext} // Call handleNext on Save button click
+                            handleSave={handleNext}
                             onClose={onClose}
                             isSaveDisabled={isSaveDisabled}
-                            isEditable={isEditable} // Pass the editable state to Form
+                            isEditable={isEditable}
                         />
                     </div>
                 </div>
@@ -97,9 +129,9 @@ const SearchNameModal = ({ isOpen, onClose }) => {
 
             {currentStep === 2 && (
                 <FinancialAssistanceModal
-                    memberName={selectedMember} // Pass the selected member's name
-                    onCancel={() => setCurrentStep(1)} // Go back to step 1
-                    onAdd={handleAddRecord} // Handle adding the financial assistance record
+                    memberName={selectedMember.name} // Use selectedMember object
+                    onCancel={() => setCurrentStep(1)}
+                    onAdd={handleAddRecord}
                 />
             )}
         </>

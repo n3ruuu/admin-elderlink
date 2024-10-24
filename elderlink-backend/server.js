@@ -3,7 +3,8 @@
 const express = require("express")
 const mysql = require("mysql2")
 const cors = require("cors")
-const healthRecordsRouter = require("./healthRecords") // Import the health records router
+const healthRecordsRouter = require("./routes/healthRecords") // Import the health records router
+const financialAssistanceRouter = require("./routes/financialAssistance")
 
 const app = express()
 const port = 5000
@@ -131,6 +132,7 @@ app.get("/members/search", (req, res) => {
 
 // Use health records routes
 app.use("/health-records", healthRecordsRouter) // Connect health records routes
+app.use("/financial-assistance", financialAssistanceRouter)
 
 // Start the server
 app.listen(port, () => {

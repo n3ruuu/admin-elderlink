@@ -5,10 +5,11 @@ const Form = ({
     setSearchTerm,
     clearSearchTerm,
     handleSuggestionClick,
-    suggestions, // Add suggestions prop
+    suggestions,
     isSaveDisabled,
     handleSave,
     onClose,
+    isEditable, // Add isEditable prop to control input field
 }) => {
     return (
         <form className="relative">
@@ -27,11 +28,12 @@ const Form = ({
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="relative p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="Search by name"
+                    disabled={!isEditable} // Disable input when not editable
                 />
                 {searchTerm && (
                     <button
                         type="button"
-                        onClick={clearSearchTerm}
+                        onClick={clearSearchTerm} // Clear input and make editable again
                         className="absolute right-3 top-10 text-2xl text-gray-500 hover:text-gray-800"
                         title="Clear search"
                     >
@@ -41,7 +43,7 @@ const Form = ({
             </div>
 
             {/* Suggestions */}
-            {suggestions.length > 0 && ( // Check if there are any suggestions
+            {suggestions.length > 0 && (
                 <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-md w-full">
                     {suggestions.map((suggestion) => (
                         <li
@@ -72,7 +74,7 @@ const Form = ({
                     onClick={handleSave}
                     disabled={isSaveDisabled}
                 >
-                    Save
+                    Next
                 </button>
             </div>
         </form>
