@@ -1,7 +1,9 @@
 /* eslint-disable react/prop-types */
+import { useState } from "react"
 import EditIcon from "../../assets/icons/edit.svg"
 import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
+import ReportIcon from "../../assets/icons/report.svg"
 import moment from "moment" // Import Moment.js
 
 const Table = ({
@@ -10,6 +12,24 @@ const Table = ({
     handleArchiveClick,
     financialAssistanceRecords,
 }) => {
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 6 // Number of items to display per page
+
+    // Combine membersData and financialAssistanceRecords
+    const combinedData = [...membersData, ...financialAssistanceRecords]
+
+    // Pagination calculations
+    const totalPages = Math.ceil(combinedData.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const currentData = combinedData.slice(
+        startIndex,
+        startIndex + itemsPerPage,
+    )
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page)
+    }
+
     return (
         <div>
             <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
@@ -39,25 +59,35 @@ const Table = ({
                     </tr>
                 </thead>
                 <tbody>
-                    {/* Render existing members data */}
-                    {membersData.map((row, index) => (
+                    {/* Render combined data with pagination */}
+                    {currentData.map((row, index) => (
                         <tr
-                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
-                            key={row.id}
+                            className={`text-[#333333] font-[500] ${
+                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
+                            }`}
+                            key={row.id || `new-${index}`} // Ensure unique key for both existing and new records
                         >
                             <td className="px-16 py-4 whitespace-nowrap">
-                                {row.member_name}
+                                {row.member_name || row.memberName}
                             </td>
                             <td className="whitespace-nowrap">
-                                {row.benefit_type}
+                                {row.benefit_type || row.benefitType}
                             </td>
                             <td className="whitespace-nowrap">
-                                {moment(row.date_of_claim).format("MM-DD-YYYY")}
+                                {moment(
+                                    row.date_of_claim || row.dateOfClaim,
+                                ).format("MM-DD-YYYY")}
                             </td>
                             <td
-                                className={`whitespace-nowrap font-[500] ${row.benefit_status === "claimed" ? "text-green-500" : "text-red-500"}`}
+                                className={`whitespace-nowrap font-[500] ${
+                                    (row.benefit_status ||
+                                        row.benefitStatus) === "claimed"
+                                        ? "text-green-500"
+                                        : "text-red-500"
+                                }`}
                             >
-                                {row.benefit_status === "claimed"
+                                {(row.benefit_status || row.benefitStatus) ===
+                                "claimed"
                                     ? "Claimed"
                                     : "Unclaimed"}
                             </td>
@@ -84,58 +114,65 @@ const Table = ({
                             </td>
                         </tr>
                     ))}
-
-                    {/* Render newly added financial assistance records */}
-                    {financialAssistanceRecords.map((record, index) => (
-                        <tr
-                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
-                            key={`new-${index}`} // Ensure unique key
-                        >
-                            <td className="px-16 py-4 whitespace-nowrap">
-                                {record.memberName}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {record.benefitType}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {moment(record.dateOfClaim).format(
-                                    "MM-DD-YYYY",
-                                )}
-                            </td>
-                            <td
-                                className={`whitespace-nowrap font-[500] ${record.benefitStatus === "claimed" ? "text-green-500" : "text-red-500"}`}
-                            >
-                                {record.benefitStatus === "claimed"
-                                    ? "Claimed"
-                                    : "Unclaimed"}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {record.claimer}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {record.relationship}
-                            </td>
-                            <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">
-                                <button
-                                    aria-label="Edit"
-                                    onClick={() => handleOpenModal(record)}
-                                >
-                                    <img src={EditIcon} alt="Edit" />
-                                </button>
-                                <button
-                                    aria-label="View"
-                                    onClick={() => handleArchiveClick(record)}
-                                >
-                                    <img src={ViewIcon} alt="View" />
-                                </button>
-                                <button aria-label="Archive">
-                                    <img src={ArchiveIcon} alt="Archive" />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
                 </tbody>
             </table>
+
+            <div className="flex fixed bottom-5 mt-4">
+                {/* Pagination controls */}
+                <div>
+                    <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className={`px-4 py-2 ${
+                            currentPage === 1
+                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                        } rounded-md`}
+                    >
+                        Previous
+                    </button>
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                            key={index + 1}
+                            onClick={() => handlePageChange(index + 1)}
+                            className={`px-4 py-2 ${
+                                currentPage === index + 1
+                                    ? "bg-[#219EBC] text-white"
+                                    : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                            } rounded-md mx-1`}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                    <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className={`px-4 py-2 ${
+                            currentPage === totalPages
+                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                        } rounded-md`}
+                    >
+                        Next
+                    </button>
+                </div>
+
+                {/* Generate Report button at bottom-right */}
+                <button
+                    className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
+                    onClick={() => {
+                        // Logic to generate report
+                        console.log("Generating report...")
+                    }}
+                >
+                    <img
+                        src={ReportIcon}
+                        alt="Report Icon"
+                        className="w-5 h-5 mr-2 transition duration-300 group-hover:brightness-0 group-hover:invert"
+                    />
+                    <span>Generate Report</span>
+                </button>
+            </div>
         </div>
     )
 }

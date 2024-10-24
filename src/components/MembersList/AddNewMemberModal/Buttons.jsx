@@ -32,11 +32,11 @@ const Buttons = ({
                     disabled={!formValid || !isChanged} // Disable if form is not valid or no changes made
                     className={`${
                         !formValid || !isChanged
-                            ? "bg-gray-300 text-gray-500 cursor-not-allowed w-[100px]"
+                            ? "opacity-50 cursor-not-allowed w-[100px]"
                             : "bg-[#219EBC] hover:bg-[#1A7A8A] text-white w-[100px]"
-                    } font-bold py-2 px-4 rounded transition-colors duration-300`}
+                    } bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px]`}
                 >
-                    {isEditing ? "Edit" : "Add"}
+                    {isEditing ? "Save" : "Add"}
                 </button>
             )}
         </div>
