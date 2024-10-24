@@ -15,6 +15,7 @@ const FinancialAssistanceModal = ({ memberName, onCancel, onAdd }) => {
     const handleAdd = () => {
         if (!isFormValid) return
 
+        // Create new record object
         const newRecord = {
             member_name: memberName,
             benefit_type: benefitType,
@@ -24,8 +25,9 @@ const FinancialAssistanceModal = ({ memberName, onCancel, onAdd }) => {
             relationship,
         }
 
+        // Call onAdd function from parent to add record
         onAdd(newRecord)
-        clearFields()
+        clearFields() // Clear form fields after adding
     }
 
     // Clear input fields
@@ -253,17 +255,18 @@ const FinancialAssistanceModal = ({ memberName, onCancel, onAdd }) => {
 
                 <div className="flex justify-end space-x-4">
                     <button
-                        className="border w-[100px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
-                        onClick={onCancel}
+                        className="border w-[100px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] py-2 px-4 rounded transition-colors duration-200"
+                        onClick={onCancel} // Cancel button
                     >
                         Cancel
                     </button>
                     <button
-                        className={`bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px] ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
-                        onClick={handleAdd}
-                        disabled={!isFormValid}
+                        className={`border w-[100px] border-[#219EBC] bg-[#219EBC] text-white py-2 px-4 rounded transition-colors duration-200 ${
+                            isDisplaying ? "hidden" : ""
+                        }`}
+                        onClick={handleAdd} // Save record button
                     >
-                        Add
+                        Save
                     </button>
                 </div>
             </div>

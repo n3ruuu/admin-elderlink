@@ -4,7 +4,12 @@ import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import moment from "moment" // Import Moment.js
 
-const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
+const Table = ({
+    membersData,
+    handleOpenModal,
+    handleArchiveClick,
+    financialAssistanceRecords,
+}) => {
     return (
         <div>
             <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
@@ -34,6 +39,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                     </tr>
                 </thead>
                 <tbody>
+                    {/* Render existing members data */}
                     {membersData.map((row, index) => (
                         <tr
                             className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
@@ -46,16 +52,14 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                                 {row.benefit_type}
                             </td>
                             <td className="whitespace-nowrap">
-                                {moment(row.date_of_claim).format("MM-DD-YYYY")}{" "}
-                                {/* Format the date using Moment.js */}
+                                {moment(row.date_of_claim).format("MM-DD-YYYY")}
                             </td>
                             <td
-                                className={`whitespace-nowrap font-[500] ${row.benefit_status === "Claimed" ? "text-green-500" : "text-red-500"}`}
+                                className={`whitespace-nowrap font-[500] ${row.benefit_status === "claimed" ? "text-green-500" : "text-red-500"}`}
                             >
-                                {row.benefit_status === "Claimed"
+                                {row.benefit_status === "claimed"
                                     ? "Claimed"
-                                    : "Unclaimed"}{" "}
-                                {/* Update status display */}
+                                    : "Unclaimed"}
                             </td>
                             <td className="whitespace-nowrap">{row.claimer}</td>
                             <td className="whitespace-nowrap">
@@ -63,16 +67,66 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                             </td>
                             <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">
                                 <button
-                                    aria-label="Add"
+                                    aria-label="Edit"
                                     onClick={() => handleOpenModal(row)}
                                 >
                                     <img src={EditIcon} alt="Edit" />
                                 </button>
                                 <button
-                                    aria-label="Edit"
+                                    aria-label="View"
                                     onClick={() => handleArchiveClick(row)}
                                 >
-                                    <img src={ViewIcon} alt="Archive" />
+                                    <img src={ViewIcon} alt="View" />
+                                </button>
+                                <button aria-label="Archive">
+                                    <img src={ArchiveIcon} alt="Archive" />
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+
+                    {/* Render newly added financial assistance records */}
+                    {financialAssistanceRecords.map((record, index) => (
+                        <tr
+                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
+                            key={`new-${index}`} // Ensure unique key
+                        >
+                            <td className="px-16 py-4 whitespace-nowrap">
+                                {record.memberName}
+                            </td>
+                            <td className="whitespace-nowrap">
+                                {record.benefitType}
+                            </td>
+                            <td className="whitespace-nowrap">
+                                {moment(record.dateOfClaim).format(
+                                    "MM-DD-YYYY",
+                                )}
+                            </td>
+                            <td
+                                className={`whitespace-nowrap font-[500] ${record.benefitStatus === "claimed" ? "text-green-500" : "text-red-500"}`}
+                            >
+                                {record.benefitStatus === "claimed"
+                                    ? "Claimed"
+                                    : "Unclaimed"}
+                            </td>
+                            <td className="whitespace-nowrap">
+                                {record.claimer}
+                            </td>
+                            <td className="whitespace-nowrap">
+                                {record.relationship}
+                            </td>
+                            <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">
+                                <button
+                                    aria-label="Edit"
+                                    onClick={() => handleOpenModal(record)}
+                                >
+                                    <img src={EditIcon} alt="Edit" />
+                                </button>
+                                <button
+                                    aria-label="View"
+                                    onClick={() => handleArchiveClick(record)}
+                                >
+                                    <img src={ViewIcon} alt="View" />
                                 </button>
                                 <button aria-label="Archive">
                                     <img src={ArchiveIcon} alt="Archive" />

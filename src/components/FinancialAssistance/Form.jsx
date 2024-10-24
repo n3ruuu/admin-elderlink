@@ -44,7 +44,7 @@ const Form = ({
 
             {/* Suggestions */}
             {suggestions.length > 0 && (
-                <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-md w-full">
+                <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-md w-full z-10">
                     {suggestions.map((suggestion) => (
                         <li
                             key={suggestion.id}

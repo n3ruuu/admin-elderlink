@@ -11,6 +11,15 @@ const db = mysql.createConnection({
     database: "elderlinkdb",
 })
 
+// Check connection
+db.connect((err) => {
+    if (err) {
+        console.error("Database connection failed: " + err.stack)
+        return
+    }
+    console.log("Connected to database.")
+})
+
 // Endpoint to add financial assistance
 router.post("/", (req, res) => {
     const {
@@ -42,8 +51,16 @@ router.post("/", (req, res) => {
             if (err) {
                 return res.status(500).json({ error: err.message })
             }
+            // Return the entire new record
             res.status(201).json({
                 financial_assistance_id: result.insertId,
+                member_id,
+                member_name,
+                benefit_type,
+                date_of_claim,
+                benefit_status,
+                claimer,
+                relationship,
                 message: "Financial assistance record added successfully",
             })
         },

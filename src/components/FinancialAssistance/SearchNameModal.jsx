@@ -10,6 +10,8 @@ const SearchNameModal = ({ isOpen, onClose }) => {
     const [isEditable, setIsEditable] = useState(true)
     const [currentStep, setCurrentStep] = useState(1)
     const [selectedMember, setSelectedMember] = useState("")
+    const [financialAssistanceRecords, setFinancialAssistanceRecords] =
+        useState([]) // State to track financial assistance records
 
     useEffect(() => {
         const fetchMembers = async () => {
@@ -61,46 +63,17 @@ const SearchNameModal = ({ isOpen, onClose }) => {
         setCurrentStep(2)
     }
 
-    const handleAddRecord = async (newRecord) => {
-        // Validate benefit_status length
-        if (newRecord.benefit_status && newRecord.benefit_status.length > 10) {
-            console.error(
-                "Benefit status is too long:",
-                newRecord.benefit_status,
-            )
-            return // Prevent the request if validation fails
-        }
-
-        try {
-            const response = await fetch(
-                "http://localhost:5000/financial-assistance",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        member_name: selectedMember.name,
-                        member_id: selectedMember.id, // Ensure selectedMember has id
-                        ...newRecord,
-                    }),
-                },
-            )
-
-            if (!response.ok) {
-                throw new Error("Failed to add record")
-            }
-
-            const result = await response.json()
-            console.log("New record added:", result)
-            setCurrentStep(1) // Reset to the first step
-            onClose() // Close the modal
-        } catch (error) {
-            console.error("Error adding record:", error)
-        }
-    }
-
     const isSaveDisabled = searchTerm.trim() === ""
+
+    // Function to handle adding a new financial assistance record
+    const addFinancialAssistanceRecord = (newRecord) => {
+        setFinancialAssistanceRecords((prevRecords) => [
+            ...prevRecords,
+            newRecord,
+        ])
+        setCurrentStep(1) // Go back to step 1 after saving
+        clearSearchTerm() // Clear search term and reset editable state
+    }
 
     if (!isOpen) return null
 
@@ -131,8 +104,23 @@ const SearchNameModal = ({ isOpen, onClose }) => {
                 <FinancialAssistanceModal
                     memberName={selectedMember.name} // Use selectedMember object
                     onCancel={() => setCurrentStep(1)}
-                    onAdd={handleAddRecord}
+                    onSave={addFinancialAssistanceRecord} // Pass down the function to add records
                 />
+            )}
+
+            {/* Displaying the Financial Assistance Records */}
+            {financialAssistanceRecords.length > 0 && (
+                <div className="mt-8 p-4 bg-gray-100 rounded">
+                    <h3 className="text-xl font-semibold">Added Records:</h3>
+                    <ul>
+                        {financialAssistanceRecords.map((record, index) => (
+                            <li key={index} className="mt-2">
+                                {record.memberName} - {record.otherDetails}{" "}
+                                {/* Replace with actual record details */}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             )}
         </>
     )
