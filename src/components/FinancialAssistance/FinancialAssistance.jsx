@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
-import FinancialAssistanceModal from "./FinancialAssistanceModal" // Import the FinancialAssistanceModal
+import FinancialAssistanceModal from "./Modal" // Import the FinancialAssistanceModal
 import ArchiveConfirmModal from "./ArchiveConfirmModal"
 import SuccessModal from "./SuccessModal" // Import the SuccessModal
 

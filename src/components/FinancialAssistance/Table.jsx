@@ -5,10 +5,13 @@ import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
 import moment from "moment" // Import Moment.js
+import FinancialAssistanceModal from "./Modal" // Adjust the path as needed
 
-const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
+const Table = ({ membersData, handleArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
+    const [modalData, setModalData] = useState(null) // State for modal data
+    const [isModalOpen, setIsModalOpen] = useState(false) // State to manage modal visibility
 
     // Filter members to only include those with status 'Active'
     const activeMembersData = membersData.filter(
@@ -23,6 +26,16 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
+    }
+
+    const handleEditClick = (row) => {
+        setModalData(row) // Set the modal data with the selected row information
+        setIsModalOpen(true) // Open the modal
+    }
+
+    const closeModal = () => {
+        setIsModalOpen(false) // Close the modal
+        setModalData(null) // Clear modal data
     }
 
     return (
@@ -54,12 +67,9 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {/* Render combined data with pagination */}
                     {currentMembers.map((row, index) => (
                         <tr
-                            className={`text-[#333333] font-[500] ${
-                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
-                            }`}
+                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                             key={row.id || `new-${index}`} // Ensure unique key for both existing and new records
                         >
                             <td className="px-16 py-4 whitespace-nowrap">
@@ -74,12 +84,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                                 ).format("MM-DD-YYYY")}
                             </td>
                             <td
-                                className={`whitespace-nowrap font-[500] ${
-                                    (row.benefit_status ||
-                                        row.benefitStatus) === "claimed"
-                                        ? "text-green-500"
-                                        : "text-red-500"
-                                }`}
+                                className={`whitespace-nowrap font-[500] ${(row.benefit_status || row.benefitStatus) === "claimed" ? "text-green-500" : "text-red-500"}`}
                             >
                                 {(row.benefit_status || row.benefitStatus) ===
                                 "claimed"
@@ -93,7 +98,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                             <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">
                                 <button
                                     aria-label="Edit"
-                                    onClick={() => handleOpenModal(row)}
+                                    onClick={() => handleEditClick(row)}
                                 >
                                     <img src={EditIcon} alt="Edit" />
                                 </button>
@@ -118,11 +123,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`px-4 py-2 ${
-                            currentPage === 1
-                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
-                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
-                        } rounded-md`}
+                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
                     >
                         Previous
                     </button>
@@ -130,11 +131,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                         <button
                             key={index + 1}
                             onClick={() => handlePageChange(index + 1)}
-                            className={`px-4 py-2 ${
-                                currentPage === index + 1
-                                    ? "bg-[#219EBC] text-white"
-                                    : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
-                            } rounded-md mx-1`}
+                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
                         >
                             {index + 1}
                         </button>
@@ -142,11 +139,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`px-4 py-2 ${
-                            currentPage === totalPages
-                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
-                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
-                        } rounded-md`}
+                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
                     >
                         Next
                     </button>
@@ -168,6 +161,14 @@ const Table = ({ membersData, handleOpenModal, handleArchiveClick }) => {
                     <span>Generate Report</span>
                 </button>
             </div>
+
+            {/* Render the Financial Assistance Modal if it's open */}
+            {isModalOpen && (
+                <FinancialAssistanceModal
+                    modalData={modalData}
+                    onClose={closeModal}
+                />
+            )}
         </div>
     )
 }
