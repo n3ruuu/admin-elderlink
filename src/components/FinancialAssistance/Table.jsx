@@ -5,13 +5,30 @@ import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
 import moment from "moment" // Import Moment.js
-import FinancialAssistanceModal from "./Modal" // Adjust the path as needed
+import Modal from "./Modal" // Adjust the path as needed
 
 const Table = ({ membersData, handleArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
     const [modalData, setModalData] = useState(null) // State for modal data
     const [isModalOpen, setIsModalOpen] = useState(false) // State to manage modal visibility
+
+    // Fetch financial assistance data by ID
+    const fetchMemberById = async (id) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/financial-assistance/${id}`,
+            )
+            if (!response.ok) {
+                throw new Error("Failed to fetch member data")
+            }
+            const data = await response.json()
+            return data // Return the member data
+        } catch (error) {
+            console.error("Error fetching member data:", error)
+            return null // Return null or handle error as needed
+        }
+    }
 
     // Filter members to only include those with status 'Active'
     const activeMembersData = membersData.filter(
@@ -28,9 +45,16 @@ const Table = ({ membersData, handleArchiveClick }) => {
         setCurrentPage(page)
     }
 
-    const handleEditClick = (row) => {
-        setModalData(row) // Set the modal data with the selected row information
-        setIsModalOpen(true) // Open the modal
+    const handleEditClick = async (row) => {
+        // Fetch the financial assistance data from the database using financial_assistance_id
+        const fetchedMemberData = await fetchMemberById(
+            row.financial_assistance_id,
+        )
+        console.log("Fetched Member Data:", fetchedMemberData) // Debugging line
+        if (fetchedMemberData) {
+            setModalData(fetchedMemberData) // Set the modal data with the fetched information
+            setIsModalOpen(true) // Open the modal
+        }
     }
 
     const closeModal = () => {
@@ -83,6 +107,7 @@ const Table = ({ membersData, handleArchiveClick }) => {
                                     row.date_of_claim || row.dateOfClaim,
                                 ).format("MM-DD-YYYY")}
                             </td>
+
                             <td
                                 className={`whitespace-nowrap font-[500] ${(row.benefit_status || row.benefitStatus) === "claimed" ? "text-green-500" : "text-red-500"}`}
                             >
@@ -123,7 +148,7 @@ const Table = ({ membersData, handleArchiveClick }) => {
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"}`}
                     >
                         Previous
                     </button>
@@ -131,7 +156,7 @@ const Table = ({ membersData, handleArchiveClick }) => {
                         <button
                             key={index + 1}
                             onClick={() => handlePageChange(index + 1)}
-                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
+                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"}`}
                         >
                             {index + 1}
                         </button>
@@ -139,7 +164,7 @@ const Table = ({ membersData, handleArchiveClick }) => {
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"}`}
                     >
                         Next
                     </button>
@@ -164,10 +189,7 @@ const Table = ({ membersData, handleArchiveClick }) => {
 
             {/* Render the Financial Assistance Modal if it's open */}
             {isModalOpen && (
-                <FinancialAssistanceModal
-                    modalData={modalData}
-                    onClose={closeModal}
-                />
+                <Modal modalData={modalData} onClose={closeModal} />
             )}
         </div>
     )

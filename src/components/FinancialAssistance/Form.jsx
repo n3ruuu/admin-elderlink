@@ -1,4 +1,6 @@
 /* eslint-disable react/prop-types */
+import moment from "moment" // Import Moment.js
+
 const Form = ({
     searchTerm,
     setSearchTerm,
@@ -19,6 +21,7 @@ const Form = ({
     onAdd,
     onCancel,
     isFormValid,
+    isEditMode, // New prop to indicate edit mode
 }) => {
     return (
         <div>
@@ -96,9 +99,9 @@ const Form = ({
                     </label>
                     <input
                         type="date"
-                        className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
-                        value={dateOfClaim}
+                        value={moment(dateOfClaim).format("YYYY-MM-DD")}
                         onChange={(e) => setDateOfClaim(e.target.value)}
+                        className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
                     />
                 </div>
             </div>
@@ -112,9 +115,10 @@ const Form = ({
                     </label>
                     <input
                         type="text"
-                        className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
                         value={claimer}
                         onChange={(e) => setClaimer(e.target.value)}
+                        className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
+                        placeholder="Enter claimer's name"
                     />
                 </div>
 
@@ -125,9 +129,10 @@ const Form = ({
                     </label>
                     <input
                         type="text"
-                        className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
                         value={relationship}
                         onChange={(e) => setRelationship(e.target.value)}
+                        className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
+                        placeholder="Enter relationship"
                     />
                 </div>
             </div>
@@ -135,7 +140,7 @@ const Form = ({
             {/* Benefit Status */}
             <div className="mb-6">
                 <label className="block text-lg font-medium text-gray-700 mb-1">
-                    Benefit Status
+                    Benefit Status <span className="text-red-500">*</span>
                 </label>
                 <select
                     className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
@@ -147,22 +152,24 @@ const Form = ({
                 </select>
             </div>
 
-            {/* Buttons */}
+            {/* Action Buttons */}
             <div className="flex justify-end space-x-4">
                 <button
+                    type="button"
+                    onClick={onCancel} // Call cancel function
                     className="border w-[100px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
-                    onClick={onCancel}
                 >
                     Cancel
                 </button>
                 <button
-                    className={`${
-                        isFormValid ? "" : "opacity-50 cursor-not-allowed"
-                    } bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px]`}
-                    onClick={onAdd}
-                    disabled={!isFormValid}
+                    type="button"
+                    onClick={onAdd} // Call the unified function
+                    className={`bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px] ${
+                        !isFormValid ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    disabled={!isFormValid} // Disable if the form is invalid
                 >
-                    Add
+                    {isEditMode ? "Edit" : "Add"} {/* Change button text */}
                 </button>
             </div>
         </div>

@@ -78,6 +78,26 @@ router.get("/", (req, res) => {
     })
 })
 
+// Endpoint to get a specific financial assistance record by ID
+router.get("/:id", (req, res) => {
+    const financialAssistanceId = req.params.id // Get the ID from the URL parameters
+
+    const query =
+        "SELECT * FROM financial_assistance WHERE financial_assistance_id = ?"
+
+    db.query(query, [financialAssistanceId], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message })
+        }
+        if (results.length === 0) {
+            return res
+                .status(404)
+                .json({ message: "Financial assistance record not found" })
+        }
+        res.status(200).json(results[0]) // Return the specific record
+    })
+})
+
 // Endpoint to update financial assistance
 router.put("/:id", (req, res) => {
     const financialAssistanceId = req.params.id

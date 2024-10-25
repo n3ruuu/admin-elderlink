@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react"
 import Form from "./Form" // Import the Form component
 
-const FinancialAssistanceModal = ({ onCancel, onAdd }) => {
+const Modal = ({ onCancel, onAdd, modalData }) => {
     const [memberId, setMemberId] = useState(null)
     const [memberName, setMemberName] = useState("")
     const [benefitType, setBenefitType] = useState("")
@@ -100,6 +100,23 @@ const FinancialAssistanceModal = ({ onCancel, onAdd }) => {
         setIsEditable(true) // Reset search input to be editable
     }
 
+    // Pre-fill the form with existing data if modalData is provided
+    useEffect(() => {
+        if (modalData) {
+            setMemberId(modalData.member_id)
+            setMemberName(modalData.member_name)
+            setBenefitType(modalData.benefit_type)
+            setDateOfClaim(modalData.date_of_claim)
+            setBenefitStatus(modalData.benefit_status)
+            setClaimer(modalData.claimer)
+            setRelationship(modalData.relationship)
+            setSearchTerm(modalData.member_name) // Pre-fill search term
+            setIsEditable(false) // Disable search input for editing
+        } else {
+            clearFields() // Clear fields if no modalData
+        }
+    }, [modalData])
+
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white rounded-lg p-6 w-[40%]">
@@ -131,4 +148,4 @@ const FinancialAssistanceModal = ({ onCancel, onAdd }) => {
     )
 }
 
-export default FinancialAssistanceModal
+export default Modal

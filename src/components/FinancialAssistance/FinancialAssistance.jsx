@@ -47,6 +47,7 @@ const FinancialAssistance = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setCurrentMember(null)
+        console.log("Closing")
     }
 
     // Show success modal after saving or archiving
