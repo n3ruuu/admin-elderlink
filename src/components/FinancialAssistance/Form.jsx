@@ -19,7 +19,7 @@ const Form = ({
     benefitStatus,
     setBenefitStatus,
     onAdd,
-    onCancel,
+    onCancel, // Use onCancel directly here
     isFormValid,
     isEditMode, // New prop to indicate edit mode
 }) => {
@@ -148,7 +148,7 @@ const Form = ({
                     onChange={(e) => setBenefitStatus(e.target.value)}
                 >
                     <option value="claimed">Claimed</option>
-                    <option value="not claimed">Not Claimed</option>
+                    <option value="unclaimed">Unclaimed</option>
                 </select>
             </div>
 

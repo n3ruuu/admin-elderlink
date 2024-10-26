@@ -4,62 +4,72 @@ import EditIcon from "../../assets/icons/edit.svg"
 import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
-import moment from "moment" // Import Moment.js
+import moment from "moment"
 import Modal from "./Modal" // Adjust the path as needed
 
 const Table = ({ membersData, handleArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 6 // Number of items to display per page
-    const [modalData, setModalData] = useState(null) // State for modal data
-    const [isModalOpen, setIsModalOpen] = useState(false) // State to manage modal visibility
+    const itemsPerPage = 6
+    const [modalData, setModalData] = useState(null)
 
-    // Fetch financial assistance data by ID
     const fetchMemberById = async (id) => {
         try {
             const response = await fetch(
                 `http://localhost:5000/financial-assistance/${id}`,
             )
-            if (!response.ok) {
-                throw new Error("Failed to fetch member data")
-            }
-            const data = await response.json()
-            return data // Return the member data
+            if (!response.ok) throw new Error("Failed to fetch member data")
+            return await response.json()
         } catch (error) {
             console.error("Error fetching member data:", error)
-            return null // Return null or handle error as needed
+            return null
         }
     }
 
-    // Filter members to only include those with status 'Active'
     const activeMembersData = membersData.filter(
         (member) => member.status === "Active",
     )
-    const totalPages = Math.ceil(activeMembersData.length / itemsPerPage) // Calculate total pages
-    const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
+    const totalPages = Math.ceil(activeMembersData.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
     const currentMembers = activeMembersData.slice(
         startIndex,
         startIndex + itemsPerPage,
-    ) // Get current active members for display
+    )
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
     }
 
     const handleEditClick = async (row) => {
-        // Fetch the financial assistance data from the database using financial_assistance_id
         const fetchedMemberData = await fetchMemberById(
             row.financial_assistance_id,
         )
-        console.log("Fetched Member Data:", fetchedMemberData) // Debugging line
         if (fetchedMemberData) {
-            setModalData(fetchedMemberData) // Set the modal data with the fetched information
-            setIsModalOpen(true) // Open the modal
+            setModalData(fetchedMemberData)
         }
     }
 
     const closeModal = () => {
-        setIsModalOpen(false) // Close the modal
-        setModalData(null) // Clear modal data
+        setModalData(null)
+    }
+
+    const updateBeneficiary = async (updatedData) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/financial-assistance/${updatedData.member_id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedData),
+                },
+            )
+            if (!response.ok) throw new Error("Failed to update beneficiary")
+            closeModal()
+            // Optionally refetch data or update membersData state here
+        } catch (error) {
+            console.error("Error updating beneficiary:", error)
+        }
     }
 
     return (
@@ -94,7 +104,7 @@ const Table = ({ membersData, handleArchiveClick }) => {
                     {currentMembers.map((row, index) => (
                         <tr
                             className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
-                            key={row.id || `new-${index}`} // Ensure unique key for both existing and new records
+                            key={row.id || `new-${index}`}
                         >
                             <td className="px-16 py-4 whitespace-nowrap">
                                 {row.member_name || row.memberName}
@@ -107,12 +117,10 @@ const Table = ({ membersData, handleArchiveClick }) => {
                                     row.date_of_claim || row.dateOfClaim,
                                 ).format("MM-DD-YYYY")}
                             </td>
-
                             <td
-                                className={`whitespace-nowrap font-[500] ${(row.benefit_status || row.benefitStatus) === "claimed" ? "text-green-500" : "text-red-500"}`}
+                                className={`whitespace-nowrap font-[500] ${row.benefit_status === "claimed" ? "text-green-500" : "text-red-500"}`}
                             >
-                                {(row.benefit_status || row.benefitStatus) ===
-                                "claimed"
+                                {row.benefit_status === "claimed"
                                     ? "Claimed"
                                     : "Unclaimed"}
                             </td>
@@ -143,7 +151,6 @@ const Table = ({ membersData, handleArchiveClick }) => {
             </table>
 
             <div className="flex fixed bottom-5 mt-4">
-                {/* Pagination controls */}
                 <div>
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
@@ -170,13 +177,9 @@ const Table = ({ membersData, handleArchiveClick }) => {
                     </button>
                 </div>
 
-                {/* Generate Report button at bottom-right */}
                 <button
                     className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
-                    onClick={() => {
-                        // Logic to generate report
-                        console.log("Generating report...")
-                    }}
+                    onClick={() => console.log("Generating report...")}
                 >
                     <img
                         src={ReportIcon}
@@ -187,9 +190,13 @@ const Table = ({ membersData, handleArchiveClick }) => {
                 </button>
             </div>
 
-            {/* Render the Financial Assistance Modal if it's open */}
-            {isModalOpen && (
-                <Modal modalData={modalData} onClose={closeModal} />
+            {modalData && (
+                <Modal
+                    modalData={modalData}
+                    onCancel={closeModal}
+                    onAdd={updateBeneficiary} // Pass update function for editing
+                    onSave={updateBeneficiary} // You can also use the same for save if needed
+                />
             )}
         </div>
     )

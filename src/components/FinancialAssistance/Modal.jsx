@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react"
 import Form from "./Form" // Import the Form component
 
-const Modal = ({ onCancel, onAdd, modalData }) => {
+const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
     const [memberId, setMemberId] = useState(null)
     const [memberName, setMemberName] = useState("")
     const [benefitType, setBenefitType] = useState("")
@@ -69,11 +69,11 @@ const Modal = ({ onCancel, onAdd, modalData }) => {
     // Check if all fields are filled
     const isFormValid = benefitType && dateOfClaim && claimer && relationship
 
-    // Add new financial assistance record
-    const handleAdd = () => {
+    // Add or save financial assistance record
+    const handleSave = () => {
         if (!isFormValid) return
 
-        const newRecord = {
+        const recordData = {
             member_id: memberId,
             member_name: memberName,
             benefit_type: benefitType,
@@ -83,7 +83,12 @@ const Modal = ({ onCancel, onAdd, modalData }) => {
             relationship,
         }
 
-        onAdd(newRecord)
+        if (modalData) {
+            onSave(recordData) // Save changes to the existing record
+        } else {
+            onAdd(recordData) // Add a new record
+        }
+
         clearFields()
     }
 
@@ -120,7 +125,9 @@ const Modal = ({ onCancel, onAdd, modalData }) => {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white rounded-lg p-6 w-[40%]">
-                <h2 className="text-3xl font-bold mb-6">Add Beneficiary</h2>
+                <h2 className="text-3xl font-bold mb-6">
+                    {modalData ? "Edit Beneficiary" : "Add Beneficiary"}
+                </h2>
 
                 <Form
                     searchTerm={searchTerm}
@@ -139,9 +146,10 @@ const Modal = ({ onCancel, onAdd, modalData }) => {
                     setRelationship={setRelationship}
                     benefitStatus={benefitStatus}
                     setBenefitStatus={setBenefitStatus}
-                    onAdd={handleAdd}
-                    onCancel={onCancel}
+                    onAdd={handleSave} // Use handleSave for both add and edit
+                    onCancel={onCancel} // Pass down the cancel function
                     isFormValid={isFormValid}
+                    isEditMode={!!modalData} // Pass whether in edit mode
                 />
             </div>
         </div>

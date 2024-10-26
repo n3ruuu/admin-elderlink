@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
-import FinancialAssistanceModal from "./Modal" // Import the FinancialAssistanceModal
+import Modal from "./Modal" // Import the FinancialAssistanceModal
 import ArchiveConfirmModal from "./ArchiveConfirmModal"
 import SuccessModal from "./SuccessModal" // Import the SuccessModal
 
@@ -41,13 +41,14 @@ const FinancialAssistance = () => {
     const handleOpenModal = (member) => {
         setCurrentMember(member)
         setIsModalOpen(true)
+        console.log("Opening Modal")
     }
 
     // Closes the member modal
     const handleCloseModal = () => {
+        console.log("Cancel button clicked.")
         setIsModalOpen(false)
         setCurrentMember(null)
-        console.log("Closing")
     }
 
     // Show success modal after saving or archiving
@@ -160,7 +161,7 @@ const FinancialAssistance = () => {
 
             {/* Modals */}
             {isModalOpen && (
-                <FinancialAssistanceModal
+                <Modal
                     memberName={currentMember ? currentMember.name : ""}
                     onCancel={handleCloseModal}
                     onAdd={handleSave} // Pass handleSave function to modal
