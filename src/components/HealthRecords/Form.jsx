@@ -56,7 +56,7 @@ const Form = ({
                 ) : (
                     <input
                         type="text"
-                        id="searchMember"
+                        id="searchMember"   
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         disabled={!isEditable}

@@ -14,7 +14,8 @@ const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
     const [suggestions, setSuggestions] = useState([])
     const [membersList, setMembersList] = useState([])
     const [isEditable, setIsEditable] = useState(true)
-    const [initialValues, setInitialValues] = useState({})
+    const [initialValues, setInitialValues] = useState({}) // Store initial values for comparison
+    const [isModified, setIsModified] = useState(false) // Track if the form has been modified
 
     // Fetch members from the backend
     useEffect(() => {
@@ -62,32 +63,79 @@ const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
     // Clear the search field and reset editable state
     const clearSearchTerm = () => {
         setSearchTerm("")
-        setSuggestions([])
         setIsEditable(true)
     }
 
-    // Check if all fields are filled
-    const hasChanged = () => {
-        return (
-            memberName !== initialValues.member_name ||
-            benefitType !== initialValues.benefit_type ||
-            dateOfClaim !== initialValues.date_of_claim ||
-            benefitStatus !== initialValues.benefit_status ||
-            claimer !== initialValues.claimer ||
-            relationship !== initialValues.relationship
-        )
+    // Pre-fill the form with existing data if modalData is provided
+    useEffect(() => {
+        if (modalData) {
+            setMemberId(modalData.member_id)
+            setMemberName(modalData.member_name)
+            setBenefitType(modalData.benefit_type)
+            setDateOfClaim(modalData.date_of_claim)
+            setBenefitStatus(modalData.benefit_status)
+            setClaimer(modalData.claimer)
+            setRelationship(modalData.relationship)
+            setSearchTerm(modalData.member_name)
+            setIsEditable(false) // Disable search input for editing
+
+            // Store initial values for comparison
+            setInitialValues({
+                memberId: modalData.member_id,
+                memberName: modalData.member_name,
+                benefitType: modalData.benefit_type,
+                dateOfClaim: modalData.date_of_claim,
+                benefitStatus: modalData.benefit_status,
+                claimer: modalData.claimer,
+                relationship: modalData.relationship,
+            })
+        } else {
+            clearFields() // Clear fields if no modalData
+        }
+    }, [modalData])
+
+    const clearFields = () => {
+        setMemberId(null)
+        setMemberName("")
+        setBenefitType("")
+        setDateOfClaim("")
+        setBenefitStatus("claimed")
+        setClaimer("")
+        setRelationship("")
+        setSearchTerm("")
+        setIsEditable(true)
+        setInitialValues({}) // Reset initial values
+        setIsModified(false) // Reset modified state
     }
 
-    const isFormValid =
-        benefitType &&
-        dateOfClaim &&
-        claimer &&
-        relationship &&
-        (modalData ? hasChanged() : true) // For edit mode, check if values have changed
+    // Check if the current values differ from initial values
+    useEffect(() => {
+        const currentValues = {
+            memberId,
+            memberName,
+            benefitType,
+            dateOfClaim,
+            benefitStatus,
+            claimer,
+            relationship,
+        }
 
-    // Add or save financial assistance record
+        setIsModified(
+            JSON.stringify(currentValues) !== JSON.stringify(initialValues),
+        ) // Set modified state
+    }, [
+        memberId,
+        memberName,
+        benefitType,
+        dateOfClaim,
+        benefitStatus,
+        claimer,
+        relationship,
+        initialValues,
+    ])
+
     const handleSave = () => {
-        if (!isFormValid) return
+        if (!isFormValid()) return
 
         const recordData = {
             member_id: memberId,
@@ -100,83 +148,60 @@ const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
         }
 
         if (modalData) {
-            onSave(recordData) // Save changes to the existing record
+            // In edit mode, pass the ID for the existing record
+            recordData.financial_assistance_id =
+                modalData.financial_assistance_id
+            onSave(recordData) // Call onSave to update the record
         } else {
-            onAdd(recordData) // Add a new record
+            onAdd(recordData) // Call onAdd to create a new record
         }
 
         clearFields()
     }
 
-    // Clear input fields
-    const clearFields = () => {
-        setMemberName("")
-        setBenefitType("")
-        setDateOfClaim("")
-        setBenefitStatus("claimed")
-        setClaimer("")
-        setRelationship("")
-        setSearchTerm("")
-        setMemberId(null)
-        setIsEditable(true) // Reset search input to be editable
+    const isFormValid = () => {
+        // Implement your form validation logic here
+        return (
+            memberId &&
+            memberName &&
+            benefitType &&
+            dateOfClaim &&
+            claimer &&
+            relationship
+        ) // Return true or false based on validation
     }
 
-    // Pre-fill the form with existing data if modalData is provided
-    useEffect(() => {
-        if (modalData) {
-            const initial = {
-                member_id: modalData.member_id,
-                member_name: modalData.member_name,
-                benefit_type: modalData.benefit_type,
-                date_of_claim: modalData.date_of_claim,
-                benefit_status: modalData.benefit_status,
-                claimer: modalData.claimer,
-                relationship: modalData.relationship,
-            }
-            setInitialValues(initial)
-
-            setMemberId(modalData.member_id)
-            setMemberName(modalData.member_name)
-            setBenefitType(modalData.benefit_type)
-            setDateOfClaim(modalData.date_of_claim)
-            setBenefitStatus(modalData.benefit_status)
-            setClaimer(modalData.claimer)
-            setRelationship(modalData.relationship)
-            setSearchTerm(modalData.member_name)
-            setIsEditable(false) // Disable search input for editing
-        } else {
-            clearFields() // Clear fields if no modalData
-        }
-    }, [modalData])
-
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white rounded-lg p-6 w-[40%]">
-                <h2 className="text-3xl font-bold mb-6">
-                    {modalData ? "Edit Beneficiary" : "Add Beneficiary"}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg p-8 w-[40%]">
+                <h2 className="text-3xl font-semibold mb-6">
+                    {modalData
+                        ? "Edit Financial Assistance Record"
+                        : "Add Financial Assistance Record"}
                 </h2>
-
                 <Form
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    isEditable={isEditable}
-                    clearSearchTerm={clearSearchTerm}
-                    suggestions={suggestions}
-                    handleSuggestionClick={handleSuggestionClick}
+                    memberName={memberName}
+                    setMemberName={setMemberName}
                     benefitType={benefitType}
                     setBenefitType={setBenefitType}
                     dateOfClaim={dateOfClaim}
                     setDateOfClaim={setDateOfClaim}
+                    benefitStatus={benefitStatus}
+                    setBenefitStatus={setBenefitStatus}
                     claimer={claimer}
                     setClaimer={setClaimer}
                     relationship={relationship}
                     setRelationship={setRelationship}
-                    benefitStatus={benefitStatus}
-                    setBenefitStatus={setBenefitStatus}
-                    onAdd={handleSave} // Use handleSave for both add and edit
-                    onCancel={onCancel} // Pass down the cancel function
-                    isFormValid={isFormValid}
-                    isEditMode={!!modalData} // Pass whether in edit mode
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    suggestions={suggestions}
+                    handleSuggestionClick={handleSuggestionClick}
+                    clearSearchTerm={clearSearchTerm}
+                    isEditable={isEditable}
+                    handleSave={handleSave}
+                    onCancel={onCancel} // Pass cancel function
+                    isEditMode={!!modalData} // Determine if in edit mode
+                    isModified={isModified} // Pass modified state
                 />
             </div>
         </div>

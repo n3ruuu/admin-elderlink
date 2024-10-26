@@ -18,11 +18,23 @@ const Form = ({
     setRelationship,
     benefitStatus,
     setBenefitStatus,
-    onAdd,
-    onCancel, // Use onCancel directly here
-    isFormValid,
-    isEditMode, // New prop to indicate edit mode
+    onCancel,
+    handleSave,
+    isEditMode,
+    isModified, // Accept isModified prop
 }) => {
+    // Function to check if all required fields are filled
+    const isFormValid = () => {
+        return (
+            searchTerm &&
+            benefitType &&
+            dateOfClaim &&
+            claimer &&
+            relationship &&
+            benefitStatus
+        )
+    }
+
     return (
         <div>
             {/* Search Member / Name Display */}
@@ -107,8 +119,23 @@ const Form = ({
                 </div>
             </div>
 
-            {/* Claimer and Relationship */}
+            {/* Benefit Status, Claimer, and Relationship */}
             <div className="grid grid-cols-2 gap-4 mb-6">
+                {/* Benefit Status */}
+                <div>
+                    <label className="block text-lg font-medium text-gray-700 mb-1">
+                        Benefit Status <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                        className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
+                        value={benefitStatus}
+                        onChange={(e) => setBenefitStatus(e.target.value)}
+                    >
+                        <option value="claimed">Claimed</option>
+                        <option value="unclaimed">Unclaimed</option>
+                    </select>
+                </div>
+
                 {/* Claimer */}
                 <div>
                     <label className="block text-lg font-medium text-gray-700 mb-1">
@@ -119,58 +146,39 @@ const Form = ({
                         value={claimer}
                         onChange={(e) => setClaimer(e.target.value)}
                         className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
-                        placeholder="Enter claimer's name"
-                    />
-                </div>
-
-                {/* Relationship */}
-                <div>
-                    <label className="block text-lg font-medium text-gray-700 mb-1">
-                        Relationship <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        value={relationship}
-                        onChange={(e) => setRelationship(e.target.value)}
-                        className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
-                        placeholder="Enter relationship"
+                        placeholder="Enter claimer name"
                     />
                 </div>
             </div>
 
-            {/* Benefit Status */}
+            {/* Relationship */}
             <div className="mb-6">
                 <label className="block text-lg font-medium text-gray-700 mb-1">
-                    Benefit Status <span className="text-red-500">*</span>
+                    Relationship <span className="text-red-500">*</span>
                 </label>
-                <select
+                <input
+                    type="text"
+                    value={relationship}
+                    onChange={(e) => setRelationship(e.target.value)}
                     className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
-                    value={benefitStatus}
-                    onChange={(e) => setBenefitStatus(e.target.value)}
-                >
-                    <option value="claimed">Claimed</option>
-                    <option value="unclaimed">Unclaimed</option>
-                </select>
+                    placeholder="Enter relationship"
+                />
             </div>
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-4">
                 <button
-                    type="button"
-                    onClick={onCancel} // Call cancel function
+                    onClick={onCancel}
                     className="border w-[100px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
                 >
                     Cancel
                 </button>
                 <button
-                    type="button"
-                    onClick={onAdd} // Call the unified function
-                    className={`bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px] ${
-                        !isFormValid ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                    disabled={!isFormValid} // Disable if the form is invalid
+                    onClick={handleSave}
+                    disabled={!isFormValid() || (isEditMode && !isModified)} // Disable button if form is invalid or not modified in edit mode
+                    className={`bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px] ${!isFormValid() || (isEditMode && !isModified) ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                    {isEditMode ? "Save" : "Add"} {/* Change button text */}
+                    {isEditMode ? "Save" : "Add"}
                 </button>
             </div>
         </div>

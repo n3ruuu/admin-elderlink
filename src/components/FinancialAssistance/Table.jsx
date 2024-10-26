@@ -5,25 +5,15 @@ import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
 import moment from "moment"
-import Modal from "./Modal" // Adjust the path as needed
 
-const Table = ({ membersData, handleArchiveClick }) => {
+const Table = ({
+    membersData,
+    onOpenModal,
+    handleArchiveClick,
+    handleEditClick,
+}) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6
-    const [modalData, setModalData] = useState(null)
-
-    const fetchMemberById = async (id) => {
-        try {
-            const response = await fetch(
-                `http://localhost:5000/financial-assistance/${id}`,
-            )
-            if (!response.ok) throw new Error("Failed to fetch member data")
-            return await response.json()
-        } catch (error) {
-            console.error("Error fetching member data:", error)
-            return null
-        }
-    }
 
     const activeMembersData = membersData.filter(
         (member) => member.status === "Active",
@@ -37,39 +27,6 @@ const Table = ({ membersData, handleArchiveClick }) => {
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
-    }
-
-    const handleEditClick = async (row) => {
-        const fetchedMemberData = await fetchMemberById(
-            row.financial_assistance_id,
-        )
-        if (fetchedMemberData) {
-            setModalData(fetchedMemberData)
-        }
-    }
-
-    const closeModal = () => {
-        setModalData(null)
-    }
-
-    const updateBeneficiary = async (updatedData) => {
-        try {
-            const response = await fetch(
-                `http://localhost:5000/financial-assistance/${updatedData.member_id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(updatedData),
-                },
-            )
-            if (!response.ok) throw new Error("Failed to update beneficiary")
-            closeModal()
-            // Optionally refetch data or update membersData state here
-        } catch (error) {
-            console.error("Error updating beneficiary:", error)
-        }
     }
 
     return (
@@ -137,11 +94,14 @@ const Table = ({ membersData, handleArchiveClick }) => {
                                 </button>
                                 <button
                                     aria-label="View"
-                                    onClick={() => handleArchiveClick(row)}
+                                    onClick={() => onOpenModal(row)}
                                 >
                                     <img src={ViewIcon} alt="View" />
                                 </button>
-                                <button aria-label="Archive">
+                                <button
+                                    aria-label="Archive"
+                                    onClick={handleArchiveClick}
+                                >
                                     <img src={ArchiveIcon} alt="Archive" />
                                 </button>
                             </td>
@@ -189,15 +149,6 @@ const Table = ({ membersData, handleArchiveClick }) => {
                     <span>Generate Report</span>
                 </button>
             </div>
-
-            {modalData && (
-                <Modal
-                    modalData={modalData}
-                    onCancel={closeModal}
-                    onAdd={updateBeneficiary} // Pass update function for editing
-                    onSave={updateBeneficiary} // You can also use the same for save if needed
-                />
-            )}
         </div>
     )
 }
