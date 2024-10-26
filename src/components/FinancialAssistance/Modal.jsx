@@ -14,6 +14,7 @@ const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
     const [suggestions, setSuggestions] = useState([])
     const [membersList, setMembersList] = useState([])
     const [isEditable, setIsEditable] = useState(true)
+    const [initialValues, setInitialValues] = useState({})
 
     // Fetch members from the backend
     useEffect(() => {
@@ -36,14 +37,13 @@ const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
     // Update suggestions based on search term
     useEffect(() => {
         if (searchTerm) {
-            const filteredSuggestions = membersList.filter((member) => {
-                return (
+            const filteredSuggestions = membersList.filter(
+                (member) =>
                     member.name
                         .toLowerCase()
                         .includes(searchTerm.toLowerCase()) &&
-                    member.name.toLowerCase() !== searchTerm.toLowerCase()
-                )
-            })
+                    member.name.toLowerCase() !== searchTerm.toLowerCase(),
+            )
             setSuggestions(filteredSuggestions)
         } else {
             setSuggestions([])
@@ -67,7 +67,23 @@ const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
     }
 
     // Check if all fields are filled
-    const isFormValid = benefitType && dateOfClaim && claimer && relationship
+    const hasChanged = () => {
+        return (
+            memberName !== initialValues.member_name ||
+            benefitType !== initialValues.benefit_type ||
+            dateOfClaim !== initialValues.date_of_claim ||
+            benefitStatus !== initialValues.benefit_status ||
+            claimer !== initialValues.claimer ||
+            relationship !== initialValues.relationship
+        )
+    }
+
+    const isFormValid =
+        benefitType &&
+        dateOfClaim &&
+        claimer &&
+        relationship &&
+        (modalData ? hasChanged() : true) // For edit mode, check if values have changed
 
     // Add or save financial assistance record
     const handleSave = () => {
@@ -108,6 +124,17 @@ const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
     // Pre-fill the form with existing data if modalData is provided
     useEffect(() => {
         if (modalData) {
+            const initial = {
+                member_id: modalData.member_id,
+                member_name: modalData.member_name,
+                benefit_type: modalData.benefit_type,
+                date_of_claim: modalData.date_of_claim,
+                benefit_status: modalData.benefit_status,
+                claimer: modalData.claimer,
+                relationship: modalData.relationship,
+            }
+            setInitialValues(initial)
+
             setMemberId(modalData.member_id)
             setMemberName(modalData.member_name)
             setBenefitType(modalData.benefit_type)
@@ -115,7 +142,7 @@ const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
             setBenefitStatus(modalData.benefit_status)
             setClaimer(modalData.claimer)
             setRelationship(modalData.relationship)
-            setSearchTerm(modalData.member_name) // Pre-fill search term
+            setSearchTerm(modalData.member_name)
             setIsEditable(false) // Disable search input for editing
         } else {
             clearFields() // Clear fields if no modalData

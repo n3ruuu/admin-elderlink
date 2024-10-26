@@ -38,7 +38,8 @@ const Form = ({
                     placeholder="Search by name"
                     disabled={!isEditable}
                 />
-                {searchTerm && (
+                {/* Conditionally render the clear button */}
+                {!isEditMode && searchTerm && (
                     <button
                         type="button"
                         onClick={clearSearchTerm}
@@ -169,7 +170,7 @@ const Form = ({
                     }`}
                     disabled={!isFormValid} // Disable if the form is invalid
                 >
-                    {isEditMode ? "Edit" : "Add"} {/* Change button text */}
+                    {isEditMode ? "Save" : "Add"} {/* Change button text */}
                 </button>
             </div>
         </div>
