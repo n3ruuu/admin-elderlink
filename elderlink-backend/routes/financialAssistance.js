@@ -98,11 +98,9 @@ router.get("/:id", (req, res) => {
     })
 })
 
-// Endpoint to update financial assistance
 router.put("/:id", (req, res) => {
     const financialAssistanceId = req.params.id
     const {
-        member_id,
         member_name,
         benefit_type,
         date_of_claim,
@@ -111,15 +109,28 @@ router.put("/:id", (req, res) => {
         relationship,
     } = req.body
 
+    // Log the updated values
+    console.log(
+        "Updating financial assistance record with ID:",
+        financialAssistanceId,
+    )
+    console.log("Updated values:", {
+        member_name,
+        benefit_type,
+        date_of_claim,
+        benefit_status,
+        claimer,
+        relationship,
+    })
+
     const query = `
         UPDATE financial_assistance 
-        SET member_id = ?, member_name = ?, benefit_type = ?, date_of_claim = ?, benefit_status = ?, claimer = ?, relationship = ?
+        SET member_name = ?, benefit_type = ?, date_of_claim = ?, benefit_status = ?, claimer = ?, relationship = ?
         WHERE financial_assistance_id = ?`
 
     db.query(
         query,
         [
-            member_id,
             member_name,
             benefit_type,
             date_of_claim,

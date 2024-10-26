@@ -2,9 +2,9 @@ import { useEffect, useState } from "react"
 import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
-import Modal from "./Modal" // Import the FinancialAssistanceModal
+import Modal from "./Modal"
 import ArchiveConfirmModal from "./ArchiveConfirmModal"
-import SuccessModal from "./SuccessModal" // Import the SuccessModal
+import SuccessModal from "./SuccessModal"
 
 const FinancialAssistance = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -35,9 +35,8 @@ const FinancialAssistance = () => {
             row.financial_assistance_id,
         )
         if (fetchedMemberData) {
-            console.log(fetchedMemberData)
             setCurrentMember(fetchedMemberData)
-            setIsModalOpen(true) // Open the modal for editing
+            setIsModalOpen(true)
         }
     }
 
@@ -107,44 +106,12 @@ const FinancialAssistance = () => {
 
             handleCloseModal()
             handleShowSuccessModal(
-                "Record Saved",
+                currentMember ? "Record Updated" : "Record Saved",
                 "The financial assistance record has been saved successfully.",
             )
-            fetchMembersData()
+            fetchMembersData() // Refresh the members data
         } catch (error) {
             console.error("Error saving record:", error)
-        }
-    }
-
-    const handleArchiveClick = (member) => {
-        setMemberToArchive(member)
-        setIsConfirmModalOpen(true)
-    }
-
-    const handleConfirmArchive = async () => {
-        try {
-            await fetch(
-                `http://localhost:5000/financial-assistance/${memberToArchive.financial_assistance_id}`,
-                {
-                    method: "DELETE",
-                },
-            )
-
-            setMembersData((prevData) =>
-                prevData.filter(
-                    (member) =>
-                        member.financial_assistance_id !==
-                        memberToArchive.financial_assistance_id,
-                ),
-            )
-            handleShowSuccessModal(
-                "Member Archived",
-                "The member has been archived successfully.",
-                true,
-            )
-            handleCloseConfirmModal()
-        } catch (error) {
-            console.error("Error archiving member:", error)
         }
     }
 
@@ -178,25 +145,23 @@ const FinancialAssistance = () => {
                     <Table
                         membersData={membersData}
                         onOpenModal={handleOpenModal}
-                        handleArchiveClick={handleArchiveClick}
-                        handleEditClick={handleEditClick} // Pass handleEditClick as a prop
+                        handleEditClick={handleEditClick}
                     />
                 </div>
             </div>
 
             {isModalOpen && (
                 <Modal
-                    modalData={currentMember} // Pass the current member data for editing
+                    modalData={currentMember}
                     onCancel={handleCloseModal}
-                    onAdd={handleSave} // This should handle both add and save
-                    onSave={handleSave} // Ensure this prop is included for editing
+                    onAdd={handleSave}
+                    onSave={handleSave} // Single handler for adding and saving
                 />
             )}
             {isConfirmModalOpen && (
                 <ArchiveConfirmModal
                     isOpen={isConfirmModalOpen}
                     onClose={handleCloseConfirmModal}
-                    onConfirm={handleConfirmArchive}
                     memberName={memberToArchive ? memberToArchive.name : ""}
                 />
             )}
@@ -206,9 +171,6 @@ const FinancialAssistance = () => {
                     onClose={handleCloseSuccessModal}
                     title={successTitle}
                     message={successMessage}
-                    onGoToArchives={() => {
-                        /* Add your navigation logic here if needed */
-                    }}
                     isArchiving={isArchiving}
                 />
             )}

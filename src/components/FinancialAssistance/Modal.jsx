@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
 import Form from "./Form" // Import the Form component
+import moment from "moment"
 
 const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
     const [memberId, setMemberId] = useState(null)
@@ -137,37 +138,39 @@ const Modal = ({ onCancel, onAdd, onSave, modalData }) => {
     const handleSave = () => {
         if (!isFormValid()) return
 
+        // Prepare the record data, including unchanged fields
         const recordData = {
-            member_id: memberId,
             member_name: memberName,
             benefit_type: benefitType,
-            date_of_claim: dateOfClaim,
+            date_of_claim: moment(dateOfClaim).format("YYYY-MM-DD"), // Include this even if it hasn't changed
             benefit_status: benefitStatus,
-            claimer,
-            relationship,
+            claimer: claimer,
+            relationship: relationship,
         }
+
+        console.log("Payload to send:", recordData) // Log the payload
 
         if (modalData) {
             // In edit mode, pass the ID for the existing record
             recordData.financial_assistance_id =
                 modalData.financial_assistance_id
+            console.log(
+                "Updating record with ID:",
+                recordData.financial_assistance_id,
+            )
+
+            // Always send the entire payload to ensure required fields are included
             onSave(recordData) // Call onSave to update the record
         } else {
+            console.log("Adding new record")
             onAdd(recordData) // Call onAdd to create a new record
         }
-
-        clearFields()
     }
 
     const isFormValid = () => {
         // Implement your form validation logic here
         return (
-            memberId &&
-            memberName &&
-            benefitType &&
-            dateOfClaim &&
-            claimer &&
-            relationship
+            memberName && benefitType && dateOfClaim && claimer && relationship
         ) // Return true or false based on validation
     }
 
