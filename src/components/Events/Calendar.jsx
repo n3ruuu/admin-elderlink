@@ -3,28 +3,36 @@ import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
 import interactionPlugin from "@fullcalendar/interaction"
-import EventsData from "../../data/events.json"
+import axios from "axios" // Import axios for API calls
 import "../../css/calendar.css" // Import the external CSS file
 
 const Calendar = () => {
     const [events, setEvents] = useState([])
 
     useEffect(() => {
-        // Use imported JSON data directly
-        const formattedEvents = EventsData.map((event) => ({
-            title: event.title,
-            date: formatDate(event.date),
-            location: event.location,
-            organizer: event.organizer,
-            category: event.category,
-        }))
-        setEvents(formattedEvents)
+        fetchEvents() // Call the function to fetch events
     }, [])
+
+    const fetchEvents = async () => {
+        try {
+            const response = await axios.get("http://localhost:5000/events") // Replace with your API endpoint
+            const formattedEvents = response.data.map((event) => ({
+                title: event.title,
+                date: formatDate(event.date),
+                location: event.location,
+                organizer: event.organizer,
+                category: event.category,
+            }))
+            setEvents(formattedEvents)
+        } catch (error) {
+            console.error("Error fetching events:", error)
+        }
+    }
 
     const formatDate = (dateStr) => {
         // Convert MM-DD-YYYY to YYYY-MM-DD
         const [month, day, year] = dateStr.split("-")
-        return `${year}-${month}-${day}`
+        return `${month}-${day}-${year}`
     }
 
     return (
@@ -34,7 +42,10 @@ const Calendar = () => {
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
                     events={events} // Pass events to FullCalendar
-                    headerToolbar={false} // Remove the entire header toolbar
+                    headerToolbar={{
+                        left: "prev,next today", // Navigation buttons
+                        right: "title", // Center title
+                    }}
                     height="100%"
                     themeSystem="standard"
                     dayCellDidMount={(info) => {
@@ -47,6 +58,7 @@ const Calendar = () => {
                             if (event.date === info.dateStr) {
                                 const eventTitle = document.createElement("div")
                                 eventTitle.textContent = event.title
+                                eventTitle.className = "event-title" // Add a class for styling
                                 eventContainer.appendChild(eventTitle)
                             }
                         })
