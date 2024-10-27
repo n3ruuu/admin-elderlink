@@ -4,24 +4,36 @@ import moment from "moment"
 
 const Modal = ({ isOpen, onClose, onSave, event }) => {
     const [formData, setFormData] = useState({
-        eventTitle: "",
+        title: "",
         date: "",
         location: "",
         organizer: "",
         category: "",
     })
 
+    const isEditMode = !!event // Determine if this is edit mode
+    const [isModified, setIsModified] = useState(false) // Track if the form has been modified
+
     useEffect(() => {
-        if (event) {
+        if (isEditMode) {
             setFormData({
-                eventTitle: event.title || "",
+                title: event.title || "",
                 date: event.date ? moment(event.date).format("YYYY-MM-DD") : "",
                 location: event.location || "",
                 organizer: event.organizer || "",
                 category: event.category || "",
             })
+            setIsModified(false) // Reset modification state on load
+        } else {
+            setFormData({
+                title: "",
+                date: "",
+                location: "",
+                organizer: "",
+                category: "",
+            })
         }
-    }, [event])
+    }, [event, isEditMode])
 
     if (!isOpen) return null
 
@@ -31,43 +43,51 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
             ...prevData,
             [name]: value,
         }))
+        setIsModified(true) // Mark form as modified on any change
+    }
+
+    const isFormValid = () => {
+        return (
+            formData.title &&
+            formData.date &&
+            formData.location &&
+            formData.organizer &&
+            formData.category
+        )
     }
 
     const handleSave = () => {
-        // Convert date back to the original format if needed
-        onSave({
-            ...formData,
-            date: moment(formData.date).format("YYYY-MM-DD"),
-        })
-        setFormData({
-            eventTitle: "",
-            date: "",
-            location: "",
-            organizer: "",
-            category: "",
-        })
+        const updatedEvent = {
+            ...event,
+            title: formData.title,
+            date: formData.date,
+            location: formData.location,
+            organizer: formData.organizer,
+            category: formData.category,
+        }
+        onSave(updatedEvent)
     }
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg w-[40%]">
                 <h2 className="text-3xl font-bold mb-6">
-                    {event ? "Edit Event" : "Add Event"}
+                    {isEditMode ? "Edit Event" : "Add Event"}
                 </h2>
                 <form>
                     {/* Event Title */}
                     <div className="mb-4">
                         <label
-                            htmlFor="eventTitle"
+                            htmlFor="title"
                             className="block text-lg font-medium text-gray-700 mb-1"
                         >
                             Event Title <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
-                            id="eventTitle"
-                            name="eventTitle"
-                            value={formData.eventTitle}
+                            id="title"
+                            name="title"
+                            value={formData.title}
                             onChange={handleChange}
                             className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             placeholder="Enter event title"
@@ -162,24 +182,25 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                         />
                     </div>
 
-                    {/* Export CSV and Buttons */}
-                    <div className="flex mt-8 place-content-end">
-                        <div className="flex space-x-4">
-                            <button
-                                type="button"
-                                className="bg-[#FFFFFF] border-[#219EBC] text-[#219EBC] border-2 px-6 py-2 rounded-xl"
-                                onClick={onClose}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                className="text-[#FFFFFF] bg-[#219EBC] px-6 py-2 rounded-xl"
-                                onClick={handleSave}
-                            >
-                                Save
-                            </button>
-                        </div>
+                    {/* Action Buttons */}
+                    <div className="flex justify-end space-x-4">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="border w-[100px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleSave}
+                            disabled={
+                                !isFormValid() || (isEditMode && !isModified)
+                            } // Disable button if form is invalid or not modified in edit mode
+                            className={`bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px] ${!isFormValid() || (isEditMode && !isModified) ? "opacity-50 cursor-not-allowed" : ""}`}
+                        >
+                            {isEditMode && event.id ? "Save" : "Add"}
+                        </button>
                     </div>
                 </form>
             </div>

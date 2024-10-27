@@ -111,11 +111,16 @@ const Table = ({
             </table>
 
             <div className="flex fixed bottom-5 mt-4">
+                {/* Pagination controls */}
                 <div>
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"}`}
+                        className={`px-4 py-2 ${
+                            currentPage === 1
+                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                        } rounded-md`}
                     >
                         Previous
                     </button>
@@ -123,7 +128,11 @@ const Table = ({
                         <button
                             key={index + 1}
                             onClick={() => handlePageChange(index + 1)}
-                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"}`}
+                            className={`px-4 py-2 ${
+                                currentPage === index + 1
+                                    ? "bg-[#219EBC] text-white"
+                                    : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                            } rounded-md mx-1`}
                         >
                             {index + 1}
                         </button>
@@ -131,15 +140,23 @@ const Table = ({
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"}`}
+                        className={`px-4 py-2 ${
+                            currentPage === totalPages
+                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                        } rounded-md`}
                     >
                         Next
                     </button>
                 </div>
 
+                {/* Generate Report button at bottom-right */}
                 <button
                     className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
-                    onClick={() => console.log("Generating report...")}
+                    onClick={() => {
+                        // Logic to generate report
+                        console.log("Generating report...")
+                    }}
                 >
                     <img
                         src={ReportIcon}
