@@ -16,13 +16,15 @@ const Calendar = () => {
     const fetchEvents = async () => {
         try {
             const response = await axios.get("http://localhost:5000/events") // Replace with your API endpoint
-            const formattedEvents = response.data.map((event) => ({
-                title: event.title,
-                date: formatDate(event.date),
-                location: event.location,
-                organizer: event.organizer,
-                category: event.category,
-            }))
+            const formattedEvents = response.data
+                .filter((event) => event.status === "Active") // Filter to include only active events
+                .map((event) => ({
+                    title: event.title,
+                    date: formatDate(event.date),
+                    location: event.location,
+                    organizer: event.organizer,
+                    category: event.category,
+                }))
             setEvents(formattedEvents)
         } catch (error) {
             console.error("Error fetching events:", error)

@@ -6,14 +6,17 @@ import SendIcon from "../../assets/icons/send-icon.svg"
 import ReportIcon from "../../assets/icons/report.svg"
 import moment from "moment"
 
-const Table = ({ eventsData, handleOpenModal, handleArchiveClick }) => {
+const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 9
 
-    // Calculate pagination
-    const totalPages = Math.ceil(eventsData.length / itemsPerPage)
+    // Filter events with status "Active"
+    const activeEventsData = eventsData.filter(
+        (event) => event.status === "Active",
+    )
+    const totalPages = Math.ceil(activeEventsData.length / itemsPerPage)
     const startIndex = (currentPage - 1) * itemsPerPage
-    const currentEvents = eventsData.slice(
+    const currentEvents = activeEventsData.slice(
         startIndex,
         startIndex + itemsPerPage,
     )
@@ -77,9 +80,7 @@ const Table = ({ eventsData, handleOpenModal, handleArchiveClick }) => {
                                         />
                                     </button>
                                     <button
-                                        onClick={() =>
-                                            handleArchiveClick(event)
-                                        }
+                                        onClick={() => onArchiveClick(event)}
                                     >
                                         <img
                                             src={ArchiveIcon}
@@ -87,11 +88,7 @@ const Table = ({ eventsData, handleOpenModal, handleArchiveClick }) => {
                                             className="h-5"
                                         />
                                     </button>
-                                    <button
-                                        onClick={() =>
-                                            handleArchiveClick(event)
-                                        }
-                                    >
+                                    <button>
                                         <img
                                             src={SendIcon}
                                             alt="Send Icon"
@@ -112,7 +109,6 @@ const Table = ({ eventsData, handleOpenModal, handleArchiveClick }) => {
             </table>
 
             <div className="flex fixed bottom-5 mt-4">
-                {/* Pagination controls */}
                 <div>
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
@@ -150,12 +146,9 @@ const Table = ({ eventsData, handleOpenModal, handleArchiveClick }) => {
                         Next
                     </button>
                 </div>
-
-                {/* Generate Report button at bottom-right */}
                 <button
                     className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
                     onClick={() => {
-                        // Logic to generate report
                         console.log("Generating report...")
                     }}
                 >

@@ -1,53 +1,48 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import Modal from "./Modal"
-import ArchiveConfirmModal from "./ArchiveConfirmModal"
+import ArchiveModal from "./ArchiveModal"
 import Calendar from "./Calendar"
 import Header from "./Header"
 import Table from "./Table"
 import ViewModeSwitcher from "./ViewModeSwitcher"
-import SuccessModal from "../common/SuccessModal" // Import your SuccessModal
+import SuccessModal from "../common/SuccessModal"
 
 const Events = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
-    const [successModalOpen, setSuccessModalOpen] = useState(false) // State for success modal
+    const [successModalOpen, setSuccessModalOpen] = useState(false)
     const [currentEvent, setCurrentEvent] = useState(null)
     const [eventToArchive, setEventToArchive] = useState(null)
     const [eventsData, setEventsData] = useState([])
     const [filter, setFilter] = useState("all")
     const [viewMode, setViewMode] = useState("list")
-    const [modalTitle, setModalTitle] = useState("") // Title for the success modal
-    const [modalMessage, setModalMessage] = useState("") // Message for the success modal
+    const [modalTitle, setModalTitle] = useState("")
+    const [modalMessage, setModalMessage] = useState("")
 
-    // Fetch events from the backend when the component mounts
     useEffect(() => {
         fetchEvents()
     }, [])
 
-    // Function to fetch events
     const fetchEvents = async () => {
         try {
             const response = await axios.get("http://localhost:5000/events")
-            setEventsData(response.data) // Update the state with the fetched data
+            setEventsData(response.data)
         } catch (error) {
             console.error("Error fetching events:", error)
         }
     }
 
-    // Open the modal with the event data to edit
     const handleOpenModal = (event = null) => {
         setCurrentEvent(event)
         setIsModalOpen(true)
     }
 
-    // Close the modal
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setCurrentEvent(null)
     }
 
-    // Save event (create or update)
     const handleSave = async (updatedEvent) => {
         try {
             const eventData = {
@@ -56,45 +51,39 @@ const Events = () => {
                 location: updatedEvent.location,
                 organizer: updatedEvent.organizer,
                 category: updatedEvent.category,
-                // Add any other relevant fields you want to save
             }
 
             if (updatedEvent.id) {
-                // Update existing event
                 const response = await axios.put(
                     `http://localhost:5000/events/${updatedEvent.id}`,
-                    eventData, // Use the new object without circular references
+                    eventData,
                 )
                 setEventsData((prevData) =>
                     prevData.map((event) =>
                         event.id === updatedEvent.id ? response.data : event,
                     ),
                 )
-                // Set success modal for update
                 setModalTitle("Event Updated!")
                 setModalMessage("The event has been successfully edited.")
             } else {
-                // Create new event
                 const response = await axios.post(
                     "http://localhost:5000/events",
-                    eventData, // Use the new object without circular references
+                    eventData,
                 )
                 setEventsData((prevData) => [...prevData, response.data])
-                // Set success modal for addition
                 setModalTitle("Event Added!")
                 setModalMessage(
-                    `The event has been successfully added to the event list.`,
+                    "The event has been successfully added to the event list.",
                 )
             }
         } catch (error) {
             console.error("Error saving event:", error)
         }
         handleCloseModal()
-        setSuccessModalOpen(true) // Open success modal
+        setSuccessModalOpen(true)
         fetchEvents()
     }
 
-    // Archive an event
     const handleArchiveClick = (event) => {
         setEventToArchive(event)
         setIsConfirmModalOpen(true)
@@ -102,32 +91,43 @@ const Events = () => {
 
     const handleConfirmArchive = async () => {
         try {
+            // Archive the event in the backend
             await axios.put(
                 `http://localhost:5000/events/archive/${eventToArchive.id}`,
-                { status: "archived" },
+                { status: "Archived" },
             )
-            setEventsData((prevData) =>
-                prevData.filter((event) => event.id !== eventToArchive.id),
-            )
+
+            // Update local state by filtering out the archived event
+            setEventsData((prevData) => {
+                const updatedData = prevData.filter(
+                    (event) => event.id !== eventToArchive.id,
+                )
+                console.log("Updated Events Data:", updatedData)
+                return updatedData
+            })
+
+            // Close the confirmation modal
             setIsConfirmModalOpen(false)
             setEventToArchive(null)
+
+            // Open the SuccessModal with appropriate title and message
+            setModalTitle("Event Archived!")
+            setModalMessage("The event has been successfully archived.")
+            setSuccessModalOpen(true) // Open the success modal
         } catch (error) {
             console.error("Error archiving event:", error)
         }
     }
 
-    // Close the confirm archive modal
     const handleCloseConfirmModal = () => {
         setIsConfirmModalOpen(false)
         setEventToArchive(null)
     }
 
-    // Handle filter change
     const handleFilterChange = (newFilter) => {
         setFilter(newFilter)
     }
 
-    // Handle view mode change
     const handleViewModeChange = (mode) => {
         setViewMode(mode)
     }
@@ -147,10 +147,9 @@ const Events = () => {
                     />
                     {viewMode === "list" ? (
                         <Table
-                            eventsData={eventsData} // Pass eventsData to Table component
+                            eventsData={eventsData}
                             filter={filter}
-                            handleOpenModal={handleOpenModal}
-                            handleArchiveClick={handleArchiveClick}
+                            onArchiveClick={handleArchiveClick}
                         />
                     ) : (
                         <div className="mt-8">
@@ -168,20 +167,19 @@ const Events = () => {
                 />
             )}
             {isConfirmModalOpen && (
-                <ArchiveConfirmModal
-                    event={eventToArchive}
-                    onConfirm={handleConfirmArchive}
+                <ArchiveModal
+                    isOpen={isConfirmModalOpen}
                     onClose={handleCloseConfirmModal}
+                    onConfirm={handleConfirmArchive}
+                    eventName={eventToArchive ? eventToArchive.title : ""}
                 />
             )}
-            {successModalOpen && ( // Render SuccessModal
+            {successModalOpen && (
                 <SuccessModal
                     isOpen={successModalOpen}
                     onClose={() => setSuccessModalOpen(false)}
                     title={modalTitle}
                     message={modalMessage}
-                    onGoToArchives={null} // Add if you have a go to archives function
-                    isArchiving={false} // Change if you want to show archiving
                 />
             )}
         </section>
