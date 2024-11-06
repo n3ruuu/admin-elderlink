@@ -100,7 +100,7 @@ router.put("/:id", upload.single("image"), (req, res) => {
 
     // Build the query and parameters dynamically, allowing image to be optional
     let query = "UPDATE news SET headline = ?, author = ?, body = ?, date = ?"
-    const params = [headline, author, body, formatDate(date)] // Use the utility function to format the date
+    const params = [headline, author, body, formatDate(date)] // Format the date
 
     if (image) {
         query += ", image = ?"
@@ -116,7 +116,19 @@ router.put("/:id", upload.single("image"), (req, res) => {
                 error: "An error occurred while updating the news article.",
             })
         }
-        res.status(200).json({ message: "News article updated successfully" })
+        // Optionally fetch the updated news article after the update
+        db.query("SELECT * FROM news WHERE id = ?", [id], (err, rows) => {
+            if (err) {
+                console.error("Error fetching updated article:", err.message)
+                return res.status(500).json({
+                    error: "An error occurred while fetching the updated news article.",
+                })
+            }
+            res.status(200).json({
+                message: "News article updated successfully",
+                updatedArticle: rows[0],
+            })
+        })
     })
 })
 

@@ -20,8 +20,8 @@ const Modal = ({ onClose, onSubmit, news }) => {
         }
     }, [news])
 
+    // Update hasChanges state whenever the form inputs or image change
     useEffect(() => {
-        // Reset hasChanges when the news prop changes (i.e., when modal is opened in edit mode)
         setHasChanges(
             headline !== news?.headline ||
                 author !== news?.author ||
@@ -42,6 +42,12 @@ const Modal = ({ onClose, onSubmit, news }) => {
     const handleRemoveImage = () => {
         setImage(null)
         setImagePreview(null)
+        setHasChanges(true) // Indicate change if the image is removed
+    }
+
+    // Function to check if all required fields are filled (used for adding a new article)
+    const isFormValid = () => {
+        return headline && author && date && body && image
     }
 
     const handleSubmit = async () => {
@@ -63,8 +69,13 @@ const Modal = ({ onClose, onSubmit, news }) => {
                       headers: { "Content-Type": "multipart/form-data" },
                   })
 
-            onSubmit(response.data)
-            onClose()
+            // If updating, use the updated article, otherwise use the newly created article
+            const article = news?.id
+                ? response.data.updatedArticle
+                : response.data
+
+            onSubmit(article) // Pass the correct article object
+            onClose() // Close the modal after submission
         } catch (error) {
             console.error("Error saving news:", error)
         }
@@ -160,12 +171,12 @@ const Modal = ({ onClose, onSubmit, news }) => {
 
                     <button
                         className={`flex w-[150px] items-center justify-center py-2 ${
-                            hasChanges
+                            (news?.id ? hasChanges : isFormValid())
                                 ? "bg-[#219EBC] text-white"
                                 : "bg-gray-400 text-white"
                         } rounded-md`}
                         onClick={handleSubmit}
-                        disabled={!hasChanges}
+                        disabled={news?.id ? !hasChanges : !isFormValid()}
                     >
                         <span className="mr-2">
                             <img src={SendIcon} alt="Publish" width="15px" />

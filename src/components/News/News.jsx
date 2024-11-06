@@ -3,12 +3,15 @@ import axios from "axios"
 import Modal from "./Modal"
 import Header from "./Header"
 import Table from "./Table"
+import SuccessModal from "../common/SuccessModal"
 
 const News = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [currentNews, setCurrentNews] = useState(null) // Changed from currentEvent to currentNews
     const [newsData, setNewsData] = useState([]) // Changed from eventsData to newsData
-    const [filter, setFilter] = useState("all")
+    const [successModalOpen, setSuccessModalOpen] = useState(false)
+    const [modalTitle, setModalTitle] = useState("")
+    const [modalMessage, setModalMessage] = useState("")
 
     useEffect(() => {
         fetchNews()
@@ -23,6 +26,27 @@ const News = () => {
         }
     }
 
+    const handleSaveNews = (updatedNews) => {
+        console.log(updatedNews) // Debugging line to check the updated news object
+        if (updatedNews.id) {
+            // Editing existing news
+            setNewsData(
+                newsData.map((news) =>
+                    news.id === updatedNews.id ? updatedNews : news,
+                ),
+            )
+            setModalTitle("News Updated!")
+            setModalMessage("The news has been successfully updated.")
+        } else {
+            // Adding new news
+            setNewsData([updatedNews, ...newsData])
+            setModalTitle("News Published!")
+            setModalMessage("The news has been successfully published.")
+        }
+        setSuccessModalOpen(true) // Open the success modal
+        fetchNews() // Optionally refresh the news data
+    }
+
     const handleOpenModal = (news = null) => {
         setCurrentNews(news) // Changed from event to news
         setIsModalOpen(true)
@@ -33,62 +57,9 @@ const News = () => {
         setCurrentNews(null)
     }
 
-    const handleSave = async (updatedNews) => {
-        try {
-            const formData = new FormData()
-            formData.append("headline", updatedNews.headline)
-            formData.append("author", updatedNews.author)
-            formData.append("date", updatedNews.date)
-            formData.append("body", updatedNews.body)
-            if (updatedNews.image) formData.append("image", updatedNews.image)
-
-            if (updatedNews.id) {
-                // Edit existing news
-                const response = await axios.put(
-                    `http://localhost:5000/news/${updatedNews.id}`,
-                    formData,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        },
-                    },
-                )
-                setNewsData((prevData) =>
-                    prevData.map((news) =>
-                        news.id === updatedNews.id ? response.data : news,
-                    ),
-                )
-            } else {
-                // Add new news
-                const response = await axios.post(
-                    "http://localhost:5000/news",
-                    formData,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        },
-                    },
-                )
-                setNewsData((prevData) => [...prevData, response.data])
-            }
-        } catch (error) {
-            console.error("Error saving news:", error)
-        }
-        handleCloseModal()
-        fetchNews() // Fetch news again after save
-    }
-
-    const handleFilterChange = (newFilter) => {
-        setFilter(newFilter)
-    }
-
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header
-                onOpenModal={handleOpenModal}
-                handleFilterChange={handleFilterChange}
-                filter={filter}
-            />
+            <Header onOpenModal={handleOpenModal} />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Table
@@ -101,8 +72,16 @@ const News = () => {
             {isModalOpen && (
                 <Modal
                     onClose={handleCloseModal}
-                    onSubmit={handleSave}
+                    onSubmit={handleSaveNews}
                     news={currentNews} // optional if editing
+                />
+            )}
+            {successModalOpen && (
+                <SuccessModal
+                    isOpen={successModalOpen}
+                    onClose={() => setSuccessModalOpen(false)}
+                    title={modalTitle}
+                    message={modalMessage}
                 />
             )}
         </section>
