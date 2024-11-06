@@ -6,12 +6,14 @@ const cors = require("cors")
 const healthRecordsRouter = require("./routes/healthRecords") // Import the health records router
 const financialAssistanceRouter = require("./routes/financialAssistance")
 const eventsRouter = require("./routes/events") // Import the events router
+const newsRouter = require("./routes/news")
 
 const app = express()
 const port = 5000
 
 app.use(cors())
 app.use(express.json())
+app.use("/uploads", express.static("uploads"))
 
 // MySQL Connection
 const db = mysql.createConnection({
@@ -135,6 +137,7 @@ app.get("/members/search", (req, res) => {
 app.use("/health-records", healthRecordsRouter) // Connect health records routes
 app.use("/financial-assistance", financialAssistanceRouter)
 app.use("/events", eventsRouter)
+app.use("/news", newsRouter)
 
 // Start the server
 app.listen(port, () => {

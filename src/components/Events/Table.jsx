@@ -5,9 +5,11 @@ import ArchiveIcon from "../../assets/icons/archive2.svg"
 import SendIcon from "../../assets/icons/send-icon.svg"
 import ReportIcon from "../../assets/icons/report.svg"
 import moment from "moment"
+import SmsModal from "./SmsModal"
 
 const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
+    const [isSMSModalOpen, setSMSModalOpen] = useState(false)
     const itemsPerPage = 9
 
     // Filter events with status "Active"
@@ -88,7 +90,9 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                                             className="h-5"
                                         />
                                     </button>
-                                    <button>
+                                    <button
+                                        onClick={() => setSMSModalOpen(true)}
+                                    >
                                         <img
                                             src={SendIcon}
                                             alt="Send Icon"
@@ -160,6 +164,12 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                     <span>Generate Report</span>
                 </button>
             </div>
+
+            {/* Compose SMS Modal */}
+            <SmsModal
+                isOpen={isSMSModalOpen}
+                onClose={() => setSMSModalOpen(false)}
+            />
         </div>
     )
 }

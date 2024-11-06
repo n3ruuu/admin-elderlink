@@ -11,6 +11,7 @@ import FormsAndAppIcon from "./assets/icons/forms-and-app.svg"
 import FormsIcon from "./assets/icons/forms.svg"
 import ApplicationIcon from "./assets/icons/applications.svg"
 import ArchiveIcon from "./assets/icons/archive.svg"
+import NewsIcon from "./assets/icons/news.svg"
 import SettingsIcon from "./assets/icons/settings.svg"
 import LogoutIcon from "./assets/icons/logout.svg"
 import Dashboard from "./components/Dashboard/Dashboard"
@@ -20,6 +21,7 @@ import FinancialAssistance from "./components/FinancialAssistance/FinancialAssis
 import Events from "./components/Events/Events"
 import Forms from "./components/Forms/Forms"
 import Applications from "./components/Applications/Applications"
+import News from "./components/News/News"
 import Archives from "./components/Archives/Archives"
 
 const Sidebar = () => {
@@ -230,6 +232,26 @@ const Sidebar = () => {
                         )}
                     </div>
 
+                    {/* News */}
+                    <Link
+                        to="admin-elderlink/news"
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                            isActive("/admin-elderlink/news")
+                                ? "bg-[#219EBC] text-[#F5F5FA]"
+                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
+                        }`}
+                    >
+                        <img
+                            src={NewsIcon}
+                            alt="News Icon"
+                            className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                isActive("/admin-elderlink/news") &&
+                                "filter brightness-0 invert"
+                            }`}
+                        />
+                        <p>News</p>
+                    </Link>
+
                     {/* Archive */}
                     <Link
                         to="admin-elderlink/archives"
@@ -309,6 +331,8 @@ const Sidebar = () => {
                     path="admin-elderlink/applications"
                     element={<Applications />}
                 />
+                <Route path="admin-elderlink/news" element={<News />} />
+
                 <Route path="admin-elderlink/archives" element={<Archives />} />
             </Routes>
         </section>
