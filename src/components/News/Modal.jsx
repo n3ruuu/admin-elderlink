@@ -1,16 +1,35 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import SendIcon from "../../assets/icons/news-send.svg"
 import PhotoIcon from "../../assets/icons/photo.svg"
 import axios from "axios"
 
-const AddNewsModal = ({ onClose, onSubmit }) => {
-    const [headline, setHeadline] = useState("")
-    const [author, setAuthor] = useState("")
-    const [date, setDate] = useState("")
-    const [body, setBody] = useState("")
+const Modal = ({ onClose, onSubmit, news }) => {
+    const [headline, setHeadline] = useState(news?.headline || "")
+    const [author, setAuthor] = useState(news?.author || "")
+    const [date, setDate] = useState(news?.date || "")
+    const [body, setBody] = useState(news?.body || "")
     const [image, setImage] = useState(null)
     const [imagePreview, setImagePreview] = useState(null)
+    const [hasChanges, setHasChanges] = useState(false)
+
+    // If news is being edited and has an image, set the imagePreview
+    useEffect(() => {
+        if (news?.image) {
+            setImagePreview(`http://localhost:5000/uploads/${news.image}`) // Assuming news.image contains the URL of the image
+        }
+    }, [news])
+
+    useEffect(() => {
+        // Reset hasChanges when the news prop changes (i.e., when modal is opened in edit mode)
+        setHasChanges(
+            headline !== news?.headline ||
+                author !== news?.author ||
+                date !== news?.date ||
+                body !== news?.body ||
+                image !== null,
+        )
+    }, [headline, author, date, body, image, news])
 
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
@@ -34,16 +53,17 @@ const AddNewsModal = ({ onClose, onSubmit }) => {
         if (image) formData.append("image", image)
 
         try {
-            const response = await axios.post(
-                "http://localhost:5000/news",
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                },
-            )
-            onSubmit(response.data) // Return the new news data
+            const response = news?.id
+                ? await axios.put(
+                      `http://localhost:5000/news/${news.id}`,
+                      formData,
+                      { headers: { "Content-Type": "multipart/form-data" } },
+                  )
+                : await axios.post("http://localhost:5000/news", formData, {
+                      headers: { "Content-Type": "multipart/form-data" },
+                  })
+
+            onSubmit(response.data)
             onClose()
         } catch (error) {
             console.error("Error saving news:", error)
@@ -60,7 +80,9 @@ const AddNewsModal = ({ onClose, onSubmit }) => {
                 >
                     &times;
                 </button>
-                <h2 className="text-3xl font-bold mb-4">Add News</h2>
+                <h2 className="text-3xl font-bold mb-4">
+                    {news?.id ? "Edit" : "Add"} News
+                </h2>
 
                 <div className="space-y-4">
                     <div>
@@ -138,19 +160,17 @@ const AddNewsModal = ({ onClose, onSubmit }) => {
 
                     <button
                         className={`flex w-[150px] items-center justify-center py-2 ${
-                            headline && author && body && date && image
+                            hasChanges
                                 ? "bg-[#219EBC] text-white"
                                 : "bg-gray-400 text-white"
                         } rounded-md`}
                         onClick={handleSubmit}
-                        disabled={
-                            !headline || !author || !body || !date || !image
-                        }
+                        disabled={!hasChanges}
                     >
                         <span className="mr-2">
                             <img src={SendIcon} alt="Publish" width="15px" />
                         </span>
-                        Publish
+                        {news?.id ? "Edit" : "Publish"}
                     </button>
                 </div>
             </div>
@@ -158,4 +178,4 @@ const AddNewsModal = ({ onClose, onSubmit }) => {
     )
 }
 
-export default AddNewsModal
+export default Modal

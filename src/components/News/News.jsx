@@ -12,7 +12,7 @@ const News = () => {
 
     useEffect(() => {
         fetchNews()
-    }, [filter]) // Refetch news data when filter changes
+    }, [])
 
     const fetchNews = async () => {
         try {
@@ -42,10 +42,9 @@ const News = () => {
             formData.append("body", updatedNews.body)
             if (updatedNews.image) formData.append("image", updatedNews.image)
 
-            let response
             if (updatedNews.id) {
                 // Edit existing news
-                response = await axios.put(
+                const response = await axios.put(
                     `http://localhost:5000/news/${updatedNews.id}`,
                     formData,
                     {
@@ -61,7 +60,7 @@ const News = () => {
                 )
             } else {
                 // Add new news
-                response = await axios.post(
+                const response = await axios.post(
                     "http://localhost:5000/news",
                     formData,
                     {
@@ -76,6 +75,7 @@ const News = () => {
             console.error("Error saving news:", error)
         }
         handleCloseModal()
+        fetchNews() // Fetch news again after save
     }
 
     const handleFilterChange = (newFilter) => {
@@ -94,7 +94,8 @@ const News = () => {
                     <Table
                         newsData={newsData}
                         handleOpenModal={handleOpenModal}
-                    />
+                    />{" "}
+                    {/* Changed from eventsData to newsData */}
                 </div>
             </div>
             {isModalOpen && (

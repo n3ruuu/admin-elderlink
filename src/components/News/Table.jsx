@@ -76,6 +76,7 @@ const Table = ({ newsData, handleOpenModal }) => {
                                                 className="h-5"
                                             />
                                         </button>
+
                                         <button>
                                             <img
                                                 src={ArchiveIcon}

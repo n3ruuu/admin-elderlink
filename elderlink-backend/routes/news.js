@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 const express = require("express")
 const router = express.Router()
@@ -23,6 +24,12 @@ const storage = multer.diskStorage({
     },
 })
 const upload = multer({ storage: storage })
+
+// Utility function to handle date format (in case a date isn't passed)
+function formatDate(date) {
+    if (!date) return new Date().toISOString().slice(0, 19).replace("T", " ") // Return current date if not provided
+    return new Date(date).toISOString().slice(0, 19).replace("T", " ") // Format the provided date
+}
 
 // Fetch all active news articles
 router.get("/", (req, res) => {
@@ -58,7 +65,7 @@ router.post("/", upload.single("image"), (req, res) => {
     `
 
     // Use the provided date or the current date if not specified
-    const articleDate = date || new Date()
+    const articleDate = formatDate(date)
 
     db.query(
         query,
@@ -93,7 +100,7 @@ router.put("/:id", upload.single("image"), (req, res) => {
 
     // Build the query and parameters dynamically, allowing image to be optional
     let query = "UPDATE news SET headline = ?, author = ?, body = ?, date = ?"
-    const params = [headline, author, body, date || new Date()]
+    const params = [headline, author, body, formatDate(date)] // Use the utility function to format the date
 
     if (image) {
         query += ", image = ?"
