@@ -3,7 +3,7 @@ import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import moment from "moment"
 
-const Table = ({ newsData, handleOpenModal }) => {
+const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
     // Filter news with status "Active"
     const activeNewsData = newsData.filter((news) => news.status === "Active")
 
@@ -77,7 +77,11 @@ const Table = ({ newsData, handleOpenModal }) => {
                                             />
                                         </button>
 
-                                        <button>
+                                        <button
+                                            onClick={() =>
+                                                handleOpenArchiveModal(news)
+                                            }
+                                        >
                                             <img
                                                 src={ArchiveIcon}
                                                 alt="Archive Icon"

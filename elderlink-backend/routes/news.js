@@ -132,4 +132,24 @@ router.put("/:id", upload.single("image"), (req, res) => {
     })
 })
 
+// Archive a news article by ID
+router.put("/archive/:id", (req, res) => {
+    const { id } = req.params
+
+    const query = "UPDATE news SET status = 'Archived' WHERE id = ?"
+
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            console.error("Error archiving article:", err.message)
+            return res.status(500).json({
+                error: "An error occurred while archiving the news article.",
+            })
+        }
+
+        res.status(200).json({
+            message: "News article archived successfully",
+        })
+    })
+})
+
 module.exports = router

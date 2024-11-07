@@ -4,14 +4,17 @@ import Modal from "./Modal"
 import Header from "./Header"
 import Table from "./Table"
 import SuccessModal from "../common/SuccessModal"
+import ArchiveModal from "./ArchiveModal" // Import ArchiveModal component
 
 const News = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [currentNews, setCurrentNews] = useState(null) // Changed from currentEvent to currentNews
-    const [newsData, setNewsData] = useState([]) // Changed from eventsData to newsData
+    const [currentNews, setCurrentNews] = useState(null) // For adding or editing news
+    const [newsData, setNewsData] = useState([]) // List of news articles
     const [successModalOpen, setSuccessModalOpen] = useState(false)
     const [modalTitle, setModalTitle] = useState("")
     const [modalMessage, setModalMessage] = useState("")
+    const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
+    const [selectedNews, setSelectedNews] = useState(null) // News to be archived
 
     useEffect(() => {
         fetchNews()
@@ -19,7 +22,7 @@ const News = () => {
 
     const fetchNews = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/news") // Updated endpoint for news
+            const response = await axios.get("http://localhost:5000/news")
             setNewsData(response.data)
         } catch (error) {
             console.error("Error fetching news:", error)
@@ -27,7 +30,6 @@ const News = () => {
     }
 
     const handleSaveNews = (updatedNews) => {
-        console.log(updatedNews) // Debugging line to check the updated news object
         if (updatedNews.id) {
             // Editing existing news
             setNewsData(
@@ -48,13 +50,47 @@ const News = () => {
     }
 
     const handleOpenModal = (news = null) => {
-        setCurrentNews(news) // Changed from event to news
+        setCurrentNews(news) // Set current news for editing or adding
         setIsModalOpen(true)
     }
 
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setCurrentNews(null)
+    }
+
+    const openArchiveModal = (news) => {
+        setSelectedNews(news)
+        setIsArchiveModalOpen(true)
+    }
+
+    const closeArchiveModal = () => {
+        setIsArchiveModalOpen(false)
+        setSelectedNews(null)
+    }
+
+    const handleArchiveConfirm = async () => {
+        if (selectedNews) {
+            try {
+                // Update the status of the news to "Archived" in the backend
+                await axios.put(
+                    `http://localhost:5000/news/archive/${selectedNews.id}`,
+                )
+                setNewsData(
+                    newsData.map((news) =>
+                        news.id === selectedNews.id
+                            ? { ...news, status: "Archived" }
+                            : news,
+                    ),
+                )
+                setModalTitle("News Archived!")
+                setModalMessage("The news has been successfully archived.")
+                setSuccessModalOpen(true) // Show success modal
+                closeArchiveModal() // Close archive modal
+            } catch (error) {
+                console.error("Error archiving news:", error)
+            }
+        }
     }
 
     return (
@@ -65,15 +101,23 @@ const News = () => {
                     <Table
                         newsData={newsData}
                         handleOpenModal={handleOpenModal}
-                    />{" "}
-                    {/* Changed from eventsData to newsData */}
+                        handleOpenArchiveModal={openArchiveModal} // Pass archive handler
+                    />
                 </div>
             </div>
             {isModalOpen && (
                 <Modal
                     onClose={handleCloseModal}
                     onSubmit={handleSaveNews}
-                    news={currentNews} // optional if editing
+                    news={currentNews} // Pass current news data
+                />
+            )}
+            {isArchiveModalOpen && (
+                <ArchiveModal
+                    isOpen={isArchiveModalOpen}
+                    onClose={closeArchiveModal}
+                    onConfirm={handleArchiveConfirm}
+                    article={selectedNews?.headline || ""}
                 />
             )}
             {successModalOpen && (
