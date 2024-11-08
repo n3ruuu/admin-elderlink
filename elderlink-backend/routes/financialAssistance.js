@@ -155,4 +155,29 @@ router.put("/:id", (req, res) => {
     )
 })
 
+router.put("/archive/:id", (req, res) => {
+    const { id } = req.params
+    const { status } = req.body // Get the status from the request body
+
+    if (!status) {
+        return res.status(400).json({ message: "Status is required." })
+    }
+
+    const query =
+        "UPDATE financial_assistance SET status = ? WHERE financial_assistance_id = ?"
+
+    db.query(query, [status, id], (error, result) => {
+        if (error) {
+            console.error("Error archiving financial assistance record:", error)
+            return res.status(500).json({ message: "Error archiving record." })
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Record not found." })
+        }
+
+        res.status(200).json({ message: "Record archived successfully." })
+    })
+})
+
 module.exports = router

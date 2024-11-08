@@ -3,8 +3,8 @@ import Header from "./Header"
 import Cards from "./Cards"
 import Table from "./Table"
 import Modal from "./Modal"
-import ArchiveConfirmModal from "./ArchiveConfirmModal"
 import SuccessModal from "./SuccessModal"
+import ArchiveModal from "./ArchiveModal"
 
 const FinancialAssistance = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -14,8 +14,8 @@ const FinancialAssistance = () => {
     const [successMessage, setSuccessMessage] = useState("")
     const [isArchiving, setIsArchiving] = useState(false)
     const [currentMember, setCurrentMember] = useState(null)
-    const [memberToArchive, setMemberToArchive] = useState(null)
     const [membersData, setMembersData] = useState([])
+    const [recordToArchive, setRecordToArchive] = useState(null)
 
     const fetchMemberById = async (id) => {
         try {
@@ -109,15 +109,44 @@ const FinancialAssistance = () => {
                 currentMember ? "Record Updated" : "Record Saved",
                 "The financial assistance record has been saved successfully.",
             )
-            fetchMembersData() // Refresh the members data
+            fetchMembersData()
         } catch (error) {
             console.error("Error saving record:", error)
         }
     }
 
-    const handleCloseConfirmModal = () => {
-        setIsConfirmModalOpen(false)
-        setMemberToArchive(null)
+    const handleArchiveClick = (member) => {
+        setRecordToArchive(member)
+        setIsConfirmModalOpen(true)
+    }
+
+    const handleConfirmArchive = async (selectedReason) => {
+        if (!recordToArchive) return
+
+        try {
+            await fetch(
+                `http://localhost:5000/financial-assistance/archive/${recordToArchive.financial_assistance_id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ status: selectedReason }),
+                },
+            )
+
+            setSuccessTitle("Financial Assistance Record Archived!")
+            setSuccessMessage(
+                "The financial assistance record has been successfully archived.",
+            )
+            fetchMembersData()
+            setIsSuccessModalOpen(true)
+        } catch (error) {
+            console.error("Error archiving financial assistance record:", error)
+        } finally {
+            setIsConfirmModalOpen(false)
+            setRecordToArchive(null)
+        }
     }
 
     const handleCloseSuccessModal = () => {
@@ -146,6 +175,7 @@ const FinancialAssistance = () => {
                         membersData={membersData}
                         onOpenModal={handleOpenModal}
                         handleEditClick={handleEditClick}
+                        onArchiveClick={handleArchiveClick} // Pass handleArchive to the Table component
                     />
                 </div>
             </div>
@@ -155,16 +185,18 @@ const FinancialAssistance = () => {
                     modalData={currentMember}
                     onCancel={handleCloseModal}
                     onAdd={handleSave}
-                    onSave={handleSave} // Single handler for adding and saving
+                    onSave={handleSave}
                 />
             )}
+
             {isConfirmModalOpen && (
-                <ArchiveConfirmModal
+                <ArchiveModal
                     isOpen={isConfirmModalOpen}
-                    onClose={handleCloseConfirmModal}
-                    memberName={memberToArchive ? memberToArchive.name : ""}
+                    onClose={() => setIsConfirmModalOpen(false)}
+                    onConfirm={handleConfirmArchive}
                 />
             )}
+
             {isSuccessModalOpen && (
                 <SuccessModal
                     isOpen={isSuccessModalOpen}

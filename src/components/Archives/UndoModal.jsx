@@ -8,18 +8,18 @@ const UndoModal = ({ isOpen, onClose, onConfirm }) => {
                 <h3 className="text-xl font-semibold mb-4">
                     Are you sure you want to undo?
                 </h3>
-                <div className="flex justify-between">
-                    <button
-                        onClick={onConfirm}
-                        className="bg-green-500 text-white px-4 py-2 rounded-md"
-                    >
-                        Yes
-                    </button>
+                <div className="flex justify-end mt-8">
                     <button
                         onClick={onClose}
-                        className="bg-gray-300 text-black px-4 py-2 rounded-md"
+                        className="mr-2 border border-[#219EBC] text-[#219EBC] hover:bg-[#219EBC] hover:text-white font-bold px-4 py-2 rounded transition-colors duration-300"
                     >
-                        No
+                        Cancel
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        className="bg-[#219EBC] hover:bg-[#168B99] text-white font-bold px-4 py-2 rounded transition-colors duration-300"
+                    >
+                        Confirm
                     </button>
                 </div>
             </div>

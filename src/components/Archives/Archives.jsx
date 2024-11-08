@@ -6,6 +6,7 @@ import MembersListTable from "./Tables/MembersListTable" // Import the MembersLi
 import HealthRecordsTable from "./Tables/HealthRecordsTable"
 import EventsTable from "./Tables/EventsTable"
 import NewsTable from "./Tables/NewsTable"
+import FinanceTable from "./Tables/FinanceTable"
 
 const Archives = () => {
     const [filter, setFilter] = useState("members") // Default filter
@@ -32,6 +33,7 @@ const Archives = () => {
 
                 {filter === "members" && <MembersListTable />}
                 {filter === "health" && <HealthRecordsTable />}
+                {filter === "finance" && <FinanceTable />}
                 {filter === "events" && <EventsTable />}
                 {filter === "news" && <NewsTable />}
             </div>
