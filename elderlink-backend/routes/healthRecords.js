@@ -161,7 +161,7 @@ router.get("/", (req, res) => {
     })
 })
 
-// PUT: Archive a health record
+// PUT: Archive a health record or change status to 'Active'
 router.put("/archive/:id", (req, res) => {
     const healthRecordId = req.params.id
     const { status } = req.body // Get the status reason from the request body
@@ -172,15 +172,34 @@ router.put("/archive/:id", (req, res) => {
         WHERE health_record_id = ?
     `
 
-    db.query(query, [status, healthRecordId], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message })
-        }
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Record not found" })
-        }
-        res.status(200).json({ message: "Health record archived successfully" })
-    })
+    if (status === "Active") {
+        // Archive the record (change status to "Archived")
+        db.query(query, ["Archived", healthRecordId], (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: err.message })
+            }
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: "Record not found" })
+            }
+            res.status(200).json({
+                message: "Health record archived successfully",
+            })
+        })
+    } else {
+        // Change the status to "Active" if it's not already "Active"
+        db.query(query, ["Active", healthRecordId], (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: err.message })
+            }
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: "Record not found" })
+            }
+            res.status(200).json({
+                message:
+                    "Health record status updated to 'Active' successfully",
+            })
+        })
+    }
 })
 
 module.exports = router

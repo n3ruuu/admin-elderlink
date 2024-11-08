@@ -1,17 +1,33 @@
-/* eslint-disable react/prop-types */
-import EditIcon from "../../assets/icons/edit.svg"
-import ArchiveIcon from "../../assets/icons/archive2.svg"
+import { useState, useEffect } from "react"
 import moment from "moment"
 
-const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
-    // Filter news with status "Active"
-    const activeNewsData = newsData.filter((news) => news.status === "Active")
+const NewsTable = () => {
+    const [news, setNews] = useState([]) // State to hold fetched News data
+
+    useEffect(() => {
+        // Fetch data from the API
+        const fetchNews = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/news")
+                const data = await response.json()
+                console.log(data) // Log the full response to see the data structure
+
+                // Set all fetched news (both Active and Archived)
+                setNews(data)
+            } catch (error) {
+                console.error("Error fetching News:", error)
+            }
+        }
+
+        fetchNews()
+    }, [])
 
     return (
         <div className="mt-8 mx-auto px-4">
             {/* Scrollable container with a fixed height */}
-            <div className="overflow-y-auto max-h-[650px] shadow-lg rounded-xl border">
-                <table className="min-w-full bg-white">
+            <div className="overflow-y-auto max-h-[calc(90vh-200px)] mx-16 ">
+                {/* Set max height and enable vertical scrolling */}
+                <table className="bg-[#FFFFFF] rounded-xl shadow-lg w-full">
                     <thead className="text-gray-500">
                         <tr>
                             <th className="px-6 py-4 text-left font-medium">
@@ -29,34 +45,39 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                             <th className="px-6 py-4 text-left font-medium">
                                 Photo
                             </th>
+                            <th className="text-left font-medium whitespace-nowrap">
+                                Status
+                            </th>
                             <th className="px-6 py-4 text-left font-medium">
                                 Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {activeNewsData.length > 0 ? (
-                            activeNewsData.map((news) => (
+                        {news.length > 0 ? (
+                            news.map((newsItem) => (
                                 <tr
-                                    key={news.id}
-                                    className="border-b last:border-none"
+                                    key={newsItem.id}
+                                    className="border-b last:border-none space-y-4"
                                 >
                                     <td className="px-6 py-4 text-left align-top">
-                                        {news.headline}
+                                        {newsItem.headline}
                                     </td>
                                     <td className="px-6 py-4 text-left align-top">
-                                        {news.author}
+                                        {newsItem.author}
                                     </td>
                                     <td className="px-6 py-4 text-left align-top whitespace-nowrap">
-                                        {moment(news.date).format("MM-DD-YYYY")}
+                                        {moment(newsItem.date).format(
+                                            "MM-DD-YYYY",
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 text-left align-top">
-                                        {news.body}
+                                        {newsItem.body}
                                     </td>
                                     <td className="px-6 py-4 text-left">
-                                        {news.image ? (
+                                        {newsItem.image ? (
                                             <img
-                                                src={`http://localhost:5000/uploads/${news.image}`}
+                                                src={`http://localhost:5000/uploads/${newsItem.image}`}
                                                 alt="News"
                                                 className="w-[500px] h-[200px] object-cover rounded-md"
                                             />
@@ -64,30 +85,11 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                                             "No Image"
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 text-left flex gap-2">
-                                        <button
-                                            onClick={() =>
-                                                handleOpenModal(news)
-                                            }
-                                        >
-                                            <img
-                                                src={EditIcon}
-                                                alt="Edit Icon"
-                                                className="h-5"
-                                            />
-                                        </button>
-
-                                        <button
-                                            onClick={() =>
-                                                handleOpenArchiveModal(news)
-                                            }
-                                        >
-                                            <img
-                                                src={ArchiveIcon}
-                                                alt="Archive Icon"
-                                                className="h-5"
-                                            />
-                                        </button>
+                                    <td className="text-left text-red-500 align-top pt-4 whitespace-nowrap">
+                                        {newsItem.status}
+                                    </td>
+                                    <td className="px-8 flex gap-2 text-[#219EBC] align-top font-semibold underline">
+                                        Undo
                                     </td>
                                 </tr>
                             ))
@@ -105,4 +107,4 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
     )
 }
 
-export default Table
+export default NewsTable

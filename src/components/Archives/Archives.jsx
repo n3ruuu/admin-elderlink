@@ -1,32 +1,39 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react"
 import Header from "./Header" // Make sure this is the correct path
-import ArchivedMembersTable from "./ArchivedMembersTable" // The name was changed in the implementation
 import ViewModeSwitcher from "./ViewModeSwitcher" // Make sure this is the correct path
-import ArchivesData from "../../data/archives.json" // Your data source
+import MembersListTable from "./Tables/MembersListTable" // Import the MembersListTable component
+import HealthRecordsTable from "./Tables/HealthRecordsTable"
+import EventsTable from "./Tables/EventsTable"
+import NewsTable from "./Tables/NewsTable"
 
 const Archives = () => {
-    const [filter, setFilter] = useState("Active") // Filter only active members by default
+    const [filter, setFilter] = useState("members") // Default filter
+    const [viewMode, setViewMode] = useState("Archived") // Track view mode: "Archived" or "Members"
 
     const handleFilterChange = (filterOption) => {
         setFilter(filterOption) // Update filter
     }
 
-    // Filter the archive data based on the selected filter (in this case 'Active')
-    const filteredMembers = ArchivesData.filter(
-        (member) => member.status === filter,
-    )
+    const handleViewModeChange = (mode) => {
+        setViewMode(mode) // Update view mode to "Archived" or "Members"
+    }
 
     return (
-        <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
+        <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden ">
             <Header />
             <div className="flex w-full h-full flex-col">
                 <ViewModeSwitcher
                     filter={filter}
                     handleFilterChange={handleFilterChange}
+                    viewMode={viewMode}
+                    handleViewModeChange={handleViewModeChange}
                 />
-                <ArchivedMembersTable membersData={filteredMembers} />{" "}
-                {/* Pass the filtered members */}
+
+                {filter === "members" && <MembersListTable />}
+                {filter === "health" && <HealthRecordsTable />}
+                {filter === "events" && <EventsTable />}
+                {filter === "news" && <NewsTable />}
             </div>
         </section>
     )

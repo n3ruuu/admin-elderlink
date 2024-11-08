@@ -61,12 +61,10 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
 
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
-                {/* Table header and body */}
+            <table className="min-w-full bg-[#FFFFFF] rounded-xl shadow-lg">
                 <thead className="text-[#767171CC]">
                     <tr>
-                        {/* Senior Citizen ID No. column */}
-                        <th className="pl-8 py-4 text-left font-medium whitespace-nowrap w-[10%]">
+                        <th className="pl-16 py-4 text-left font-medium whitespace-nowrap w-[10%]">
                             ID No.
                         </th>
                         <th className="text-left font-medium whitespace-nowrap w-[20%]">
@@ -93,12 +91,14 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {currentMembers.map((member) => (
-                        <tr key={member.id} className="border-b">
+                    {currentMembers.map((member, index) => (
+                        <tr
+                            key={member.id}
+                            className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
+                        >
                             {/* Senior Citizen ID No. column */}
                             <td className="px-16 py-4 text-left">
-                                {member.idNo}{" "}
-                                {/* Make sure this matches the property name from your imported members */}
+                                {member.idNo}
                             </td>
                             <td className="text-left">{member.name}</td>
                             <td className="text-left">

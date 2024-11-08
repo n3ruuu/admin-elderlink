@@ -6,7 +6,7 @@ const Header = () => {
             <div className="w-1/2">
                 <h1 className="text-6xl font-bold">Archives</h1>
                 <p className="text-[#767171CC] mt-3">
-                    Deceased or inactive members of OSCA
+                    Archived records of Elderlink
                 </p>
             </div>
             <div className="flex w-1/2 text-[#76717180] place-content-end">

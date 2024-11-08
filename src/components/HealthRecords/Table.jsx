@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import EditIcon from "../../assets/icons/edit2.svg"
 import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
@@ -7,14 +7,12 @@ import ReportIcon from "../../assets/icons/report.svg"
 
 const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(6) // Initial value
-    const tableContainerRef = useRef(null)
+    const itemsPerPage = 6 // Number of items to display per page
 
     // Filter members to only include those with status 'Active'
     const activeMembersData = membersData.filter(
         (member) => member.status === "Active",
     )
-
     const totalPages = Math.ceil(activeMembersData.length / itemsPerPage) // Calculate total pages
     const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
     const currentMembers = activeMembersData.slice(
@@ -26,31 +24,8 @@ const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
         setCurrentPage(page)
     }
 
-    // Adjust number of items per page based on the container's height
-    useEffect(() => {
-        const updateItemsPerPage = () => {
-            if (tableContainerRef.current) {
-                const containerHeight = tableContainerRef.current.clientHeight
-                const rowHeight = 50 // Height of one table row (adjust if necessary)
-                const rowsPerPage = Math.floor(containerHeight / rowHeight)
-                setItemsPerPage(rowsPerPage > 0 ? rowsPerPage : 1)
-            }
-        }
-
-        updateItemsPerPage()
-
-        // Recalculate on window resize
-        window.addEventListener("resize", updateItemsPerPage)
-        return () => {
-            window.removeEventListener("resize", updateItemsPerPage)
-        }
-    }, [])
-
     return (
-        <div
-            ref={tableContainerRef}
-            className="relative max-h-[500px] overflow-y-auto"
-        >
+        <div>
             <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
                 <thead className="text-[#767171CC]">
                     <tr>
@@ -93,8 +68,8 @@ const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
                                 {row.medical_conditions
                                     ? row.medical_conditions
                                           .split(",")
-                                          .map((condition, index) => (
-                                              <div key={index}>
+                                          .map((condition, idx) => (
+                                              <div key={idx}>
                                                   {condition.trim()}
                                               </div>
                                           ))
@@ -104,8 +79,8 @@ const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
                                 {row.medications
                                     ? row.medications
                                           .split(",")
-                                          .map((medication, index) => (
-                                              <div key={index}>
+                                          .map((medication, idx) => (
+                                              <div key={idx}>
                                                   {medication.trim()}
                                               </div>
                                           ))
@@ -147,7 +122,7 @@ const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
                 </tbody>
             </table>
 
-            <div className="flex mt-4 justify-between">
+            <div className="flex fixed bottom-5 mt-4">
                 {/* Pagination controls */}
                 <div>
                     <button
@@ -186,9 +161,10 @@ const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
                         Next
                     </button>
                 </div>
+
                 {/* Generate Report button at bottom-right */}
                 <button
-                    className=" border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
+                    className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
                     onClick={() => {
                         // Logic to generate report
                         console.log("Generating report...")

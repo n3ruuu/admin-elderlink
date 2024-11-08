@@ -34,7 +34,7 @@ function formatDate(date) {
 // Fetch all active news articles
 router.get("/", (req, res) => {
     const query =
-        "SELECT id, headline, author, body, date, image, status FROM news WHERE status = 'Active'"
+        "SELECT id, headline, author, body, date, image, status FROM news"
 
     db.query(query, (err, results) => {
         if (err) {
