@@ -6,6 +6,7 @@ const financialAssistanceRouter = require("./routes/financialAssistance")
 const eventsRouter = require("./routes/events")
 const newsRouter = require("./routes/news")
 const membersRouter = require("./routes/members") // Import the new members router
+const formsRouter = require("./routes/forms")
 
 const app = express()
 const port = 5000
@@ -22,6 +23,7 @@ app.use("/health-records", healthRecordsRouter)
 app.use("/financial-assistance", financialAssistanceRouter)
 app.use("/events", eventsRouter)
 app.use("/news", newsRouter)
+app.use("/forms", formsRouter)
 
 // Start the server
 app.listen(port, () => {
