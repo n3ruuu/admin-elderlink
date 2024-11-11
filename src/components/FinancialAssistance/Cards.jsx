@@ -5,7 +5,7 @@ import PayoutIcon from "../../assets/icons/payout.svg"
 
 const Cards = ({
     totalBeneficiaries,
-    totalAmountDisbursed,
+    monthlyTotalPayouts,
     upcomingPayouts,
 }) => (
     <div className="flex gap-5 mb-5">
@@ -23,7 +23,7 @@ const Cards = ({
                 <img src={DisburseIcon} alt="Recent Transactions Icon" />
             </div>
             <div className="flex flex-col">
-                <h3 className="font-bold text-5xl">{totalAmountDisbursed}</h3>
+                <h3 className="font-bold text-5xl">{monthlyTotalPayouts}</h3>
                 <p className="text-[24px]">Monthly Total Payouts</p>
             </div>
         </div>

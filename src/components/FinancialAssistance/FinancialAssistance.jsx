@@ -5,6 +5,7 @@ import Table from "./Table"
 import Modal from "./Modal"
 import SuccessModal from "./SuccessModal"
 import ArchiveModal from "./ArchiveModal"
+import moment from "moment" // You can use moment.js to help with date manipulation
 
 const FinancialAssistance = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -16,6 +17,48 @@ const FinancialAssistance = () => {
     const [currentMember, setCurrentMember] = useState(null)
     const [membersData, setMembersData] = useState([])
     const [recordToArchive, setRecordToArchive] = useState(null)
+    const [searchTerm, setSearchTerm] = useState("") // Add state for search term
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value)
+    }
+
+    const filteredBenefit = membersData.filter((member) => {
+        const searchTermLower = searchTerm.toLowerCase() // Convert searchTerm to lowercase once to optimize performance
+        return (
+            member.status === "Active" && // Only include records with status "Active"
+            ((member.financial_assistance_id &&
+                member.financial_assistance_id
+                    .toString()
+                    .includes(searchTermLower)) ||
+                (member.member_id &&
+                    member.member_id.toString().includes(searchTermLower)) ||
+                (member.member_name &&
+                    member.member_name
+                        .toLowerCase()
+                        .includes(searchTermLower)) ||
+                (member.benefit_type &&
+                    member.benefit_type
+                        .toLowerCase()
+                        .includes(searchTermLower)) ||
+                (member.date_of_claim &&
+                    member.date_of_claim
+                        .toLowerCase()
+                        .includes(searchTermLower)) ||
+                (member.benefit_status &&
+                    member.benefit_status
+                        .toLowerCase()
+                        .includes(searchTermLower)) ||
+                (member.claimer &&
+                    member.claimer.toLowerCase().includes(searchTermLower)) ||
+                (member.relationship &&
+                    member.relationship
+                        .toLowerCase()
+                        .includes(searchTermLower)) ||
+                (member.status &&
+                    member.status.toLowerCase().includes(searchTermLower)))
+        )
+    })
 
     const fetchMemberById = async (id) => {
         try {
@@ -149,13 +192,34 @@ const FinancialAssistance = () => {
         }
     }
 
+    const getMonthlyTotalPayouts = () => {
+        const startOfMonth = moment().startOf("month")
+        const endOfMonth = moment().endOf("month")
+
+        return membersData.filter((member) => {
+            const claimDate = moment(member.date_of_claim)
+            return claimDate.isBetween(startOfMonth, endOfMonth, null, "[]")
+        }).length // Return the number of records (payouts) in this month
+    }
+
     const handleCloseSuccessModal = () => {
         setIsSuccessModalOpen(false)
     }
 
-    const totalBeneficiaries = membersData.length
-    const totalAmountDisbursed = 10 // Example value
-    const upcomingPayouts = 15 // Example value
+    // Calculate upcoming payouts for the current week
+    const getUpcomingPayoutsThisWeek = () => {
+        const startOfWeek = moment().startOf("week")
+        const endOfWeek = moment().endOf("week")
+
+        return membersData.filter((member) => {
+            const claimDate = moment(member.date_of_claim)
+            return claimDate.isBetween(startOfWeek, endOfWeek, null, "[]")
+        }).length
+    }
+
+    const totalBeneficiaries = filteredBenefit.length
+    const upcomingPayouts = getUpcomingPayoutsThisWeek() // Payouts within this week
+    const monthlyTotalPayouts = getMonthlyTotalPayouts() // Get the total for the current month
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
@@ -163,16 +227,18 @@ const FinancialAssistance = () => {
                 title="Financial Assistance"
                 subtitle="Manage finances and benefits"
                 onOpenModal={() => handleOpenModal(null)}
+                searchTerm={searchTerm}
+                onSearchChange={handleSearchChange}
             />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards
                         totalBeneficiaries={totalBeneficiaries}
-                        totalAmountDisbursed={totalAmountDisbursed}
+                        monthlyTotalPayouts={monthlyTotalPayouts}
                         upcomingPayouts={upcomingPayouts}
                     />
                     <Table
-                        membersData={membersData}
+                        membersData={filteredBenefit}
                         onOpenModal={handleOpenModal}
                         handleEditClick={handleEditClick}
                         onArchiveClick={handleArchiveClick} // Pass handleArchive to the Table component
@@ -203,7 +269,7 @@ const FinancialAssistance = () => {
                     onClose={handleCloseSuccessModal}
                     title={successTitle}
                     message={successMessage}
-                    isArchiving={isArchiving}
+                    archiving={isArchiving}
                 />
             )}
         </section>

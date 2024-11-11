@@ -4,14 +4,14 @@ import FilterIcon from "../../assets/icons/filter-icon.svg"
 
 const Header = ({ onOpenModal, searchTerm, setSearchTerm }) => {
     return (
-        <div className="p-16 w-full pb-8 flex items-center">
+        <div className="p-16 w-full pb-8 flex">
             <div className="w-1/2">
                 <h1 className="text-6xl font-bold">Health Records</h1>
                 <p className="text-[#767171CC] mt-3">
                     Maintain comprehensive health records
                 </p>
             </div>
-            <div className="flex items-center w-2/3 text-[#333333]">
+            <div className="flex justify-end items-start gap-5 w-1/2 text-[#333333]">
                 <div className="w-[60%]">
                     <div className="relative w-full max-w-md">
                         <div className="relative w-full">
@@ -39,7 +39,7 @@ const Header = ({ onOpenModal, searchTerm, setSearchTerm }) => {
                 </div>
 
                 <button
-                    className="text-[#F5F5FA] bg-[#219EBC] px-8 ml-4 text-[24px] py-2 rounded-lg hover:bg-[#1A7F8C]"
+                    className="text-[#F5F5FA] bg-[#219EBC] px-8 text-[24px] py-2 rounded-lg hover:bg-[#1A7F8C]"
                     onClick={() => onOpenModal(null)} // Open modal for new member
                 >
                     &#43; Add Record

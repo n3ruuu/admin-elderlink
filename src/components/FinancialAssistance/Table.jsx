@@ -5,6 +5,7 @@ import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
 import moment from "moment"
+import * as XLSX from "xlsx" // Import the XLSX library
 
 const Table = ({
     membersData,
@@ -15,18 +16,45 @@ const Table = ({
     const [currentPage, setCurrentPage] = useState(1)
 
     const itemsPerPage = 6
-    const activeMembersData = membersData.filter(
-        (member) => member.status === "Active",
-    )
-    const totalPages = Math.ceil(activeMembersData.length / itemsPerPage)
+
+    const totalPages = Math.ceil(membersData.length / itemsPerPage)
     const startIndex = (currentPage - 1) * itemsPerPage
-    const currentMembers = activeMembersData.slice(
+    const currentMembers = membersData.slice(
         startIndex,
         startIndex + itemsPerPage,
     )
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
+    }
+
+    // Function to generate and download the Excel report
+    const generateReport = () => {
+        // Prepare the data to export
+        const data = membersData.map((row) => ({
+            financial_assistance_id: row.financial_assistance_id,
+            member_id: row.member_id,
+            member_name: row.member_name,
+            benefit_type: row.benefit_type,
+            date_of_claim: moment(row.date_of_claim || row.dateOfClaim).format(
+                "MM-DD-YYYY",
+            ),
+            benefit_status:
+                row.benefit_status === "claimed" ? "Claimed" : "Unclaimed",
+            claimer: row.claimer,
+            relationship: row.relationship,
+            status: row.status, // Add status if required
+        }))
+
+        // Convert the data to a worksheet
+        const ws = XLSX.utils.json_to_sheet(data)
+
+        // Create a new workbook
+        const wb = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(wb, ws, "Financial Assistance Report")
+
+        // Write the Excel file and trigger download
+        XLSX.writeFile(wb, "Financial_Assistance_Report.xlsx")
     }
 
     return (
@@ -139,7 +167,7 @@ const Table = ({
 
                 <button
                     className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
-                    onClick={() => console.log("Generating report...")}
+                    onClick={generateReport}
                 >
                     <img
                         src={ReportIcon}
