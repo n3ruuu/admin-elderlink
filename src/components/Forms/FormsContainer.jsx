@@ -1,59 +1,134 @@
 /* eslint-disable react/prop-types */
+import { useState } from "react"
 import moment from "moment"
+import ArchiveIcon from "../../assets/icons/archive2.svg" // Import the archive icon
+import ArchiveModal from "./ArchiveModal" // Import the ArchiveModal component
+import axios from "axios" // Import axios for making API requests
+import SuccessModal from "../common/SuccessModal"
 
-const FormsContainer = ({ groupedForms, selectedCategory }) => {
+const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData }) => {
+    const [activeFormId, setActiveFormId] = useState(null) // Track the active form
+    const [isModalOpen, setIsModalOpen] = useState(false) // Modal visibility state
+    const [formTitle, setFormTitle] = useState("") // Store form title to display in modal
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+    const [modalTitle, setModalTitle] = useState("") // Success modal title
+    const [modalMessage, setModalMessage] = useState("") // Success modal message
+
+    const handleArchiveClick = (formId, formTitle) => {
+        setActiveFormId(formId) // Set the active form ID
+        setFormTitle(formTitle) // Store the title for display in modal
+        setIsModalOpen(true) // Open the modal
+    }
+
+    const handleModalClose = () => {
+        setIsModalOpen(false) // Close the modal
+        setActiveFormId(null) // Reset the active form ID
+        setFormTitle("") // Reset the title
+    }
+
+    const handleArchiveConfirm = async () => {
+        console.log(activeFormId)
+        try {
+            // Send PUT request to archive the form
+            const response = await axios.put(
+                `http://localhost:5000/forms/archive/${activeFormId}`,
+            )
+            console.log(response.data.message) // Log success message
+            // Close the modal after confirming
+            handleModalClose()
+
+            // Show success modal
+            setModalTitle("Form Archived")
+            setModalMessage("The form has been successfully archived.")
+            setIsSuccessModalOpen(true)
+
+            fetchFormsData()
+        } catch (error) {
+            console.error(
+                "Error archiving form:",
+                error.response?.data?.error || error.message,
+            )
+        }
+    }
+
     return (
         <div className="py-8 px-16">
-            {/* Display only selected category forms */}
+            {/* Display only selected category forms with status 'Active' */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {groupedForms[selectedCategory]?.map((form) => (
-                    <div
-                        key={form.id}
-                        className="bg-white rounded-lg shadow-md p-6 hover:scale-105 transform transition-all relative"
-                    >
-                        <div>
-                            {/* Use an object tag to display a thumbnail preview */}
-                            <div className="w-full h-32 bg-gray-300 mb-4 rounded-lg ">
-                                <object
-                                    data={`http://localhost:5000/${form.pdfLink}`}
-                                    type="application/pdf"
-                                    width="100%"
-                                    height="100%"
-                                >
-                                    <p>
-                                        Your browser does not support PDF
-                                        preview.
-                                    </p>
-                                </object>
-                            </div>
-                            <h3 className="text-lg font-semibold">
-                                {form.title}
-                            </h3>
-                            <p className="text-sm text-gray-500">
-                                Date Created:{" "}
-                                {moment(form.lastOpened).format(
-                                    "MMMM D, YYYY, h:mm A",
-                                )}
-                            </p>
-                        </div>
-                        <a
-                            href={`http://localhost:5000/${form.pdfLink}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#219EBC] font-semibold mt-2 hover:underline inline-block"
+                {groupedForms[selectedCategory]
+                    ?.filter((form) => form.status === "Active") // Filter for 'Active' status
+                    .map((form) => (
+                        <div
+                            key={form.id}
+                            className="bg-white rounded-lg shadow-md p-6 hover:scale-105 transform transition-all relative"
                         >
-                            Open Form
-                        </a>
+                            <div>
+                                {/* Use an object tag to display a thumbnail preview */}
+                                <div className="w-full h-32 bg-gray-300 mb-4 rounded-lg">
+                                    <object
+                                        data={`http://localhost:5000/${form.pdfLink}`}
+                                        type="application/pdf"
+                                        width="100%"
+                                        height="100%"
+                                    >
+                                        <p>
+                                            Your browser does not support PDF
+                                            preview.
+                                        </p>
+                                    </object>
+                                </div>
+                                <h3 className="text-lg font-semibold">
+                                    {form.title}
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                    Date Created:{" "}
+                                    {moment(form.createdAt).format(
+                                        "MMMM D, YYYY, h:mm A",
+                                    )}
+                                </p>
+                            </div>
+                            <a
+                                href={`http://localhost:5000/${form.pdfLink}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#219EBC] font-semibold mt-2 hover:underline inline-block"
+                            >
+                                Open Form
+                            </a>
 
-                        {/* Ellipsis dots in the bottom left corner */}
-                        <div className="absolute bottom-8 right-8 flex flex-col items-center space-y-1 cursor-pointer">
-                            <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
-                            <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
-                            <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
+                            {/* Archive icon in the bottom right corner */}
+                            <img
+                                src={ArchiveIcon}
+                                alt="Archive"
+                                onClick={() =>
+                                    handleArchiveClick(form.id, form.title)
+                                }
+                                className="absolute bottom-6 right-8 w-6 h-6 cursor-pointer transition-transform hover:scale-110"
+                            />
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
+
+            {/* Archive Modal */}
+            <ArchiveModal
+                isOpen={isModalOpen}
+                onClose={handleModalClose}
+                onConfirm={handleArchiveConfirm}
+                article={formTitle}
+            />
+
+            {/* Success Modal */}
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                title={modalTitle}
+                message={modalMessage}
+                isArchiving={true}
+                onGoToArchives={() => {
+                    // Implement navigation to archives page if needed
+                    console.log("Navigate to archives page")
+                }}
+            />
         </div>
     )
 }

@@ -22,7 +22,7 @@ const ArchiveModal = ({ isOpen, onClose, onConfirm, article }) => {
                     Confirm Archive
                 </h2>
                 <p className="text-lg mb-4">
-                    Are you sure you want to archive the form titled{" "}
+                    Are you sure you want to archive the news about{" "}
                     <span className="font-bold">{article}</span>?
                 </p>
                 <div className="flex justify-end space-x-1">

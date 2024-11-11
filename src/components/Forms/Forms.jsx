@@ -2,28 +2,33 @@ import { useState, useEffect } from "react"
 import Header from "./Header"
 import FormsCategories from "./FormsCategories"
 import FormsContainer from "./FormsContainer"
+import Table from "./Table" // Import Table component
+import SuccessModal from "../common/SuccessModal"
 
 const Forms = () => {
     const [formsData, setFormsData] = useState([]) // State to store forms data
     const [selectedCategory, setSelectedCategory] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false) // State for modal visibility
+    const [modalTitle, setModalTitle] = useState("") // State for modal title
+    const [modalMessage, setModalMessage] = useState("") // State for modal message
 
     useEffect(() => {
-        // Fetch forms data from API on component mount
-        const fetchFormsData = async () => {
-            try {
-                const response = await fetch("http://localhost:5000/forms")
-                if (!response.ok) {
-                    throw new Error("Failed to fetch forms data")
-                }
-                const data = await response.json()
-                setFormsData(data)
-            } catch (error) {
-                console.error("Error fetching forms data:", error)
-            }
-        }
-
         fetchFormsData()
     }, [])
+
+    // Fetch forms data from API on component mount
+    const fetchFormsData = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/forms")
+            if (!response.ok) {
+                throw new Error("Failed to fetch forms data")
+            }
+            const data = await response.json()
+            setFormsData(data)
+        } catch (error) {
+            console.error("Error fetching forms data:", error)
+        }
+    }
 
     const handleCategoryClick = (category) => {
         setSelectedCategory(category)
@@ -56,9 +61,20 @@ const Forms = () => {
             }
             const data = await response.json()
             console.log("Form uploaded successfully:", data)
+            fetchFormsData()
+
+            // Show success modal
+            setModalTitle("Upload Successful")
+            setModalMessage("The form has been added successfully.")
+            setIsModalOpen(true)
         } catch (error) {
             console.error("Error uploading file:", error)
         }
+    }
+
+    // Close modal handler
+    const handleCloseModal = () => {
+        setIsModalOpen(false)
     }
 
     // Grouping forms by category
@@ -95,11 +111,35 @@ const Forms = () => {
                     <FormsContainer
                         groupedForms={groupedForms}
                         selectedCategory={selectedCategory}
+                        fetchFormsData={fetchFormsData}
                     />
                 </>
             ) : (
-                <FormsCategories onCategoryClick={handleCategoryClick} />
+                <>
+                    {/* Display FormsCategories and Table when no category is selected */}
+                    <FormsCategories
+                        onCategoryClick={handleCategoryClick}
+                        fetchFormsData={fetchFormsData}
+                    />
+                    <h3 className="font-bold px-16 py-4 text-xl">
+                        Recent Forms
+                    </h3>
+                    <Table
+                        formsData={formsData}
+                        fetchFormsData={fetchFormsData}
+                    />{" "}
+                    {/* Pass formsData as prop */}
+                </>
             )}
+
+            {/* Success Modal */}
+            <SuccessModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                title={modalTitle}
+                message={modalMessage}
+                isArchiving={false} // Not archiving, so show only "Got it" button
+            />
         </section>
     )
 }

@@ -55,8 +55,13 @@ router.post("/", upload.single("pdf"), (req, res) => {
     let { title, createdAt, category } = req.body
     const pdfLink = req.file ? req.file.path : null // File path for uploaded PDF
 
-    // Remove the .pdf extension from the title (if present)
-    title = title.replace(/\.pdf$/, "").trim() // Remove .pdf and trim any whitespace
+    // Remove .pdf or .Pdf extension, replace dashes with spaces, and convert to Title Case
+    title = title
+        .replace(/\.pdf$/i, "") // Remove .pdf or .Pdf (case-insensitive)
+        .replace(/-/g, " ") // Replace dashes with spaces
+        .toLowerCase() // Convert all to lowercase
+        .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize each word
+        .trim() // Trim any whitespace
 
     // Validate required fields
     if (!title || !pdfLink || !category) {
@@ -84,6 +89,34 @@ router.post("/", upload.single("pdf"), (req, res) => {
         res.status(201).json({
             message: "Form added successfully",
             formId: result.insertId,
+        })
+    })
+})
+
+// Archive form by updating status to "Archived"
+router.put("/archive/:id", (req, res) => {
+    const formId = req.params.id
+
+    const query = `
+        UPDATE forms 
+        SET status = 'Archived' 
+        WHERE id = ?
+    `
+
+    db.query(query, [formId], (err, result) => {
+        if (err) {
+            console.error("Error archiving form:", err.message)
+            return res.status(500).json({
+                error: "An error occurred while archiving the form.",
+            })
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Form not found." })
+        }
+
+        res.status(200).json({
+            message: "Form archived successfully",
         })
     })
 })
