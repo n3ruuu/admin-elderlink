@@ -15,7 +15,7 @@ const Header = ({ handleOpenModal, setSearchTerm }) => {
                     Access and update member profiles
                 </p>
             </div>
-            <div className="flex items-center w-2/3 text-[#76717180]">
+            <div className="flex items-center w-2/3 text-[#333333]">
                 {/* Search Bar */}
                 <div className="w-[60%]">
                     <div className="relative w-full max-w-md">
@@ -43,7 +43,7 @@ const Header = ({ handleOpenModal, setSearchTerm }) => {
                 </div>
 
                 <button
-                    className="text-[#F5F5FA] bg-[#219EBC] px-8 ml-4 text-[24px] py-2 rounded-xl"
+                    className="text-[#F5F5FA] bg-[#219EBC] px-8 ml-4 text-[24px] py-2 rounded-lg hover:bg-[#1A7F8C]"
                     onClick={() => handleOpenModal(null)}
                 >
                     &#43; Add Member

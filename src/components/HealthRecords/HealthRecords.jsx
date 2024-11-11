@@ -9,16 +9,19 @@ import SuccessModal from "./SuccessModal"
 const HealthRecords = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
-    const [currentMember, setCurrentMember] = useState(null)
+    const [currentRecord, setCurrentRecord] = useState(null)
     const [membersData, setMembersData] = useState([])
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+    const [searchTerm, setSearchTerm] = useState("")
     const [successTitle, setSuccessTitle] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
-    const [priorityCareCount, setPriorityCareCount] = useState(0)
     const [recentUpdatesCount, setRecentUpdatesCount] = useState(0)
     const [recordToArchive, setRecordToArchive] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
 
     const fetchMembersData = async () => {
+        setLoading(true)
         try {
             const response = await fetch("http://localhost:5000/health-records")
             if (!response.ok) {
@@ -27,53 +30,51 @@ const HealthRecords = () => {
             const data = await response.json()
             setMembersData(data)
         } catch (error) {
-            console.error("Error fetching members data:", error)
-        }
-    }
-
-    const fetchPriorityCareCount = async () => {
-        try {
-            const response = await fetch(
-                "http://localhost:5000/health-records/priority-care/count",
-            )
-            const data = await response.json()
-            setPriorityCareCount(data.count)
-        } catch (error) {
-            console.error("Error fetching priority care count:", error)
-        }
-    }
-
-    const fetchRecentUpdatesCount = async () => {
-        const oneWeekAgo = new Date()
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-        try {
-            const response = await fetch(
-                `http://localhost:5000/health-records?since=${oneWeekAgo.toISOString()}`,
-            )
-            if (!response.ok) {
-                throw new Error("Network response was not ok")
-            }
-            const data = await response.json()
-            setRecentUpdatesCount(data.length)
-        } catch (error) {
-            console.error("Error fetching recent updates count:", error)
+            setError(error.message)
+        } finally {
+            setLoading(false)
         }
     }
 
     useEffect(() => {
         fetchMembersData()
-        fetchPriorityCareCount()
-        fetchRecentUpdatesCount()
     }, [])
 
+    const filteredRecords = membersData.filter((member) => {
+        const searchTermLower = searchTerm.toLowerCase()
+        return (
+            member.status === "Active" &&
+            (member.member_name.toLowerCase().includes(searchTermLower) ||
+                (member.medical_conditions &&
+                    member.medical_conditions
+                        .toLowerCase()
+                        .includes(searchTermLower)) ||
+                (member.medications &&
+                    member.medications
+                        .toLowerCase()
+                        .includes(searchTermLower)) ||
+                (member.guardian &&
+                    member.guardian.toLowerCase().includes(searchTermLower)) ||
+                (member.relationship &&
+                    member.relationship
+                        .toLowerCase()
+                        .includes(searchTermLower)) ||
+                (member.emergency_contact &&
+                    member.emergency_contact
+                        .toString()
+                        .toLowerCase()
+                        .includes(searchTermLower)))
+        )
+    })
+
     const handleOpenModal = (member) => {
-        setCurrentMember(member)
+        setCurrentRecord(member)
         setIsModalOpen(true)
     }
 
     const handleCloseModal = () => {
         setIsModalOpen(false)
-        setCurrentMember(null)
+        setCurrentRecord(null)
     }
 
     const handleSave = async (updatedMember) => {
@@ -81,7 +82,7 @@ const HealthRecords = () => {
             const now = new Date().toISOString()
             updatedMember.record_date = now
 
-            if (currentMember) {
+            if (currentRecord) {
                 await fetch(
                     `http://localhost:5000/health-records/${updatedMember.id}`,
                     {
@@ -113,8 +114,6 @@ const HealthRecords = () => {
             }
 
             fetchMembersData()
-            fetchPriorityCareCount()
-
             handleCloseModal()
             setIsSuccessModalOpen(true)
         } catch (error) {
@@ -157,26 +156,35 @@ const HealthRecords = () => {
     }
 
     const getActiveMembers = () => {
-        return membersData.filter((member) => member.status === "Active")
+        return filteredRecords
     }
 
     const totalRecords = getActiveMembers().length
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header onOpenModal={handleOpenModal} />
+            <Header
+                onOpenModal={handleOpenModal}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+            />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards
                         totalRecords={totalRecords}
-                        priorityCareCount={priorityCareCount}
-                        recentUpdatesCount={recentUpdatesCount}
+                        recentUpdatesCount={recentUpdatesCount} // Pass recentUpdatesCount prop
                     />
-                    <Table
-                        membersData={getActiveMembers()}
-                        onOpenModal={handleOpenModal}
-                        onArchiveClick={handleArchiveClick}
-                    />
+                    {loading ? (
+                        <p>Loading...</p>
+                    ) : error ? (
+                        <p>Error: {error}</p>
+                    ) : (
+                        <Table
+                            membersData={getActiveMembers()}
+                            onOpenModal={handleOpenModal}
+                            onArchiveClick={handleArchiveClick}
+                        />
+                    )}
                 </div>
             </div>
             {isModalOpen && (
@@ -184,7 +192,7 @@ const HealthRecords = () => {
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     onSave={handleSave}
-                    member={currentMember}
+                    member={currentRecord}
                     membersList={membersData}
                 />
             )}

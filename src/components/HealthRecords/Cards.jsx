@@ -3,7 +3,7 @@ import TotalNumberIcon from "../../assets/icons/total-senior.svg"
 import PriorityCareIcon from "../../assets/icons/priority-care.svg"
 import RecentUpdatesIcon from "../../assets/icons/recent-updates.svg"
 
-const Cards = ({ totalRecords, priorityCareCount, recentUpdatesCount }) => {
+const Cards = ({ totalRecords, recentUpdatesCount }) => {
     return (
         <div className="flex gap-5 mb-5">
             <div className="bg-white w-1/3 h-[200px] rounded-[12px] p-8 flex gap-4 items-center">
@@ -20,7 +20,7 @@ const Cards = ({ totalRecords, priorityCareCount, recentUpdatesCount }) => {
                     <img src={PriorityCareIcon} alt="Priority Care Icon" />
                 </div>
                 <div className="flex flex-col">
-                    <h3 className="font-bold text-5xl">{priorityCareCount}</h3>
+                    <h3 className="font-bold text-5xl">0</h3>
                     <p className="text-[24px]">Priority Care</p>
                 </div>
             </div>
