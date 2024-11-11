@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import SearchBar from "../common/SearchBar"
+import SearchBar from "./SearchBar"
 
 const Header = ({ handleOpenModal }) => {
     return (

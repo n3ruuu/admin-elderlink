@@ -12,7 +12,6 @@ import FormsIcon from "./assets/icons/forms.svg"
 import ApplicationIcon from "./assets/icons/applications.svg"
 import ArchiveIcon from "./assets/icons/archive.svg"
 import NewsIcon from "./assets/icons/news.svg"
-import SettingsIcon from "./assets/icons/settings.svg"
 import LogoutIcon from "./assets/icons/logout.svg"
 import Dashboard from "./components/Dashboard/Dashboard"
 import MembersList from "./components/MembersList/MembersList"
@@ -273,24 +272,6 @@ const Sidebar = () => {
                     </Link>
 
                     {/* Settings */}
-                    <Link
-                        to="admin-elderlink/settings"
-                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
-                            isActive("/admin-elderlink/settings")
-                                ? "bg-[#219EBC] text-[#F5F5FA]"
-                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
-                        } absolute bottom-20 w-[95%]`}
-                    >
-                        <img
-                            src={SettingsIcon}
-                            alt="Settings Icon"
-                            className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                isActive("/admin-elderlink/settings") &&
-                                "filter brightness-0 invert"
-                            }`}
-                        />
-                        <p>Settings</p>
-                    </Link>
 
                     {/* Logout */}
                     <Link

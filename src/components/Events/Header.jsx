@@ -16,7 +16,7 @@ const Header = ({ onOpenModal }) => {
                 </div>
 
                 <button
-                    className="text-[#F5F5FA] bg-[#219EBC] px-8 ml-4 text-[24px] py-2 rounded-xl"
+                    className="text-[#F5F5FA] bg-[#219EBC] px-8 ml-4 text-[24px] py-2 rounded-lg hover:bg-[#1A7F8C]"
                     onClick={onOpenModal} // Use the correct prop name here
                 >
                     &#43; Add Events

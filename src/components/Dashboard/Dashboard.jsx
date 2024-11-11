@@ -23,13 +23,16 @@ import UpcomingEventsIcon from "../../assets/icons/upcoming-events.svg"
 import TransactionIcon from "../../assets/icons/transaction.svg"
 
 const Dashboard = () => {
+    // eslint-disable-next-line no-unused-vars
     const [totalSeniorCitizens, setTotalSeniorCitizens] = useState(0)
+    const [activeSeniorCitizens, setActiveSeniorCitizens] = useState(0) // State for active senior citizens
     const [summaryData, setSummaryData] = useState({
         gender: { male: 0, female: 0 },
         ageGroup: {},
         streetDistribution: {},
     })
     const [upcomingEvents, setUpcomingEvents] = useState(0)
+    const [upcomingEventDetails, setUpcomingEventDetails] = useState([])
     const [pendingApplications, setPendingApplications] = useState(0)
     const [isTotalHovered, setIsTotalHovered] = useState(false)
     const [isEventsHovered, setIsEventsHovered] = useState(false)
@@ -45,29 +48,35 @@ const Dashboard = () => {
                 )
                 setTotalSeniorCitizens(response.data.length)
 
-                const males = response.data.filter(
+                // Filter active senior citizens
+                const activeCitizens = response.data.filter(
+                    (member) => member.status === "Active",
+                )
+                setActiveSeniorCitizens(activeCitizens.length)
+
+                const males = activeCitizens.filter(
                     (member) => member.gender === "male",
                 ).length
-                const females = response.data.filter(
+                const females = activeCitizens.filter(
                     (member) => member.gender === "female",
                 ).length
 
                 const ageGroups = {
-                    "60-65 years": response.data.filter(
+                    "60-65 years": activeCitizens.filter(
                         (member) => member.age >= 60 && member.age <= 65,
                     ).length,
-                    "66-75 years": response.data.filter(
+                    "66-75 years": activeCitizens.filter(
                         (member) => member.age >= 66 && member.age <= 75,
                     ).length,
-                    "76-85 years": response.data.filter(
+                    "76-85 years": activeCitizens.filter(
                         (member) => member.age >= 76 && member.age <= 85,
                     ).length,
-                    "85+ years": response.data.filter(
+                    "85+ years": activeCitizens.filter(
                         (member) => member.age > 85,
                     ).length,
                 }
 
-                const streets = response.data.reduce((acc, member) => {
+                const streets = activeCitizens.reduce((acc, member) => {
                     acc[member.address] = (acc[member.address] || 0) + 1
                     return acc
                 }, {})
@@ -85,7 +94,21 @@ const Dashboard = () => {
         const fetchUpcomingEvents = async () => {
             try {
                 const response = await axios.get("http://localhost:5000/events")
-                setUpcomingEvents(response.data.length)
+                const currentDate = new Date()
+
+                // Filter events that are within the next month and have "Active" status
+                const upcoming = response.data.filter((event) => {
+                    const eventDate = new Date(event.date)
+                    const diffTime = eventDate - currentDate
+                    return (
+                        event.status === "Active" &&
+                        diffTime >= 0 &&
+                        diffTime <= 30 * 24 * 60 * 60 * 1000 // within the next month
+                    )
+                })
+
+                setUpcomingEventDetails(upcoming)
+                setUpcomingEvents(upcoming.length)
             } catch (error) {
                 console.error("Error fetching upcoming events:", error)
             }
@@ -149,7 +172,7 @@ const Dashboard = () => {
                             >
                                 <DashboardCard
                                     icon={TotalNumberIcon}
-                                    count={totalSeniorCitizens}
+                                    count={activeSeniorCitizens}
                                     title="Total Number of Senior Citizens"
                                     bgColor="bg-[#FFF5E1]"
                                 />
@@ -286,6 +309,61 @@ const Dashboard = () => {
                                     title="Upcoming Events"
                                     bgColor="bg-[#E1F5FE]"
                                 />
+                                {isEventsHovered && (
+                                    <div className="absolute top-0 left-0 w-full h-full bg-white p-4 shadow-lg rounded-lg z-10 flex flex-col">
+                                        <h3 className="font-bold text-2xl text-[#333]">
+                                            Upcoming Events Details
+                                        </h3>
+                                        <div className="flex">
+                                            {/* Display the active events horizontally */}
+                                            {upcomingEventDetails.filter(
+                                                (event) =>
+                                                    event.status === "Active",
+                                            ).length > 0 && (
+                                                <div className="flex flex-row w-full overflow-x-auto space-x-4">
+                                                    {upcomingEventDetails
+                                                        .filter(
+                                                            (event) =>
+                                                                event.status ===
+                                                                "Active",
+                                                        ) // Only filter active events
+                                                        .slice(0, 3) // Limit to 3 active events
+                                                        .map((event, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="flex-shrink-0 w-48 p-4 mt-4 bg-gray-100 rounded-lg"
+                                                            >
+                                                                <p className="font-semibold">
+                                                                    •{" "}
+                                                                    <strong>
+                                                                        {
+                                                                            event.title
+                                                                        }
+                                                                    </strong>
+                                                                </p>
+                                                                <p>
+                                                                    {new Date(
+                                                                        event.date,
+                                                                    ).toLocaleDateString()}{" "}
+                                                                    |{" "}
+                                                                    <em>
+                                                                        {
+                                                                            event.location
+                                                                        }
+                                                                    </em>
+                                                                </p>
+                                                                <p>
+                                                                    {
+                                                                        event.description
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 

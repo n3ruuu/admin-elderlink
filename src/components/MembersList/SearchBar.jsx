@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
+// SearchBar.jsx
 import SearchIcon from "../../assets/icons/search.svg"
 import FilterIcon from "../../assets/icons/filter-icon.svg"
 
-const SearchBar = () => {
+const SearchBar = ({ searchTerm, setSearchTerm }) => {
     return (
         <div className="relative w-full max-w-md">
             <div className="relative w-full">
@@ -10,6 +11,8 @@ const SearchBar = () => {
                     type="search"
                     name="search"
                     id="search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)} // Update the searchTerm state
                     className="p-3 pl-12 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full"
                     placeholder="Search..."
                 />
