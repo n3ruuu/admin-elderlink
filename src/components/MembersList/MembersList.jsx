@@ -10,6 +10,7 @@ const MembersList = () => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // State for SuccessModal
     const [currentMember, setCurrentMember] = useState(null)
     const [membersData, setMembersData] = useState([])
+    const [searchTerm, setSearchTerm] = useState("")
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [successModalMessage, setSuccessModalMessage] = useState("") // State to hold success message
@@ -34,6 +35,31 @@ const MembersList = () => {
             setLoading(false)
         }
     }
+
+    const filteredMembers = membersData.filter((member) => {
+        // Ensure all fields are treated as strings
+        const searchTermLower = searchTerm.toLowerCase()
+
+        return (
+            member.status === "Active" && // Ensure the member's status is "Active"
+            (member.name.toLowerCase().includes(searchTermLower) ||
+                (member.idNo &&
+                    member.idNo.toLowerCase().includes(searchTermLower)) ||
+                (member.dob &&
+                    member.dob.toLowerCase().includes(searchTermLower)) ||
+                (member.gender &&
+                    member.gender.toLowerCase().includes(searchTermLower)) ||
+                (member.address &&
+                    member.address.toLowerCase().includes(searchTermLower)) ||
+                (member.age &&
+                    member.age
+                        .toString()
+                        .toLowerCase()
+                        .includes(searchTermLower)) ||
+                (member.phone &&
+                    member.phone.toLowerCase().includes(searchTermLower)))
+        )
+    })
 
     const handleOpenModal = (member) => {
         setCurrentMember(member)
@@ -135,23 +161,22 @@ const MembersList = () => {
         setMembersData((prevMembers) => [...prevMembers, ...newMembers])
     }
 
-    const activeMembers = membersData.filter(
-        (member) => member.status === "Active",
-    )
-
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header handleOpenModal={() => handleOpenModal(null)} />
+            <Header
+                handleOpenModal={() => handleOpenModal(null)}
+                setSearchTerm={setSearchTerm}
+            />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
-                    <Cards membersData={activeMembers} />
+                    <Cards membersData={filteredMembers} />
                     {loading ? (
                         <div>Loading...</div>
                     ) : error ? (
                         <div>Error: {error}</div>
                     ) : (
                         <Table
-                            membersData={activeMembers}
+                            membersData={filteredMembers}
                             handleOpenModal={handleOpenModal}
                             handleArchiveMember={handleArchiveMember}
                         />

@@ -7,6 +7,7 @@ import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ArchiveModal from "./ArchiveModal"
 import SuccessModal from "./SuccessModal"
 import ReportIcon from "../../assets/icons/report.svg"
+import * as XLSX from "xlsx" // Import the XLSX library
 
 const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
     const [currentPage, setCurrentPage] = useState(1)
@@ -59,8 +60,41 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
         }
     }
 
+    const handleGenerateReport = async () => {
+        try {
+            // Fetch members data from the API
+            const response = await axios.get("http://localhost:5000/members")
+            const members = response.data
+
+            // Convert the members data to a format suitable for Excel
+            const formattedData = members.map((member) => ({
+                "ID No.": member.idNo,
+                Name: member.name,
+                "Date of Birth": moment(member.dob).format("MM-DD-YYYY"),
+                Age: member.age,
+                Gender: member.gender === "male" ? "Male" : "Female",
+                Address: member.address,
+                "Phone Number":
+                    member.phone && member.phone.startsWith("+639")
+                        ? `0${member.phone.slice(3)}`
+                        : member.phone,
+                Status: member.status, // Add status field here
+            }))
+
+            // Create a new workbook and add the members data
+            const wb = XLSX.utils.book_new()
+            const ws = XLSX.utils.json_to_sheet(formattedData)
+            XLSX.utils.book_append_sheet(wb, ws, "Members")
+
+            // Generate and trigger the download
+            XLSX.writeFile(wb, "Members_Report.xlsx")
+        } catch (error) {
+            console.error("Error generating report:", error.message)
+        }
+    }
+
     return (
-        <div className="overflow-x-auto">
+        <div>
             <table className="min-w-full bg-[#FFFFFF] rounded-xl shadow-lg">
                 <thead className="text-[#767171CC]">
                     <tr>
@@ -96,20 +130,24 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
                             key={member.id}
                             className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                         >
-                            {/* Senior Citizen ID No. column */}
                             <td className="px-16 py-4 text-left">
                                 {member.idNo}
                             </td>
                             <td className="text-left">{member.name}</td>
                             <td className="text-left">
-                                {moment(member.dob).format("YYYY-MM-DD")}
+                                {moment(member.dob).format("MM-DD-YYYY")}
                             </td>
                             <td className="text-left">{member.age}</td>
                             <td className="text-left">
                                 {member.gender === "male" ? "Male" : "Female"}
                             </td>
                             <td className="text-left">{member.address}</td>
-                            <td className="text-left">{member.phone}</td>
+                            <td className="text-left">
+                                {member.phone && member.phone.startsWith("+639")
+                                    ? `0${member.phone.slice(3)}`
+                                    : member.phone}
+                            </td>
+
                             <td className="px-8 py-4 flex gap-2">
                                 <button
                                     onClick={() => handleOpenModal(member)}
@@ -199,9 +237,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
             {/* Generate Report button at bottom-right */}
             <button
                 className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
-                onClick={() => {
-                    console.log("Generating report...")
-                }}
+                onClick={handleGenerateReport}
             >
                 <img
                     src={ReportIcon}
