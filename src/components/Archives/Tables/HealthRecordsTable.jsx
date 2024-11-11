@@ -146,9 +146,7 @@ const HealthRecordsTable = () => {
                                 {row.emergency_contact}
                             </td>
                             <td
-                                className={`text-left pl-8 ${getStatusColor(
-                                    row.status,
-                                )}`}
+                                className={`text-left pl-8 ${getStatusColor(row.status)}`}
                             >
                                 {row.status}
                             </td>
@@ -164,13 +162,11 @@ const HealthRecordsTable = () => {
             </table>
 
             {/* Undo Modal */}
-            {showUndoModal && (
-                <UndoModal
-                    onClose={() => setShowUndoModal(false)}
-                    onUndo={handleUndo}
-                    member={selectedMember}
-                />
-            )}
+            <UndoModal
+                isOpen={showUndoModal}
+                onClose={() => setShowUndoModal(false)}
+                onConfirm={handleUndo}
+            />
         </div>
     )
 }

@@ -91,7 +91,7 @@ const MembersListTable = () => {
     return (
         <div className="overflow-y-auto max-h-[calc(90vh-200px)] mx-16 ">
             {/* Set max height and enable vertical scrolling */}
-            <table className="bg-[#FFFFFF] rounded-xl shadow-lg w-full">
+            <table className="bg-[#FFFFFF] rounded-xl shadow-lg min-w-full">
                 <thead className="text-[#767171CC]">
                     <tr>
                         <th className="pl-16 py-4 text-left font-medium whitespace-nowrap w-[10%]">

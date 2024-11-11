@@ -6,7 +6,7 @@ import OscaIcon from "../../assets/osca.png"
 
 const FormsCategories = ({ onCategoryClick }) => {
     return (
-        <div className="flex flex-wrap px-16 w-full gap-4 font-[500]">
+        <div className="flex flex-wrap px-16 w-full gap-x-6 gap-y-4 font-[500]">
             <button
                 onClick={() => onCategoryClick("Provincial Initiatives")}
                 className="flex pl-8 text-[20px] items-center bg-[#FFFFFF] rounded-[12px] w-[31.5%] h-[120px]"

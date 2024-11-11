@@ -22,6 +22,8 @@ import TotalNumberIcon from "../../assets/icons/total-number.svg"
 import UpcomingEventsIcon from "../../assets/icons/upcoming-events.svg"
 import TransactionIcon from "../../assets/icons/transaction.svg"
 
+import ApplicationsData from "../../data/applications.json"
+
 const Dashboard = () => {
     // eslint-disable-next-line no-unused-vars
     const [totalSeniorCitizens, setTotalSeniorCitizens] = useState(0)
@@ -37,6 +39,8 @@ const Dashboard = () => {
     const [isTotalHovered, setIsTotalHovered] = useState(false)
     const [isEventsHovered, setIsEventsHovered] = useState(false)
     const [isTransactionsHovered, setIsTransactionsHovered] = useState(false)
+    const [pendingApplicationsDetails, setPendingApplicationsDetails] =
+        useState([]) //
 
     const COLORS = ["#0088FE", "#FFBB28"]
 
@@ -113,18 +117,14 @@ const Dashboard = () => {
                 console.error("Error fetching upcoming events:", error)
             }
         }
-
-        const fetchPendingApplications = async () => {
-            try {
-                const response = await axios.get(
-                    "http://localhost:5000/applications?status=pending",
-                )
-                setPendingApplications(response.data.length)
-            } catch (error) {
-                console.error("Error fetching pending applications:", error)
-            }
+        // Fetch pending applications
+        const fetchPendingApplications = () => {
+            const pendingApps = ApplicationsData.filter(
+                (application) => application.status === "Pending",
+            )
+            setPendingApplications(pendingApps.length)
+            setPendingApplicationsDetails(pendingApps) // Set pending applications details
         }
-
         fetchTotalSeniorCitizens()
         fetchUpcomingEvents()
         fetchPendingApplications()
@@ -387,6 +387,52 @@ const Dashboard = () => {
                                     title="Pending Applications"
                                     bgColor="bg-[#E1FFE1]"
                                 />
+                                {isTransactionsHovered && (
+                                    <div className="absolute top-0 left-0 w-full h-full bg-white p-6 shadow-lg rounded-lg z-10 flex flex-col space-y-4">
+                                        <h3 className="font-bold text-2xl text-[#333]">
+                                            Pending Applications Details
+                                        </h3>
+                                        <div className="flex flex-wrap gap-4">
+                                            {/* Loop through the applications and display them in pairs */}
+                                            {pendingApplicationsDetails.map(
+                                                (application, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="w-full sm:w-1/2 lg:w-1/2 xl:w-1/2"
+                                                    >
+                                                        <div className="mb-4 border-b pb-3">
+                                                            <p className="text-gray-700">
+                                                                <strong>
+                                                                    Applicant:
+                                                                </strong>{" "}
+                                                                {
+                                                                    application.applicant_name
+                                                                }
+                                                            </p>
+                                                            <p className="text-gray-700">
+                                                                <strong>
+                                                                    Date
+                                                                    Submitted:
+                                                                </strong>{" "}
+                                                                {
+                                                                    application.date_submitted
+                                                                }
+                                                            </p>
+                                                            <p className="text-gray-700">
+                                                                <strong>
+                                                                    Form Type:
+                                                                </strong>{" "}
+                                                                {
+                                                                    application.form_type
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ),
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

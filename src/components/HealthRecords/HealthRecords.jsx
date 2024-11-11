@@ -19,6 +19,15 @@ const HealthRecords = () => {
     const [recordToArchive, setRecordToArchive] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [isArchiving, setIsArchiving] = useState(false)
+
+    // Fetch recentUpdatesCount from localStorage on initial render
+    useEffect(() => {
+        const storedUpdatesCount = localStorage.getItem("recentUpdatesCount")
+        if (storedUpdatesCount) {
+            setRecentUpdatesCount(Number(storedUpdatesCount)) // Convert to number if stored as string
+        }
+    }, [])
 
     const fetchMembersData = async () => {
         setLoading(true)
@@ -77,12 +86,21 @@ const HealthRecords = () => {
         setCurrentRecord(null)
     }
 
+    const incrementUpdatesCount = () => {
+        setRecentUpdatesCount((prevCount) => {
+            const newCount = prevCount + 1
+            localStorage.setItem("recentUpdatesCount", newCount) // Save to localStorage
+            return newCount
+        })
+    }
+
     const handleSave = async (updatedMember) => {
         try {
             const now = new Date().toISOString()
             updatedMember.record_date = now
 
             if (currentRecord) {
+                // Updating existing health record
                 await fetch(
                     `http://localhost:5000/health-records/${updatedMember.id}`,
                     {
@@ -97,8 +115,9 @@ const HealthRecords = () => {
                 setSuccessMessage(
                     "Member health record has been successfully updated.",
                 )
-                setRecentUpdatesCount((prevCount) => prevCount + 1)
+                incrementUpdatesCount() // Increment count after update
             } else {
+                // Adding a new health record
                 await fetch("http://localhost:5000/health-records", {
                     method: "POST",
                     headers: {
@@ -110,12 +129,15 @@ const HealthRecords = () => {
                 setSuccessMessage(
                     "The health record has been successfully added to the list.",
                 )
-                setRecentUpdatesCount((prevCount) => prevCount + 1)
+                incrementUpdatesCount() // Increment count after adding
             }
 
-            fetchMembersData()
+            fetchMembersData() // Refresh the members data
             handleCloseModal()
+
+            // Set isArchiving to false when adding a new record
             setIsSuccessModalOpen(true)
+            setIsArchiving(false) // Set to false here, since it's not archiving
         } catch (error) {
             console.error("Error saving health record:", error)
         }
@@ -123,6 +145,7 @@ const HealthRecords = () => {
 
     const handleArchiveClick = (member) => {
         setRecordToArchive(member)
+        setIsArchiving(true) // Set isArchiving to true when archiving
         setIsConfirmModalOpen(true)
     }
 
@@ -130,7 +153,7 @@ const HealthRecords = () => {
         if (!recordToArchive) return
 
         try {
-            await fetch(
+            const response = await fetch(
                 `http://localhost:5000/health-records/archive/${recordToArchive.health_record_id}`,
                 {
                     method: "PUT",
@@ -141,11 +164,20 @@ const HealthRecords = () => {
                 },
             )
 
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to archive the health record",
+                )
+            }
+
             setSuccessTitle("Health Record Archived!")
             setSuccessMessage(
                 "The health record has been successfully archived.",
             )
-            fetchMembersData()
+            incrementUpdatesCount() // Increment count after archiving
+            fetchMembersData() // Refresh the member data after archiving
             setIsSuccessModalOpen(true)
         } catch (error) {
             console.error("Error archiving health record:", error)
@@ -209,6 +241,7 @@ const HealthRecords = () => {
                     onClose={() => setIsSuccessModalOpen(false)}
                     title={successTitle}
                     message={successMessage}
+                    isArchiving={isArchiving} // Pass isArchiving here
                 />
             )}
         </section>

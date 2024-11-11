@@ -3,7 +3,12 @@
 import SearchIcon from "../../assets/icons/search.svg"
 import ImportIcon from "../../assets/icons/import.svg"
 
-const Header = ({ selectedCategory, onFileUpload }) => {
+const Header = ({
+    selectedCategory,
+    onFileUpload,
+    searchQuery,
+    onSearchChange,
+}) => {
     return (
         <section className="w-full font-inter bg-[#F5F5FA] overflow-hidden">
             <div className="p-16 w-full pb-8 flex items-start justify-between">
@@ -13,7 +18,7 @@ const Header = ({ selectedCategory, onFileUpload }) => {
                         Create forms aligned to the community's need
                     </p>
                 </div>
-                <div className="w-1/2 text-[#76717180] flex items-center">
+                <div className="w-1/2 text-[#333333] justify-end flex items-start">
                     <div className="relative w-full max-w-md mr-4">
                         <input
                             type="search"
@@ -21,6 +26,8 @@ const Header = ({ selectedCategory, onFileUpload }) => {
                             id="search"
                             className="p-3 pl-12 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full"
                             placeholder="Search..."
+                            value={searchQuery} // Bind search query state
+                            onChange={onSearchChange} // Handle change
                         />
                         <img
                             src={SearchIcon}

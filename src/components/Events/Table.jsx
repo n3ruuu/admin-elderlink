@@ -3,7 +3,6 @@ import { useState } from "react"
 import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import SendIcon from "../../assets/icons/send-icon.svg"
-import ReportIcon from "../../assets/icons/report.svg"
 import moment from "moment"
 import SmsModal from "./SmsModal"
 
@@ -29,7 +28,7 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
 
     return (
         <div className="mt-8">
-            <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
+            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
                 <thead className="text-[#767171CC]">
                     <tr>
                         <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
@@ -47,15 +46,22 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                         <th className="text-left font-medium whitespace-nowrap">
                             Category
                         </th>
-                        <th className="px-8 text-left font-medium whitespace-nowrap">
+                        <th className="px-8 w-[150px] text-left font-medium whitespace-nowrap">
                             Actions
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {currentEvents.length > 0 ? (
-                        currentEvents.map((event) => (
-                            <tr key={event.id}>
+                        currentEvents.map((event, index) => (
+                            <tr
+                                className={`text-[#333333] font-[500] ${
+                                    index % 2 === 0
+                                        ? "bg-white"
+                                        : "bg-[#F5F5FA]"
+                                }`}
+                                key={event.id}
+                            >
                                 <td className="px-16 py-4 text-left whitespace-nowrap">
                                     {event.title}
                                 </td>
@@ -71,14 +77,14 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                                 <td className="text-left whitespace-nowrap">
                                     {event.category}
                                 </td>
-                                <td className="px-8 pt-4 text-left whitespace-nowrap flex gap-2">
+                                <td className="px-8 pt-4 text-left whitespace-nowrap flex gap-3">
                                     <button
                                         onClick={() => handleOpenModal(event)}
                                     >
                                         <img
                                             src={EditIcon}
                                             alt="Edit Icon"
-                                            className="h-5"
+                                            className="w-[20px]"
                                         />
                                     </button>
                                     <button
@@ -87,7 +93,7 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                                         <img
                                             src={ArchiveIcon}
                                             alt="Archive Icon"
-                                            className="h-5"
+                                            className="w-[20px]"
                                         />
                                     </button>
                                     <button
@@ -96,7 +102,7 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                                         <img
                                             src={SendIcon}
                                             alt="Send Icon"
-                                            className="h-5"
+                                            className="w-[20px]"
                                         />
                                     </button>
                                 </td>
@@ -150,19 +156,6 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                         Next
                     </button>
                 </div>
-                <button
-                    className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
-                    onClick={() => {
-                        console.log("Generating report...")
-                    }}
-                >
-                    <img
-                        src={ReportIcon}
-                        alt="Report Icon"
-                        className="w-5 h-5 mr-2 transition duration-300 group-hover:brightness-0 group-hover:invert"
-                    />
-                    <span>Generate Report</span>
-                </button>
             </div>
 
             {/* Compose SMS Modal */}

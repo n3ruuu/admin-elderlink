@@ -82,9 +82,15 @@ const Table = ({ formsData, fetchFormsData }) => {
             <table className="w-full bg-[#FFFFFF] shadow-xl rounded-tl-[12px] rounded-tr-[12px]">
                 <thead className="font-[100] text-left border-b border-[#e0e0e0]">
                     <tr className="text-[#767171CC]">
-                        <th className="font-[500] px-8 py-4">Form Title</th>
-                        <th className="font-[500] px-4 py-4">Date Created</th>
-                        <th className="font-[500] px-4 py-4">Category</th>
+                        <th className="font-[500] w-[40%] px-8 py-4">
+                            Form Title
+                        </th>
+                        <th className="font-[500] w-[30%]  px-4 py-4">
+                            Date Created
+                        </th>
+                        <th className="font-[500] w-[30%]  px-4 py-4">
+                            Category
+                        </th>
                     </tr>
                 </thead>
             </table>
@@ -102,7 +108,7 @@ const Table = ({ formsData, fetchFormsData }) => {
                                 }`}
                                 key={form.id}
                             >
-                                <td className="px-4 py-2">
+                                <td className="px-4 w-[40%]  py-2">
                                     <div className="flex items-center gap-4">
                                         <img
                                             src={getCategoryIcon(form.category)}
@@ -112,10 +118,12 @@ const Table = ({ formsData, fetchFormsData }) => {
                                         <span>{form.title}</span>
                                     </div>
                                 </td>
-                                <td className="px-4 py-2">
+                                <td className="px-4 w-[30%] py-2">
                                     {new Date(form.createdAt).toLocaleString()}
                                 </td>
-                                <td className="px-4 py-2">{form.category}</td>
+                                <td className="px-4 w-[20%]  py-2">
+                                    {form.category}
+                                </td>
                                 <td className="px-4 py-2 text-right pr-8">
                                     {/* Archive icon */}
                                     <button

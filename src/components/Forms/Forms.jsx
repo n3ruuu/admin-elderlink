@@ -11,6 +11,7 @@ const Forms = () => {
     const [isModalOpen, setIsModalOpen] = useState(false) // State for modal visibility
     const [modalTitle, setModalTitle] = useState("") // State for modal title
     const [modalMessage, setModalMessage] = useState("") // State for modal message
+    const [searchQuery, setSearchQuery] = useState("") // State for search query
 
     useEffect(() => {
         fetchFormsData()
@@ -72,13 +73,26 @@ const Forms = () => {
         }
     }
 
+    // Handle search query change
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value)
+    }
+
+    // Filter formsData based on search query
+    const filteredFormsData = formsData.filter((form) => {
+        return (
+            form.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            form.category.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    })
+
     // Close modal handler
     const handleCloseModal = () => {
         setIsModalOpen(false)
     }
 
     // Grouping forms by category
-    const groupedForms = formsData.reduce((acc, form) => {
+    const groupedForms = filteredFormsData.reduce((acc, form) => {
         if (!acc[form.category]) {
             acc[form.category] = []
         }
@@ -91,6 +105,8 @@ const Forms = () => {
             <Header
                 selectedCategory={selectedCategory}
                 onFileUpload={handleFileUpload}
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange} // Pass the search change handler
             />
 
             {selectedCategory ? (
@@ -125,10 +141,9 @@ const Forms = () => {
                         Recent Forms
                     </h3>
                     <Table
-                        formsData={formsData}
+                        formsData={filteredFormsData} // Pass filtered forms data to Table
                         fetchFormsData={fetchFormsData}
-                    />{" "}
-                    {/* Pass formsData as prop */}
+                    />
                 </>
             )}
 

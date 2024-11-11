@@ -45,8 +45,9 @@ const Calendar = () => {
                     initialView="dayGridMonth"
                     events={events} // Pass events to FullCalendar
                     headerToolbar={{
-                        left: "prev,next today", // Navigation buttons
-                        right: "title", // Center title
+                        left: null, // Navigation buttons
+                        center: "title", // Center title
+                        right: "prev,next",
                     }}
                     height="100%"
                     themeSystem="standard"

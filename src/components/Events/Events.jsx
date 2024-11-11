@@ -19,6 +19,7 @@ const Events = () => {
     const [viewMode, setViewMode] = useState("list")
     const [modalTitle, setModalTitle] = useState("")
     const [modalMessage, setModalMessage] = useState("")
+    const [searchQuery, setSearchQuery] = useState("") // State for the search query
 
     useEffect(() => {
         fetchEvents()
@@ -132,12 +133,29 @@ const Events = () => {
         setViewMode(mode)
     }
 
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value)
+    }
+
+    // Filter the events based on the search query
+    const filteredEvents = eventsData.filter((event) => {
+        return (
+            event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            event.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            event.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            event.date.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    })
+
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
             <Header
                 onOpenModal={handleOpenModal}
                 handleFilterChange={handleFilterChange}
                 filter={filter}
+                searchQuery={searchQuery} // Pass the search query to Header
+                onSearchChange={handleSearchChange} // Pass the search change handler to Header
             />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
@@ -147,13 +165,14 @@ const Events = () => {
                     />
                     {viewMode === "list" ? (
                         <Table
-                            eventsData={eventsData}
+                            eventsData={filteredEvents} // Use filtered events
                             filter={filter}
                             onArchiveClick={handleArchiveClick}
                         />
                     ) : (
                         <div className="mt-8">
-                            <Calendar events={eventsData} />
+                            <Calendar events={filteredEvents} />{" "}
+                            {/* Use filtered events */}
                         </div>
                     )}
                 </div>

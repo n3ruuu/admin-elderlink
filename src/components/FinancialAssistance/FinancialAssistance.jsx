@@ -110,10 +110,9 @@ const FinancialAssistance = () => {
         setCurrentMember(null)
     }
 
-    const handleShowSuccessModal = (title, message, archiving = false) => {
+    const handleShowSuccessModal = (title, message) => {
         setSuccessTitle(title)
         setSuccessMessage(message)
-        setIsArchiving(archiving)
         setIsSuccessModalOpen(true)
     }
 
@@ -153,6 +152,7 @@ const FinancialAssistance = () => {
                 "The financial assistance record has been saved successfully.",
             )
             fetchMembersData()
+            setIsArchiving(false)
         } catch (error) {
             console.error("Error saving record:", error)
         }
@@ -161,6 +161,7 @@ const FinancialAssistance = () => {
     const handleArchiveClick = (member) => {
         setRecordToArchive(member)
         setIsConfirmModalOpen(true)
+        setIsArchiving(true)
     }
 
     const handleConfirmArchive = async (selectedReason) => {
@@ -184,6 +185,8 @@ const FinancialAssistance = () => {
             )
             fetchMembersData()
             setIsSuccessModalOpen(true)
+            setIsArchiving(true)
+            console.log(isArchiving)
         } catch (error) {
             console.error("Error archiving financial assistance record:", error)
         } finally {
@@ -269,7 +272,7 @@ const FinancialAssistance = () => {
                     onClose={handleCloseSuccessModal}
                     title={successTitle}
                     message={successMessage}
-                    archiving={isArchiving}
+                    isArchiving={isArchiving}
                 />
             )}
         </section>

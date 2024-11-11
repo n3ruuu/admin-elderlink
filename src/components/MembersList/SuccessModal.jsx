@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { useNavigate } from "react-router-dom" // Import useNavigate
 
 const SuccessModal = ({
     isOpen,
@@ -8,7 +9,15 @@ const SuccessModal = ({
     onGoToArchives,
     isArchiving,
 }) => {
+    const navigate = useNavigate() // Initialize useNavigate hook
+
     if (!isOpen) return null
+
+    const handleGoToArchives = () => {
+        // Navigate to the Archives page
+        navigate("/admin-elderlink/archives")
+        onGoToArchives() // Call the provided onGoToArchives function if needed
+    }
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -23,7 +32,7 @@ const SuccessModal = ({
                     // Show both "Go to Archives" and "Got it" buttons if archiving
                     <div className="flex justify-end gap-5">
                         <button
-                            onClick={onGoToArchives}
+                            onClick={handleGoToArchives} // Trigger navigation
                             className="text-[#219EBC] border w-[150px] border-[#219EBC] hover:bg-[#219EBC] hover:text-white font-bold py-2 px-4 rounded transition-colors duration-300"
                         >
                             Go to Archives

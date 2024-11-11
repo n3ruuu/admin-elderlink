@@ -94,3 +94,57 @@
     margin: 2px;
     text-align: center; /* Center align the title */
 }
+
+/* Center the title and style the header */
+.fc-toolbar {
+    padding-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.fc-toolbar-chunk:first-child {
+    display: flex;
+    justify-content: flex-start;
+    flex: 1;
+}
+
+.fc-toolbar-chunk:nth-child(2) {
+    display: flex;
+    justify-content: center;
+    flex: 2;
+}
+
+.fc-toolbar-chunk:last-child {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+.fc-button-group {
+    padding-right: 16px;
+}
+
+/* Customize navigation buttons */
+.fc-prev-button,
+.fc-next-button {
+    background-color: #219ebc;
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.fc-prev-button:hover,
+.fc-next-button:hover {
+    background-color: #126985;
+}
+
+/* Center and style title */
+.fc-toolbar-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333333;
+}
