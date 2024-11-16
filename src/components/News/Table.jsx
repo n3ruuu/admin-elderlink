@@ -8,11 +8,11 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
     const activeNewsData = newsData.filter((news) => news.status === "Active")
 
     return (
-        <div className="mt-8 mx-auto px-4">
+        <div className="mt-8 mx-auto">
             {/* Scrollable container with a fixed height */}
             <div className="overflow-y-auto max-h-[650px] shadow-lg rounded-xl border">
                 <table className="min-w-full bg-white">
-                    <thead className="text-gray-500">
+                    <thead className="text-gray-500 border-b">
                         <tr>
                             <th className="px-6 py-4 text-left font-medium">
                                 News Headline
@@ -36,10 +36,14 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                     </thead>
                     <tbody>
                         {activeNewsData.length > 0 ? (
-                            activeNewsData.map((news) => (
+                            activeNewsData.map((news, index) => (
                                 <tr
+                                    className={`text-[#333333] font-[500] ${
+                                        index % 2 === 0
+                                            ? "bg-white"
+                                            : "bg-[#F5F5FA]"
+                                    }`}
                                     key={news.id}
-                                    className="border-b last:border-none"
                                 >
                                     <td className="px-6 py-4 text-left align-top">
                                         {news.headline}

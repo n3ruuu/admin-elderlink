@@ -49,6 +49,7 @@ const Sidebar = () => {
     const handleLogout = () => {
         // Clear authentication state or tokens here
         setIsAuthenticated(false)
+        localStorage.removeItem("authToken")
         navigate("/admin-elderlink") // Redirect to login page
     }
 
@@ -257,26 +258,6 @@ const Sidebar = () => {
                         )}
                     </div>
 
-                    {/* Archive */}
-                    <Link
-                        to="admin-elderlink/archives"
-                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
-                            isActive("/admin-elderlink/archives")
-                                ? "bg-[#219EBC] text-[#F5F5FA]"
-                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
-                        }`}
-                    >
-                        <img
-                            src={ArchiveIcon}
-                            alt="Archive Icon"
-                            className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                isActive("/admin-elderlink/archives") &&
-                                "filter brightness-0 invert"
-                            }`}
-                        />
-                        <p>Archive</p>
-                    </Link>
-
                     {/* News */}
                     <Link
                         to="admin-elderlink/news"
@@ -297,17 +278,43 @@ const Sidebar = () => {
                         <p>News</p>
                     </Link>
 
-                    {/* Logout */}
-                    <div
-                        onClick={handleLogout}
-                        className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:text-[#F5F5FA]"
+                    {/* Archive */}
+                    <Link
+                        to="admin-elderlink/archives"
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                            isActive("/admin-elderlink/archives")
+                                ? "bg-[#219EBC] text-[#F5F5FA]"
+                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
+                        }`}
                     >
                         <img
-                            src={LogoutIcon}
-                            alt="Logout Icon"
-                            className="group-hover:filter group-hover:brightness-0 group-hover:invert"
+                            src={ArchiveIcon}
+                            alt="Archive Icon"
+                            className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                isActive("/admin-elderlink/archives") &&
+                                "filter brightness-0 invert"
+                            }`}
                         />
-                        <p>Logout</p>
+                        <p>Archive</p>
+                    </Link>
+
+                    <div>
+                        <Link
+                            to="/admin-elderlink/"
+                            onClick={handleLogout}
+                            className={`group absolute bottom-5 w-[86%] flex justify-start space-x-8 text-[20px] px-6 py-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                                isActive(null)
+                                    ? "bg-[#219EBC] text-[#F5F5FA]"
+                                    : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
+                            }`}
+                        >
+                            <img
+                                src={LogoutIcon}
+                                alt="Logout Icon"
+                                className="group-hover:filter group-hover:brightness-0 group-hover:invert"
+                            />
+                            <p>Logout</p>
+                        </Link>
                     </div>
                 </div>
             </div>

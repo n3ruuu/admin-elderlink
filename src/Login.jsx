@@ -37,6 +37,7 @@ const Login = ({ onLogin }) => {
             )
         }
     }
+
     return (
         <section className="relative flex items-center justify-center font-inter min-h-screen">
             <div className="absolute inset-0 mix-blend-overlay bg-cover bg-center bg-custom-bg opacity-[0.07]"></div>

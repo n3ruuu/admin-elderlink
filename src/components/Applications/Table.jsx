@@ -7,7 +7,7 @@ import PrintIcon from "../../assets/icons/print.svg"
 
 const Table = ({ filteredData }) => (
     <table className="w-full bg-[#FFFFFF] shadow-xl rounded-xl">
-        <thead className="text-[#767171CC] ">
+        <thead className="text-[#767171CC]">
             <tr className="border-b">
                 <th className="px-16 py-4 text-left font-[500]">
                     Applicant Name

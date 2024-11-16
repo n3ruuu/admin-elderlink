@@ -40,11 +40,11 @@ const HealthRecordsTable = () => {
         }
     }
 
-    // Handle undo action (revert status to 'Active')
     const handleUndo = async () => {
         if (selectedMember) {
+            console.log("Selected Member:", selectedMember) // Check if selectedMember is defined
             const response = await fetch(
-                `http://localhost:5000/health-records/archive/${selectedMember.id}`,
+                `http://localhost:5000/health-records/archive/${selectedMember.health_record_id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -55,12 +55,13 @@ const HealthRecordsTable = () => {
             )
 
             if (response.ok) {
-                // Fetch updated data after undo
                 fetchMembers()
                 setShowUndoModal(false) // Close the undo modal
             } else {
                 console.error("Failed to undo status update")
             }
+        } else {
+            console.error("Selected member is not defined")
         }
     }
 

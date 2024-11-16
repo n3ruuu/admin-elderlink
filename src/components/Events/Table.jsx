@@ -28,8 +28,8 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
 
     return (
         <div className="mt-8">
-            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
-                <thead className="text-[#767171CC]">
+            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
+                <thead className="text-[#767171CC] border-b">
                     <tr>
                         <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
                             Event Title

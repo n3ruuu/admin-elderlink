@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react"
 import moment from "moment"
+import EditIcon from "../../assets/icons/edit.svg" // Import the archive icon
 import ArchiveIcon from "../../assets/icons/archive2.svg" // Import the archive icon
 import ArchiveModal from "./ArchiveModal" // Import the ArchiveModal component
 import axios from "axios" // Import axios for making API requests
@@ -13,6 +14,8 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData }) => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
     const [modalTitle, setModalTitle] = useState("") // Success modal title
     const [modalMessage, setModalMessage] = useState("") // Success modal message
+    const [isEditing, setIsEditing] = useState(false)
+    const [editableTitle, setEditableTitle] = useState("") // Editable form title
 
     const handleArchiveClick = (formId, formTitle) => {
         setActiveFormId(formId) // Set the active form ID
@@ -24,6 +27,35 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData }) => {
         setIsModalOpen(false) // Close the modal
         setActiveFormId(null) // Reset the active form ID
         setFormTitle("") // Reset the title
+    }
+
+    const handleEditClick = (formId, title) => {
+        setEditableTitle(title) // Set the title to be editable
+        setIsEditing(true) // Set editing mode to true
+        setActiveFormId(formId)
+    }
+
+    const handleTitleChange = async (e) => {
+        console.log(activeFormId)
+
+        if (e.key === "Enter") {
+            // Call the API to update the title
+            try {
+                const response = await axios.put(
+                    `http://localhost:5000/forms/update-title/${activeFormId}`,
+                    { newTitle: editableTitle }, // Send the new title in the request body
+                )
+                console.log(response.data.message) // Log success message
+                // Optionally, update the UI after the successful update
+                setIsEditing(false) // Exit editing mode
+                fetchFormsData()
+            } catch (error) {
+                console.error(
+                    "Error updating title:",
+                    error.response?.data?.error || error.message,
+                )
+            }
+        }
     }
 
     const handleArchiveConfirm = async () => {
@@ -77,9 +109,25 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData }) => {
                                         </p>
                                     </object>
                                 </div>
-                                <h3 className="text-lg font-semibold">
-                                    {form.title}
-                                </h3>
+                                <div className="flex items-center justify-between">
+                                    {/* Editable form title */}
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={editableTitle}
+                                            onChange={(e) =>
+                                                setEditableTitle(e.target.value)
+                                            }
+                                            onKeyDown={handleTitleChange}
+                                            className="text-lg font-semibold w-full border-b-2 border-gray-400 focus:outline-none"
+                                        />
+                                    ) : (
+                                        <h3 className="text-lg font-semibold">
+                                            {formTitle || form.title}{" "}
+                                            {/* Display form title or current form title */}
+                                        </h3>
+                                    )}
+                                </div>
                                 <p className="text-sm text-gray-500">
                                     Date Created:{" "}
                                     {moment(form.createdAt).format(
@@ -95,6 +143,15 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData }) => {
                             >
                                 Open Form
                             </a>
+
+                            <img
+                                src={EditIcon}
+                                alt="Edit"
+                                onClick={() =>
+                                    handleEditClick(form.id, form.title)
+                                }
+                                className="absolute bottom-6 right-16 w-6 h-6 cursor-pointer transition-transform hover:scale-110"
+                            />
 
                             {/* Archive icon in the bottom right corner */}
                             <img
