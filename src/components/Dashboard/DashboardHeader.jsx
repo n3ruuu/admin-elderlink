@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import SearchBar from "../common/SearchBar"
 
 const DashboardHeader = () => {
     return (
@@ -10,9 +9,7 @@ const DashboardHeader = () => {
                     Overview of key metrics and activities
                 </p>
             </div>
-            <div className="flex items-center w-1/3 mt-4">
-                <SearchBar />
-            </div>
+            <div className="flex items-center w-1/3 mt-4"></div>
         </div>
     )
 }

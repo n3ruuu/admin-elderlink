@@ -140,11 +140,22 @@ const Events = () => {
     // Filter the events based on the search query
     const filteredEvents = eventsData.filter((event) => {
         return (
-            event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            event.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            event.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            event.date.toLowerCase().includes(searchQuery.toLowerCase())
+            (event.title &&
+                event.title
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())) ||
+            (event.location &&
+                event.location
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())) ||
+            (event.organizer &&
+                event.organizer
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())) ||
+            (event.category &&
+                event.category
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()))
         )
     })
 

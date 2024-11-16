@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Route, Routes, Link, useLocation } from "react-router-dom"
+import { Route, Routes, Link, useLocation, useNavigate } from "react-router-dom"
 import ElderlinkLogo from "./assets/elderlink-logo2.png"
 import DashboardIcon from "./assets/icons/dashboard.svg"
 import MembersIcon from "./assets/icons/members.svg"
@@ -22,13 +22,27 @@ import Forms from "./components/Forms/Forms"
 import Applications from "./components/Applications/Applications"
 import News from "./components/News/News"
 import Archives from "./components/Archives/Archives"
+import Login from "./Login"
 
 const Sidebar = () => {
     const [openSubSection, setOpenSubSection] = useState(null)
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
     const location = useLocation() // Get the current path
+    const navigate = useNavigate() // Initialize navigate for redirecting after login
 
     const toggleSubSection = (section) => {
         setOpenSubSection(openSubSection === section ? null : section)
+    }
+
+    const handleLogout = () => {
+        // Clear authentication state or tokens here
+        setIsAuthenticated(false)
+        navigate("/admin-elderlink") // Redirect to login page
+    }
+
+    if (!isAuthenticated) {
+        // If not authenticated, redirect to login page
+        return <Login onLogin={() => setIsAuthenticated(true)} />
     }
 
     const isActive = (path) => location.pathname.includes(path) // Check if the current path matches the route
@@ -271,25 +285,33 @@ const Sidebar = () => {
                         <p>Archives</p>
                     </Link>
 
-                    {/* Settings */}
-
-                    {/* Logout */}
-                    <Link
-                        to="admin-elderlink/logout"
-                        className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:font-normal hover:text-[#F5F5FA] absolute bottom-5 w-[95%]"
-                    >
-                        <img
-                            src={LogoutIcon}
-                            alt="Logout Icon"
-                            className="group-hover:filter group-hover:brightness-0 group-hover:invert"
-                        />
-                        <p>Logout</p>
-                    </Link>
+                    <div>
+                        <Link
+                            to="/admin-elderlink/"
+                            onClick={handleLogout}
+                            className={`group absolute bottom-5 w-[86%] flex justify-start space-x-8 text-[20px] px-6 py-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                                isActive(null)
+                                    ? "bg-[#219EBC] text-[#F5F5FA]"
+                                    : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
+                            }`}
+                        >
+                            <img
+                                src={LogoutIcon}
+                                alt="Logout Icon"
+                                className="group-hover:filter group-hover:brightness-0 group-hover:invert"
+                            />
+                            <p>Logout</p>
+                        </Link>
+                    </div>
                 </div>
             </div>
 
             <Routes>
-                <Route path="admin-elderlink/" element={<Dashboard />} />
+                {/* Protecting Routes */}
+                <Route
+                    path="admin-elderlink/"
+                    element={<Login onLogin={() => setIsAuthenticated(true)} />}
+                />
                 <Route
                     path="admin-elderlink/dashboard"
                     element={<Dashboard />}
@@ -313,7 +335,6 @@ const Sidebar = () => {
                     element={<Applications />}
                 />
                 <Route path="admin-elderlink/news" element={<News />} />
-
                 <Route path="admin-elderlink/archives" element={<Archives />} />
             </Routes>
         </section>
