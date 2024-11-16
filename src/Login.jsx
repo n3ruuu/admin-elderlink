@@ -14,23 +14,29 @@ const Login = ({ onLogin }) => {
         e.preventDefault()
 
         try {
+            // Make the login request
             const response = await axios.post("http://localhost:5000/login", {
                 username,
                 password,
             })
+
+            // Check if login is successful
             if (response.status === 200) {
-                // Successful login
+                const { token } = response.data
+                // Store token in localStorage
+                localStorage.setItem("authToken", token) // Store the auth token
                 onLogin()
+                // Redirect to dashboard
                 navigate("/admin-elderlink/dashboard")
             }
         } catch (error) {
+            // Handle errors
             setErrorMessage(
                 error.response?.data?.message ||
                     "An error occurred. Please try again.",
             )
         }
     }
-
     return (
         <section className="relative flex items-center justify-center font-inter min-h-screen">
             <div className="absolute inset-0 mix-blend-overlay bg-cover bg-center bg-custom-bg opacity-[0.07]"></div>

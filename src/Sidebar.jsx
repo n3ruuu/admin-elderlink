@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Route, Routes, Link, useLocation, useNavigate } from "react-router-dom"
 import ElderlinkLogo from "./assets/elderlink-logo2.png"
 import DashboardIcon from "./assets/icons/dashboard.svg"
@@ -30,9 +30,21 @@ const Sidebar = () => {
     const location = useLocation() // Get the current path
     const navigate = useNavigate() // Initialize navigate for redirecting after login
 
+    // Check if the user is authenticated when the component mounts
+    useEffect(() => {
+        const token = localStorage.getItem("authToken")
+        if (token) {
+            setIsAuthenticated(true)
+        } else {
+            setIsAuthenticated(false)
+        }
+    }, [])
+
     const toggleSubSection = (section) => {
         setOpenSubSection(openSubSection === section ? null : section)
     }
+
+    console.log(isAuthenticated)
 
     const handleLogout = () => {
         // Clear authentication state or tokens here
@@ -245,6 +257,26 @@ const Sidebar = () => {
                         )}
                     </div>
 
+                    {/* Archive */}
+                    <Link
+                        to="admin-elderlink/archives"
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                            isActive("/admin-elderlink/archives")
+                                ? "bg-[#219EBC] text-[#F5F5FA]"
+                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
+                        }`}
+                    >
+                        <img
+                            src={ArchiveIcon}
+                            alt="Archive Icon"
+                            className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                isActive("/admin-elderlink/archives") &&
+                                "filter brightness-0 invert"
+                            }`}
+                        />
+                        <p>Archive</p>
+                    </Link>
+
                     {/* News */}
                     <Link
                         to="admin-elderlink/news"
@@ -265,78 +297,53 @@ const Sidebar = () => {
                         <p>News</p>
                     </Link>
 
-                    {/* Archive */}
-                    <Link
-                        to="admin-elderlink/archives"
-                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
-                            isActive("/admin-elderlink/archives")
-                                ? "bg-[#219EBC] text-[#F5F5FA]"
-                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
-                        }`}
+                    {/* Logout */}
+                    <div
+                        onClick={handleLogout}
+                        className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                     >
                         <img
-                            src={ArchiveIcon}
-                            alt="Archive Icon"
-                            className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                isActive("/admin-elderlink/archives") &&
-                                "filter brightness-0 invert"
-                            }`}
+                            src={LogoutIcon}
+                            alt="Logout Icon"
+                            className="group-hover:filter group-hover:brightness-0 group-hover:invert"
                         />
-                        <p>Archives</p>
-                    </Link>
-
-                    <div>
-                        <Link
-                            to="/admin-elderlink/"
-                            onClick={handleLogout}
-                            className={`group absolute bottom-5 w-[86%] flex justify-start space-x-8 text-[20px] px-6 py-4 rounded-xl cursor-pointer transition-all duration-300 ${
-                                isActive(null)
-                                    ? "bg-[#219EBC] text-[#F5F5FA]"
-                                    : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
-                            }`}
-                        >
-                            <img
-                                src={LogoutIcon}
-                                alt="Logout Icon"
-                                className="group-hover:filter group-hover:brightness-0 group-hover:invert"
-                            />
-                            <p>Logout</p>
-                        </Link>
+                        <p>Logout</p>
                     </div>
                 </div>
             </div>
 
-            <Routes>
-                {/* Protecting Routes */}
-                <Route
-                    path="admin-elderlink/"
-                    element={<Login onLogin={() => setIsAuthenticated(true)} />}
-                />
-                <Route
-                    path="admin-elderlink/dashboard"
-                    element={<Dashboard />}
-                />
-                <Route
-                    path="admin-elderlink/members-list"
-                    element={<MembersList />}
-                />
-                <Route
-                    path="admin-elderlink/health-records"
-                    element={<HealthRecords />}
-                />
-                <Route
-                    path="admin-elderlink/financial-assistance"
-                    element={<FinancialAssistance />}
-                />
-                <Route path="admin-elderlink/events" element={<Events />} />
-                <Route path="admin-elderlink/forms" element={<Forms />} />
-                <Route
-                    path="admin-elderlink/applications"
-                    element={<Applications />}
-                />
-                <Route path="admin-elderlink/news" element={<News />} />
-                <Route path="admin-elderlink/archives" element={<Archives />} />
-            </Routes>
+            {/* Routes */}
+            <div className="w-full">
+                <Routes>
+                    <Route
+                        path="admin-elderlink/dashboard"
+                        element={<Dashboard />}
+                    />
+                    <Route
+                        path="admin-elderlink/members-list"
+                        element={<MembersList />}
+                    />
+                    <Route
+                        path="admin-elderlink/health-records"
+                        element={<HealthRecords />}
+                    />
+                    <Route
+                        path="admin-elderlink/financial-assistance"
+                        element={<FinancialAssistance />}
+                    />
+                    <Route path="admin-elderlink/events" element={<Events />} />
+                    <Route path="admin-elderlink/forms" element={<Forms />} />
+                    <Route
+                        path="admin-elderlink/applications"
+                        element={<Applications />}
+                    />
+                    <Route path="admin-elderlink/news" element={<News />} />
+                    <Route
+                        path="admin-elderlink/archives"
+                        element={<Archives />}
+                    />
+                </Routes>
+            </div>
         </section>
     )
 }
