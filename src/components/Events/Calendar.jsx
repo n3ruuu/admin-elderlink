@@ -50,7 +50,6 @@ const Calendar = () => {
                         right: "prev,next",
                     }}
                     height="100%"
-                    themeSystem="standard"
                     dayCellDidMount={(info) => {
                         // Create a container for the event titles
                         const eventContainer = document.createElement("div")

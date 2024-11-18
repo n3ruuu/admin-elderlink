@@ -205,7 +205,7 @@ const Events = () => {
                     {viewMode === "list" ? (
                         <Table
                             eventsData={filteredEvents} // Use filtered events
-                            filter={filter}
+                            handleOpenModal={handleOpenModal}
                             onArchiveClick={handleArchiveClick}
                         />
                     ) : (

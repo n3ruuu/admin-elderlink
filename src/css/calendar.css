@@ -54,45 +54,8 @@
     position: relative; /* To handle positioning of date numbers */
 }
 
-/* Style for day numbers */
-.fc-daygrid-day-number {
-    color: #333333;
-    font-size: 1.2rem;
-    text-align: end;
-    display: flex;
-    justify-content: flex-end;
-    padding: 5px;
-    width: 100%; /* Full width */
-    position: relative; /* Position it at the bottom of the cell */
-}
-
 .fc-daygrid-day-top {
     height: 50px;
-}
-
-/* Style for event titles */
-.fc-daygrid-day-events {
-    width: fit-content;
-    position: absolute;
-    top: 5px; /* Position events at the top */
-    left: 5px; /* Add some space from the left */
-    right: 5px; /* Add some space from the right */
-    bottom: 30px; /* Avoid overlap with the date number */
-    overflow: hidden; /* Hide overflow to ensure titles don't spill out */
-    font-size: 0.8rem; /* Adjust font size as needed */
-    color: #333; /* Adjust color as needed */
-    text-align: left; /* Align text to the left */
-    z-index: 1; /* Ensure event titles are above date numbers */
-}
-
-.fc-daygrid-event-harness {
-    font-size: 12px; /* Adjust font size as needed */
-    color: #ffba34; /* Set text color */
-    background-color: #fff5e1;
-    padding: 8px 16px;
-    border-radius: 10px;
-    margin: 2px;
-    text-align: center; /* Center align the title */
 }
 
 /* Center the title and style the header */
@@ -142,9 +105,19 @@
     background-color: #126985;
 }
 
-/* Center and style title */
-.fc-toolbar-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #333333;
+.fc-event-title {
+    background-color: #219ebc;
+    color: white; /* Ensure the text is readable */
+    padding: 4px 8px; /* Optional: Add some padding for better visual separation */
+    border-radius: 4px; /* Optional: Give the event title rounded corners */
+
+    /* Ensure the event title is fully visible */
+    white-space: normal; /* Allow the text to wrap */
+    overflow: visible; /* Make sure the text doesn't get clipped */
+    word-wrap: break-word; /* Break words if they are too long */
+    max-width: none; /* Remove any width limitation */
+}
+
+.fc-event-time {
+    display: none;
 }
