@@ -9,6 +9,7 @@ import ArchiveIcon from "../../assets/icons/archive2.svg" // Import Archive Icon
 import ArchiveModal from "./ArchiveModal" // Import your ArchiveModal
 import SuccessModal from "../common/SuccessModal" // Import your SuccessModal
 import { useNavigate } from "react-router-dom" // Import useNavigate
+import moment from "moment"
 
 const Table = ({ formsData, fetchFormsData }) => {
     const [isModalOpen, setIsModalOpen] = useState(false) // For archive modal visibility
@@ -126,8 +127,9 @@ const Table = ({ formsData, fetchFormsData }) => {
                                 </div>
                             </td>
                             <td className="px-4 w-[30%] py-2">
-                                {new Date(form.createdAt).toLocaleString()}
+                                {moment(form.createdAt).format("MMMM D, YYYY")}
                             </td>
+
                             <td className="px-4 w-[20%] py-2">
                                 {form.category}
                             </td>

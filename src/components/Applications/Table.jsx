@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import moment from "moment"
 import EditIcon from "../../assets/icons/edit.svg"
 import ApproveIcon from "../../assets/icons/approve.svg"
 import RejectIcon from "../../assets/icons/reject.svg"
@@ -27,7 +28,9 @@ const Table = ({ filteredData }) => (
                     key={item.id}
                 >
                     <td className="px-16 py-4">{item.applicant_name}</td>
-                    <td>{item.date_submitted}</td>
+                    <td>
+                        {moment(item.date_submitted).format("MMMM D, YYYY")}
+                    </td>
                     <td>{item.form_type}</td>
                     <td>{item.status}</td>
                     <td className="flex pt-2">

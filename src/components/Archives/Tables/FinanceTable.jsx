@@ -74,8 +74,8 @@ const HealthRecordsTable = () => {
     }
 
     return (
-        <div className="overflow-y-auto max-h-[calc(90vh-200px)] mx-16">
-            <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
+        <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
+            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
                 <thead className="text-[#767171CC]">
                     <tr>
                         <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
@@ -116,7 +116,7 @@ const HealthRecordsTable = () => {
                             <td className="whitespace-nowrap">
                                 {moment(
                                     row.date_of_claim || row.dateOfClaim,
-                                ).format("MM-DD-YYYY")}
+                                ).format("MMMM D, YYYY")}
                             </td>
 
                             <td className="whitespace-nowrap">{row.claimer}</td>

@@ -100,7 +100,7 @@ const Table = ({
                             <td className="whitespace-nowrap">
                                 {moment(
                                     row.date_of_claim || row.dateOfClaim,
-                                ).format("MM-DD-YYYY")}
+                                ).format("MMMM D, YYYY")}
                             </td>
                             <td
                                 className={`whitespace-nowrap font-[500] ${row.benefit_status === "claimed" ? "text-green-500" : "text-red-500"}`}

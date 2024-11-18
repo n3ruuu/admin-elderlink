@@ -4,6 +4,7 @@ import OscaIcon from "../../../assets/osca.png"
 import BarangayIcon from "../../../assets/barangay.png"
 import ProvincialIcon from "../../../assets/provincial.png"
 import CityIcon from "../../../assets/city.png"
+import moment from "moment"
 
 const FormsTable = () => {
     const [forms, setForms] = useState([]) // State to hold fetched forms data
@@ -99,11 +100,12 @@ const FormsTable = () => {
     const archivedForms = forms.filter((form) => form.status === "Archived")
 
     return (
-        <div className="mt-8 w-full mx-auto px-4">
+        <div>
             {/* Scrollable container with a fixed height */}
-            <div className="overflow-y-auto max-h-[calc(90vh-200px)] mx-16">
-                <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
-                    <thead className="text-[#767171CC]">
+            <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
+                {/* Set max height and enable vertical scrolling */}
+                <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
+                    <thead className="text-[#767171CC] border-b">
                         <tr className="text-[#767171CC] text-left">
                             <th className="font-[500] w-[40%] px-8 py-4">
                                 Form Title
@@ -140,8 +142,11 @@ const FormsTable = () => {
                                     </div>
                                 </td>
                                 <td className="px-4 w-[30%] py-2">
-                                    {new Date(form.createdAt).toLocaleString()}
+                                    {moment(form.createdAt).format(
+                                        "MMMM D, YYYY",
+                                    )}
                                 </td>
+
                                 <td className="px-4 w-[20%] py-2">
                                     {form.category}
                                 </td>

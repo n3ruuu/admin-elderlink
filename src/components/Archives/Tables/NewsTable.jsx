@@ -75,12 +75,12 @@ const NewsTable = () => {
     }
 
     return (
-        <div className="mt-8 mx-auto px-4">
+        <div className=" x-auto px-4">
             {/* Scrollable container with a fixed height */}
-            <div className="overflow-y-auto max-h-[calc(90vh-200px)] mx-16">
+            <div className="overflow-y-auto rounded-xl shadow-xl max-h-[calc(90vh-200px)] mx-16">
                 {/* Set max height and enable vertical scrolling */}
-                <table className="bg-[#FFFFFF] rounded-xl shadow-lg w-full">
-                    <thead className="text-gray-500">
+                <table className="bg-[#FFFFFF] rounded-xl shadow-xl w-full">
+                    <thead className="text-[#767171CC] border-b">
                         <tr>
                             <th className="px-6 py-4 text-left font-medium">
                                 News Headline
@@ -106,63 +106,54 @@ const NewsTable = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {news.length > 0 ? (
-                            news
-                                .filter(
-                                    (newsItem) =>
-                                        newsItem.status === "Archived",
-                                ) // Filter to show only Archived news
-                                .map((newsItem) => (
-                                    <tr
-                                        key={newsItem.id}
-                                        className="border-b last:border-none space-y-4"
-                                    >
-                                        <td className="px-6 py-4 text-left align-top">
-                                            {newsItem.headline}
-                                        </td>
-                                        <td className="px-6 py-4 text-left align-top">
-                                            {newsItem.author}
-                                        </td>
-                                        <td className="px-6 py-4 text-left align-top whitespace-nowrap">
-                                            {moment(newsItem.date).format(
-                                                "MM-DD-YYYY",
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 text-left align-top">
-                                            {newsItem.body}
-                                        </td>
-                                        <td className="px-6 py-4 text-left">
-                                            {newsItem.image ? (
-                                                <img
-                                                    src={`http://localhost:5000/uploads/${newsItem.image}`}
-                                                    alt="News"
-                                                    className="w-[500px] h-[200px] object-cover rounded-md"
-                                                />
-                                            ) : (
-                                                "No Image"
-                                            )}
-                                        </td>
-                                        <td className="text-left text-red-500 align-top pt-4 whitespace-nowrap">
-                                            {newsItem.status}
-                                        </td>
-                                        <td className="px-8 cursor-pointer flex gap-2 text-[#219EBC] align-top font-semibold underline">
-                                            <button
-                                                onClick={() =>
-                                                    handleUndoClick(newsItem.id)
-                                                }
-                                            >
-                                                Undo
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                        ) : (
-                            <tr>
-                                <td colSpan="6" className="text-center py-4">
-                                    No archived news found.
-                                </td>
-                            </tr>
-                        )}
+                        {news
+                            .filter(
+                                (newsItem) => newsItem.status === "Archived",
+                            ) // Filter to show only Archived news
+                            .map((newsItem) => (
+                                <tr
+                                    key={newsItem.id}
+                                    className="border-b last:border-none space-y-4"
+                                >
+                                    <td className="px-6 py-4 text-left align-top">
+                                        {newsItem.headline}
+                                    </td>
+                                    <td className="px-6 py-4 text-left align-top">
+                                        {newsItem.author}
+                                    </td>
+                                    <td className="px-6 py-4 text-left align-top whitespace-nowrap">
+                                        {moment(newsItem.date).format(
+                                            "MMMM D, YYYY",
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 text-left align-top">
+                                        {newsItem.body}
+                                    </td>
+                                    <td className="px-6 py-4 text-left">
+                                        {newsItem.image ? (
+                                            <img
+                                                src={`http://localhost:5000/uploads/${newsItem.image}`}
+                                                alt="News"
+                                                className="w-[500px] h-[200px] object-cover rounded-md"
+                                            />
+                                        ) : (
+                                            "No Image"
+                                        )}
+                                    </td>
+                                    <td className="text-left text-red-500 align-top pt-4 whitespace-nowrap">
+                                        {newsItem.status}
+                                    </td>
+                                    <td className="px-8 cursor-pointer flex gap-2 text-[#219EBC] align-top font-semibold underline">
+                                        <button
+                                            onClick={() =>
+                                                handleUndoClick(newsItem.id)
+                                            }
+                                        >
+                                            Undo
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                     </tbody>
                 </table>
             </div>

@@ -75,10 +75,10 @@ const EventsTable = () => {
     }
 
     return (
-        <div className="overflow-y-auto max-h-[calc(90vh-200px)] mx-16">
+        <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
             {/* Set max height and enable vertical scrolling */}
-            <table className="bg-[#FFFFFF] rounded-xl shadow-lg w-full">
-                <thead className="text-[#767171CC]">
+            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
+                <thead className="text-[#767171CC] border-b">
                     <tr>
                         <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
                             Event Title
@@ -104,43 +104,38 @@ const EventsTable = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {events.length > 0 ? (
-                        events.map((event) => (
-                            <tr key={event.id}>
-                                <td className="px-16 py-4 text-left whitespace-nowrap">
-                                    {event.title}
-                                </td>
-                                <td className="text-left whitespace-nowrap">
-                                    {moment(event.date).format("MM-DD-YYYY")}
-                                </td>
-                                <td className="text-left whitespace-nowrap">
-                                    {event.location}
-                                </td>
-                                <td className="text-left whitespace-nowrap">
-                                    {event.organizer}
-                                </td>
-                                <td className="text-left whitespace-nowrap">
-                                    {event.category}
-                                </td>
-                                <td className="text-left text-red-500 whitespace-nowrap">
-                                    {event.status}
-                                </td>
-                                <td className="px-8 py-4 flex gap-2 text-[#219EBC] font-semibold underline">
-                                    <button
-                                        onClick={() => handleUndoClick(event)}
-                                    >
-                                        Undo
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="6" className="text-center py-4">
-                                No events found.
+                    {events.map((event, index) => (
+                        <tr
+                            className={`text-[#333333] font-[500] ${
+                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
+                            }`}
+                            key={event.id}
+                        >
+                            <td className="px-16 py-4 text-left whitespace-nowrap">
+                                {event.title}
+                            </td>
+                            <td className="text-left whitespace-nowrap">
+                                {moment(event.date).format("MMMM D, YYYY")}
+                            </td>
+                            <td className="text-left whitespace-nowrap">
+                                {event.location}
+                            </td>
+                            <td className="text-left whitespace-nowrap">
+                                {event.organizer}
+                            </td>
+                            <td className="text-left whitespace-nowrap">
+                                {event.category}
+                            </td>
+                            <td className="text-left text-red-500 whitespace-nowrap">
+                                {event.status}
+                            </td>
+                            <td className="px-8 py-4 flex gap-2 text-[#219EBC] font-semibold underline">
+                                <button onClick={() => handleUndoClick(event)}>
+                                    Undo
+                                </button>
                             </td>
                         </tr>
-                    )}
+                    ))}
                 </tbody>
             </table>
 

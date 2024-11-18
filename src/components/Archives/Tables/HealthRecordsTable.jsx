@@ -72,9 +72,10 @@ const HealthRecordsTable = () => {
     }
 
     return (
-        <div className="overflow-y-auto max-h-[calc(90vh-200px)] mx-16">
-            <table className="bg-[#FFFFFF] rounded-xl shadow-lg w-full">
-                <thead className="text-[#767171CC]">
+        <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
+            {/* Set max height and enable vertical scrolling */}
+            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
+                <thead className="text-[#767171CC] border-b">
                     <tr>
                         <th className="text-left font-medium whitespace-nowrap px-16 py-4 w-[20%]">
                             Name

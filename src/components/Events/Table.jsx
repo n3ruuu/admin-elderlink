@@ -63,7 +63,7 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                                 {event.title}
                             </td>
                             <td className="text-left whitespace-nowrap">
-                                {moment(event.date).format("MM-DD-YYYY")}
+                                {moment(event.date).format("MMMM D, YYYY")}
                             </td>
                             <td className="text-left whitespace-nowrap">
                                 {event.location}

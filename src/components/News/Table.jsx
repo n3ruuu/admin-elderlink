@@ -51,7 +51,7 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                                     {news.author}
                                 </td>
                                 <td className="px-6 py-4 text-left align-top whitespace-nowrap">
-                                    {moment(news.date).format("MM-DD-YYYY")}
+                                    {moment(news.date).format("MMMM D, YYYY")}
                                 </td>
                                 <td className="px-6 py-4 text-left align-top">
                                     {news.body}

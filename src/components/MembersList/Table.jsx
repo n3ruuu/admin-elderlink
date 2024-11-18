@@ -113,7 +113,7 @@ const Table = ({
                         <th className="text-left font-medium whitespace-nowrap w-[20%]">
                             Name
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
+                        <th className="text-left font-medium whitespace-nowrap w-[15%]">
                             Date of Birth
                         </th>
                         <th className="text-left font-medium whitespace-nowrap w-[10%]">
@@ -143,8 +143,8 @@ const Table = ({
                                 {member.idNo}
                             </td>
                             <td className="text-left">{member.name}</td>
-                            <td className="text-left">
-                                {moment(member.dob).format("MM-DD-YYYY")}
+                            <td className="text-left whitespace-nowrap">
+                                {moment(member.dob).format("MMMM D, YYYY")}
                             </td>
                             <td className="text-left">{member.age}</td>
                             <td className="text-left">

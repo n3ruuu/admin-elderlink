@@ -89,10 +89,10 @@ const MembersListTable = () => {
     }
 
     return (
-        <div className="overflow-y-auto max-h-[calc(90vh-200px)] mx-16 ">
+        <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
             {/* Set max height and enable vertical scrolling */}
-            <table className="bg-[#FFFFFF] rounded-xl shadow-lg min-w-full">
-                <thead className="text-[#767171CC]">
+            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
+                <thead className="text-[#767171CC] border-b">
                     <tr>
                         <th className="pl-16 py-4 text-left font-medium whitespace-nowrap w-[10%]">
                             ID No.
@@ -100,7 +100,7 @@ const MembersListTable = () => {
                         <th className="text-left font-medium whitespace-nowrap w-[20%]">
                             Name
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
+                        <th className="text-left font-medium whitespace-nowrap w-[15%]">
                             Date of Birth
                         </th>
                         <th className="text-left font-medium whitespace-nowrap w-[10%]">
@@ -134,7 +134,7 @@ const MembersListTable = () => {
                             </td>
                             <td className="text-left">{member.name}</td>
                             <td className="text-left">
-                                {moment(member.dob).format("YYYY-MM-DD")}
+                                {moment(member.dob).format("MMMM D, YYYY")}
                             </td>
                             <td className="text-left">{member.age}</td>
                             <td className="text-left">
