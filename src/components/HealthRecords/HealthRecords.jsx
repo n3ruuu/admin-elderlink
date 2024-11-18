@@ -5,6 +5,7 @@ import Table from "./Table"
 import Modal from "./Modal"
 import ArchiveConfirmModal from "./ArchiveModal"
 import SuccessModal from "./SuccessModal"
+import moment from "moment"
 
 const HealthRecords = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -20,6 +21,35 @@ const HealthRecords = () => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [isArchiving, setIsArchiving] = useState(false)
+
+    const chronicConditions = [
+        "Diabetes Mellitus",
+        "Hypertension",
+        "Asthma",
+        "Chronic Obstructive Pulmonary Disease (COPD)",
+        "Heart Disease",
+        "Chronic Kidney Disease",
+        "Arthritis",
+        "Cancer",
+        "HIV/AIDS",
+        "Stroke",
+    ] // Define chronic conditions array
+
+    const priorityCareCount = [
+        ...new Set(
+            membersData
+                .filter(
+                    (member) =>
+                        member.status === "Active" &&
+                        member.medical_conditions
+                            ?.split(",")
+                            .some((condition) =>
+                                chronicConditions.includes(condition.trim()),
+                            ),
+                )
+                .map((member) => member.health_record_id),
+        ),
+    ].length
 
     // Fetch recentUpdatesCount from localStorage on initial render
     useEffect(() => {
@@ -48,6 +78,29 @@ const HealthRecords = () => {
     useEffect(() => {
         fetchMembersData()
     }, [])
+
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
+        }
+    }
 
     const filteredRecords = membersData.filter((member) => {
         const searchTermLower = searchTerm.toLowerCase()
@@ -111,11 +164,15 @@ const HealthRecords = () => {
                         body: JSON.stringify(updatedMember),
                     },
                 )
+
                 setSuccessTitle("Health Record Updated!")
                 setSuccessMessage(
                     "Member health record has been successfully updated.",
                 )
                 incrementUpdatesCount() // Increment count after update
+
+                // Log the update action
+                await logAction(`Update Health Record`)
             } else {
                 // Adding a new health record
                 await fetch("http://localhost:5000/health-records", {
@@ -125,11 +182,15 @@ const HealthRecords = () => {
                     },
                     body: JSON.stringify(updatedMember),
                 })
+
                 setSuccessTitle("Health Record Added!")
                 setSuccessMessage(
                     "The health record has been successfully added to the list.",
                 )
                 incrementUpdatesCount() // Increment count after adding
+
+                // Log the add action
+                await logAction(`New Health Record`)
             }
 
             fetchMembersData() // Refresh the members data
@@ -172,11 +233,20 @@ const HealthRecords = () => {
                 )
             }
 
+            // Update success message and modal state
             setSuccessTitle("Health Record Archived!")
             setSuccessMessage(
                 "The health record has been successfully archived.",
             )
             incrementUpdatesCount() // Increment count after archiving
+
+            // Recalculate the recent updates count based on the filtered records
+            setRecentUpdatesCount((prevCount) => {
+                const updatedCount = prevCount - 1
+                localStorage.setItem("recentUpdatesCount", updatedCount)
+                return updatedCount
+            })
+
             fetchMembersData() // Refresh the member data after archiving
             setIsSuccessModalOpen(true)
         } catch (error) {
@@ -205,6 +275,7 @@ const HealthRecords = () => {
                     <Cards
                         totalRecords={totalRecords}
                         recentUpdatesCount={recentUpdatesCount} // Pass recentUpdatesCount prop
+                        priorityCareCount={priorityCareCount}
                     />
                     {loading ? (
                         <p>Loading...</p>
@@ -215,6 +286,7 @@ const HealthRecords = () => {
                             membersData={getActiveMembers()}
                             onOpenModal={handleOpenModal}
                             onArchiveClick={handleArchiveClick}
+                            chronicConditions={chronicConditions}
                         />
                     )}
                 </div>

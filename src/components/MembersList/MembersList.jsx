@@ -4,6 +4,7 @@ import SuccessModal from "./SuccessModal" // Import your SuccessModal
 import Header from "./Header" // Import your Header component
 import Cards from "./Cards" // Import your Cards component
 import Table from "./Table" // Import your Table component
+import moment from "moment"
 
 const MembersList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -72,6 +73,29 @@ const MembersList = () => {
         fetchMembersData()
     }
 
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
+        }
+    }
+
     const handleSave = async (updatedMember) => {
         if (currentMember) {
             // Editing an existing member
@@ -97,10 +121,13 @@ const MembersList = () => {
                     ),
                 )
 
-                setSuccessModalTitle("Update Completed!") // Set title for editing
+                setSuccessModalTitle("Update Completed!")
                 setSuccessModalMessage(
                     "Member information has been successfully updated.",
-                ) // Update message for edit
+                )
+
+                // Log the action
+                await logAction(`Update Member Info`)
             } catch (error) {
                 console.error("Error updating member:", error)
             }
@@ -122,10 +149,13 @@ const MembersList = () => {
                 const newMember = await response.json()
                 setMembersData((prevMembers) => [...prevMembers, newMember])
 
-                setSuccessModalTitle("Member Added!") // Set title for adding
+                setSuccessModalTitle("Member Added!")
                 setSuccessModalMessage(
                     "Member has been successfully added to the member list.",
-                ) // Message for adding
+                )
+
+                // Log the action
+                await logAction(`New Registration`)
             } catch (error) {
                 console.error("Error adding member:", error)
             }
@@ -142,7 +172,7 @@ const MembersList = () => {
         )
     }
 
-    const handleImportCSV = (newMembers) => {
+    const handleImportCSV = async (newMembers) => {
         // Check for duplicates before adding new members
         const duplicates = newMembers.filter((newMember) =>
             membersData.some(
@@ -159,6 +189,7 @@ const MembersList = () => {
 
         // Update the members data with new members if no duplicates
         setMembersData((prevMembers) => [...prevMembers, ...newMembers])
+        await logAction(`Imported ${newMembers.length} new members from CSV`)
     }
 
     return (
@@ -179,6 +210,7 @@ const MembersList = () => {
                             membersData={filteredMembers}
                             handleOpenModal={handleOpenModal}
                             handleArchiveMember={handleArchiveMember}
+                            logAction={logAction}
                         />
                     )}
                 </div>

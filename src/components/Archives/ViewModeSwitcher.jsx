@@ -47,7 +47,7 @@ const ViewModeSwitcher = ({ filter, handleFilterChange }) => {
                             Events
                         </button>
                         <button
-                            className={`border-1 border-[#219EBC] text-[#219EBC] border-l border-l-[#219EBC] rounded-r-xl px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
+                            className={`border-1 border-[#219EBC] text-[#219EBC] border-l border-l-[#219EBC] px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
                                 filter === "news"
                                     ? "bg-[#219EBC] text-white"
                                     : ""
@@ -55,6 +55,16 @@ const ViewModeSwitcher = ({ filter, handleFilterChange }) => {
                             onClick={() => handleFilterChange("news")}
                         >
                             News
+                        </button>
+                        <button
+                            className={`border-1 border-[#219EBC] text-[#219EBC] border-l border-l-[#219EBC] rounded-r-xl px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
+                                filter === "forms"
+                                    ? "bg-[#219EBC] text-white"
+                                    : ""
+                            }`}
+                            onClick={() => handleFilterChange("forms")}
+                        >
+                            Forms
                         </button>
                     </div>
                 </div>

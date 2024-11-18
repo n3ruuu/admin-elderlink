@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import { Line } from "react-chartjs-2"
 import {
     Chart as ChartJS,
@@ -9,6 +10,7 @@ import {
     Tooltip,
     Legend,
 } from "chart.js"
+import axios from "axios"
 
 ChartJS.register(
     CategoryScale,
@@ -21,30 +23,12 @@ ChartJS.register(
 )
 
 const ServiceRequests = () => {
-    const data = {
-        labels: [
-            "Mar 1",
-            "Mar 3",
-            "Mar 5",
-            "Mar 7",
-            "Mar 9",
-            "Mar 11",
-            "Mar 13",
-            "Mar 15",
-            "Mar 17",
-            "Mar 19",
-            "Mar 21",
-            "Mar 23",
-            "Mar 25",
-            "Mar 27",
-            "Mar 29",
-        ],
+    const [chartData, setChartData] = useState({
+        labels: [],
         datasets: [
             {
                 label: "Visits",
-                data: [
-                    50, 70, 65, 90, 30, 50, 85, 60, 45, 75, 90, 55, 85, 75, 60,
-                ],
+                data: [],
                 borderColor: "#0096C7",
                 backgroundColor: "#0096C7",
                 tension: 0.3,
@@ -53,7 +37,56 @@ const ServiceRequests = () => {
                 pointBackgroundColor: "#0096C7",
             },
         ],
-    }
+    })
+
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const fetchLogs = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/log")
+                const logs = response.data
+
+                // Extract labels (timestamps) and data (count of requests by day)
+                const aggregatedData = logs.reduce((acc, log) => {
+                    const date = new Date(log.timestamp).toLocaleDateString(
+                        "en-US",
+                        {
+                            month: "short",
+                            day: "numeric",
+                        },
+                    )
+                    acc[date] = (acc[date] || 0) + 1
+                    return acc
+                }, {})
+
+                const labels = Object.keys(aggregatedData)
+                const data = Object.values(aggregatedData)
+
+                setChartData({
+                    labels,
+                    datasets: [
+                        {
+                            label: "Service Requests",
+                            data,
+                            borderColor: "#0096C7",
+                            backgroundColor: "#0096C7",
+                            tension: 0.3,
+                            fill: false,
+                            pointRadius: 4,
+                            pointBackgroundColor: "#0096C7",
+                        },
+                    ],
+                })
+            } catch (error) {
+                console.error("Error fetching logs:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchLogs()
+    }, [])
 
     const options = {
         responsive: true,
@@ -61,7 +94,6 @@ const ServiceRequests = () => {
         scales: {
             y: {
                 beginAtZero: true,
-                max: 125,
             },
         },
         plugins: {
@@ -73,12 +105,16 @@ const ServiceRequests = () => {
     }
 
     return (
-        <div className="bg-white rounded-[12px] h-[380px] p-8 shadow-md">
+        <div className="bg-white rounded-[12px] h-[380px] w-full p-8 shadow-md">
             <h3 className="font-bold text-2xl mb-4">
                 Service Requests by Senior Citizens
             </h3>
             <div className="h-[280px]">
-                <Line data={data} options={options} />
+                {loading ? (
+                    <p>Loading data...</p>
+                ) : (
+                    <Line data={chartData} options={options} />
+                )}
             </div>
         </div>
     )

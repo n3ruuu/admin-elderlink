@@ -15,6 +15,7 @@ const News = () => {
     const [modalMessage, setModalMessage] = useState("")
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
     const [selectedNews, setSelectedNews] = useState(null) // News to be archived
+    const [searchQuery, setSearchQuery] = useState("")
 
     useEffect(() => {
         fetchNews()
@@ -28,6 +29,13 @@ const News = () => {
             console.error("Error fetching news:", error)
         }
     }
+
+    const filteredNews = newsData.filter(
+        (news) =>
+            news.headline.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            news.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            news.body.toLowerCase().includes(searchQuery.toLowerCase()),
+    )
 
     const handleSaveNews = (updatedNews) => {
         if (updatedNews.id) {
@@ -95,13 +103,18 @@ const News = () => {
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header onOpenModal={handleOpenModal} />
+            <Header
+                onOpenModal={handleOpenModal}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+            />
+
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Table
-                        newsData={newsData}
+                        newsData={filteredNews} // Use filtered data
                         handleOpenModal={handleOpenModal}
-                        handleOpenArchiveModal={openArchiveModal} // Pass archive handler
+                        handleOpenArchiveModal={openArchiveModal}
                     />
                 </div>
             </div>

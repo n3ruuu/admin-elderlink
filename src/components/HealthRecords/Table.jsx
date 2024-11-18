@@ -4,9 +4,15 @@ import EditIcon from "../../assets/icons/edit2.svg"
 import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
+import HeartIcon from "../../assets/icons/heart.svg"
 import * as XLSX from "xlsx" // Import the XLSX library
 
-const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
+const Table = ({
+    membersData,
+    onOpenModal,
+    onArchiveClick,
+    chronicConditions,
+}) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
 
@@ -85,14 +91,41 @@ const Table = ({ membersData, onOpenModal, onArchiveClick }) => {
                             key={row.id}
                         >
                             <td className="px-16 py-4 whitespace-nowrap">
-                                {row.name}
+                                <div className="relative flex items-center">
+                                    {row.medical_conditions &&
+                                        row.medical_conditions
+                                            .split(",")
+                                            .some((condition) =>
+                                                chronicConditions.includes(
+                                                    condition.trim(),
+                                                ),
+                                            ) && (
+                                            <img
+                                                src={HeartIcon}
+                                                alt="Heart"
+                                                className="absolute left-[-30px] w-5 h-5 pointer-events-none"
+                                                style={{ position: "absolute" }}
+                                            />
+                                        )}
+                                    <span>{row.name}</span>
+                                </div>
                             </td>
+
                             <td className="whitespace-normal py-4">
                                 {row.medical_conditions
                                     ? row.medical_conditions
                                           .split(",")
                                           .map((condition, idx) => (
-                                              <div key={idx}>
+                                              <div
+                                                  key={idx}
+                                                  className={`${
+                                                      chronicConditions.includes(
+                                                          condition.trim(),
+                                                      )
+                                                          ? "text-red-500"
+                                                          : ""
+                                                  }`}
+                                              >
                                                   {condition.trim()}
                                               </div>
                                           ))

@@ -156,7 +156,7 @@ const Dashboard = () => {
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
             <DashboardHeader />
             <div className="flex w-full h-full">
-                <div className="flex-1 flex flex-col pl-16 pr-8">
+                <div className="flex flex-col pl-16 pr-8">
                     <div className="flex gap-5 mb-5">
                         {/* Total Number of Senior Citizens Card */}
                         {(isTotalHovered ||
@@ -275,7 +275,10 @@ const Dashboard = () => {
                                                             dataKey="street"
                                                             hide="true"
                                                         />
-                                                        <YAxis />
+                                                        <YAxis
+                                                            domain={[0, 10]}
+                                                        />{" "}
+                                                        {/* Set range from 1 to 30 */}
                                                         <Tooltip />
                                                         <Legend />
                                                         <Bar
@@ -314,24 +317,27 @@ const Dashboard = () => {
                                         <h3 className="font-bold text-2xl text-[#333]">
                                             Upcoming Events Details
                                         </h3>
-                                        <div className="flex">
+                                        <div className="flex w-full h-full overflow-x-auto space-x-4 py-2">
                                             {/* Display the active events horizontally */}
                                             {upcomingEventDetails.filter(
                                                 (event) =>
                                                     event.status === "Active",
-                                            ).length > 0 && (
-                                                <div className="flex flex-row w-full overflow-x-auto space-x-4">
+                                            ).length > 0 ? (
+                                                <div className="flex flex-row space-x-4">
                                                     {upcomingEventDetails
                                                         .filter(
                                                             (event) =>
                                                                 event.status ===
                                                                 "Active",
-                                                        ) // Only filter active events
-                                                        .slice(0, 3) // Limit to 3 active events
+                                                        )
+                                                        .slice(
+                                                            0,
+                                                            upcomingEvents.length,
+                                                        ) // Limit to 3 active events
                                                         .map((event, index) => (
                                                             <div
                                                                 key={index}
-                                                                className="flex-shrink-0 w-48 p-4 mt-4 bg-gray-100 rounded-lg"
+                                                                className="flex-shrink-0 w-64 p-4 bg-[#219dbc79] rounded-lg shadow-sm"
                                                             >
                                                                 <p className="font-semibold">
                                                                     •{" "}
@@ -360,6 +366,11 @@ const Dashboard = () => {
                                                             </div>
                                                         ))}
                                                 </div>
+                                            ) : (
+                                                <p className="text-gray-500">
+                                                    No active events at the
+                                                    moment.
+                                                </p>
                                             )}
                                         </div>
                                     </div>

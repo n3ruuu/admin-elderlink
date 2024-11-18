@@ -91,7 +91,7 @@ const SmsModal = ({ isOpen, onClose }) => {
                             className={`ml-2 px-4 py-2 rounded-lg transition duration-200 ${
                                 recipients.includes("All Senior Citizens")
                                     ? "bg-red-500 text-white hover:bg-red-600"
-                                    : "bg-blue-500 text-white hover:bg-blue-600"
+                                    : "bg-[#219EBC] text-white hover:bg-[#1b87a1]"
                             }`}
                         >
                             {recipients.includes("All Senior Citizens")

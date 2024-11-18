@@ -8,9 +8,9 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
     const activeNewsData = newsData.filter((news) => news.status === "Active")
 
     return (
-        <div className="mt-8 mx-auto">
+        <div className="mt-8">
             {/* Scrollable container with a fixed height */}
-            <div className="overflow-y-auto max-h-[650px] shadow-lg rounded-xl border">
+            <div className="overflow-y-auto max-h-[650px] w-full shadow-lg rounded-xl border">
                 <table className="min-w-full bg-white">
                     <thead className="text-gray-500 border-b">
                         <tr>
@@ -35,73 +35,63 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {activeNewsData.length > 0 ? (
-                            activeNewsData.map((news, index) => (
-                                <tr
-                                    className={`text-[#333333] font-[500] ${
-                                        index % 2 === 0
-                                            ? "bg-white"
-                                            : "bg-[#F5F5FA]"
-                                    }`}
-                                    key={news.id}
-                                >
-                                    <td className="px-6 py-4 text-left align-top">
-                                        {news.headline}
-                                    </td>
-                                    <td className="px-6 py-4 text-left align-top">
-                                        {news.author}
-                                    </td>
-                                    <td className="px-6 py-4 text-left align-top whitespace-nowrap">
-                                        {moment(news.date).format("MM-DD-YYYY")}
-                                    </td>
-                                    <td className="px-6 py-4 text-left align-top">
-                                        {news.body}
-                                    </td>
-                                    <td className="px-6 py-4 text-left">
-                                        {news.image ? (
-                                            <img
-                                                src={`http://localhost:5000/uploads/${news.image}`}
-                                                alt="News"
-                                                className="w-[500px] h-[200px] object-cover rounded-md"
-                                            />
-                                        ) : (
-                                            "No Image"
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 text-left flex gap-2">
-                                        <button
-                                            onClick={() =>
-                                                handleOpenModal(news)
-                                            }
-                                        >
-                                            <img
-                                                src={EditIcon}
-                                                alt="Edit Icon"
-                                                className="h-5"
-                                            />
-                                        </button>
+                        {activeNewsData.map((news, index) => (
+                            <tr
+                                className={`text-[#333333] font-[500] ${
+                                    index % 2 === 0
+                                        ? "bg-white"
+                                        : "bg-[#F5F5FA]"
+                                }`}
+                                key={news.id}
+                            >
+                                <td className="px-6 py-4 text-left align-top">
+                                    {news.headline}
+                                </td>
+                                <td className="px-6 py-4 text-left align-top">
+                                    {news.author}
+                                </td>
+                                <td className="px-6 py-4 text-left align-top whitespace-nowrap">
+                                    {moment(news.date).format("MM-DD-YYYY")}
+                                </td>
+                                <td className="px-6 py-4 text-left align-top">
+                                    {news.body}
+                                </td>
+                                <td className="px-6 py-4 text-left">
+                                    {news.image ? (
+                                        <img
+                                            src={`http://localhost:5000/uploads/${news.image}`}
+                                            alt="News"
+                                            className="w-[500px] h-[200px] object-cover rounded-md"
+                                        />
+                                    ) : (
+                                        "No Image"
+                                    )}
+                                </td>
+                                <td className="px-6 py-4 text-left flex gap-2">
+                                    <button
+                                        onClick={() => handleOpenModal(news)}
+                                    >
+                                        <img
+                                            src={EditIcon}
+                                            alt="Edit Icon"
+                                            className="h-5"
+                                        />
+                                    </button>
 
-                                        <button
-                                            onClick={() =>
-                                                handleOpenArchiveModal(news)
-                                            }
-                                        >
-                                            <img
-                                                src={ArchiveIcon}
-                                                alt="Archive Icon"
-                                                className="h-5"
-                                            />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="6" className="text-center py-4">
-                                    No news found.
+                                    <button
+                                        onClick={() =>
+                                            handleOpenArchiveModal(news)
+                                        }
+                                    >
+                                        <img
+                                            src={ArchiveIcon}
+                                            alt="Archive Icon"
+                                            className="h-5"
+                                        />
+                                    </button>
                                 </td>
                             </tr>
-                        )}
+                        ))}
                     </tbody>
                 </table>
             </div>

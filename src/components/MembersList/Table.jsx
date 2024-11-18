@@ -9,7 +9,12 @@ import SuccessModal from "./SuccessModal"
 import ReportIcon from "../../assets/icons/report.svg"
 import * as XLSX from "xlsx" // Import the XLSX library
 
-const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
+const Table = ({
+    membersData,
+    handleOpenModal,
+    handleArchiveMember,
+    logAction,
+}) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6
 
@@ -39,6 +44,7 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
         if (!memberToArchive) return
 
         try {
+            // Archive the member
             await axios.put(
                 `http://localhost:5000/members/archive/${memberToArchive.id}`,
                 { status: selectedReason }, // Pass the selected reason in the request body
@@ -46,6 +52,9 @@ const Table = ({ membersData, handleOpenModal, handleArchiveMember }) => {
 
             // Call the parent function to update membersData in the parent component
             handleArchiveMember(memberToArchive.id)
+
+            // Log the action of archiving a member
+            await logAction(`Archive Member Info`)
 
             // Open SuccessModal after successful archiving
             setIsSuccessModalOpen(true)

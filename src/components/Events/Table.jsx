@@ -52,69 +52,53 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {currentEvents.length > 0 ? (
-                        currentEvents.map((event, index) => (
-                            <tr
-                                className={`text-[#333333] font-[500] ${
-                                    index % 2 === 0
-                                        ? "bg-white"
-                                        : "bg-[#F5F5FA]"
-                                }`}
-                                key={event.id}
-                            >
-                                <td className="px-16 py-4 text-left whitespace-nowrap">
-                                    {event.title}
-                                </td>
-                                <td className="text-left whitespace-nowrap">
-                                    {moment(event.date).format("MM-DD-YYYY")}
-                                </td>
-                                <td className="text-left whitespace-nowrap">
-                                    {event.location}
-                                </td>
-                                <td className="text-left whitespace-nowrap">
-                                    {event.organizer}
-                                </td>
-                                <td className="text-left whitespace-nowrap">
-                                    {event.category}
-                                </td>
-                                <td className="px-8 pt-4 text-left whitespace-nowrap flex gap-3">
-                                    <button
-                                        onClick={() => handleOpenModal(event)}
-                                    >
-                                        <img
-                                            src={EditIcon}
-                                            alt="Edit Icon"
-                                            className="w-[20px]"
-                                        />
-                                    </button>
-                                    <button
-                                        onClick={() => onArchiveClick(event)}
-                                    >
-                                        <img
-                                            src={ArchiveIcon}
-                                            alt="Archive Icon"
-                                            className="w-[20px]"
-                                        />
-                                    </button>
-                                    <button
-                                        onClick={() => setSMSModalOpen(true)}
-                                    >
-                                        <img
-                                            src={SendIcon}
-                                            alt="Send Icon"
-                                            className="w-[20px]"
-                                        />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="6" className="text-center py-4">
-                                No events found.
+                    {currentEvents.map((event, index) => (
+                        <tr
+                            className={`text-[#333333] font-[500] ${
+                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
+                            }`}
+                            key={event.id}
+                        >
+                            <td className="px-16 py-4 text-left whitespace-nowrap">
+                                {event.title}
+                            </td>
+                            <td className="text-left whitespace-nowrap">
+                                {moment(event.date).format("MM-DD-YYYY")}
+                            </td>
+                            <td className="text-left whitespace-nowrap">
+                                {event.location}
+                            </td>
+                            <td className="text-left whitespace-nowrap">
+                                {event.organizer}
+                            </td>
+                            <td className="text-left whitespace-nowrap">
+                                {event.category}
+                            </td>
+                            <td className="px-8 pt-4 text-left whitespace-nowrap flex gap-3">
+                                <button onClick={() => handleOpenModal(event)}>
+                                    <img
+                                        src={EditIcon}
+                                        alt="Edit Icon"
+                                        className="w-[20px]"
+                                    />
+                                </button>
+                                <button onClick={() => onArchiveClick(event)}>
+                                    <img
+                                        src={ArchiveIcon}
+                                        alt="Archive Icon"
+                                        className="w-[20px]"
+                                    />
+                                </button>
+                                <button onClick={() => setSMSModalOpen(true)}>
+                                    <img
+                                        src={SendIcon}
+                                        alt="Send Icon"
+                                        className="w-[20px]"
+                                    />
+                                </button>
                             </td>
                         </tr>
-                    )}
+                    ))}
                 </tbody>
             </table>
 

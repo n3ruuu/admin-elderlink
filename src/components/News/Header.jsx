@@ -2,7 +2,7 @@
 import SearchIcon from "../../assets/icons/search.svg"
 import FilterIcon from "../../assets/icons/filter-icon.svg"
 
-const Header = ({ onOpenModal }) => {
+const Header = ({ onOpenModal, searchQuery, setSearchQuery }) => {
     return (
         <div className="p-16 w-full pb-8 flex">
             <div className="w-1/2">
@@ -19,6 +19,8 @@ const Header = ({ onOpenModal }) => {
                                 type="search"
                                 name="search"
                                 id="search"
+                                value={searchQuery} // Bind input to state
+                                onChange={(e) => setSearchQuery(e.target.value)} // Update state
                                 className="p-3 pl-12 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full"
                                 placeholder="Search..."
                             />
@@ -38,7 +40,7 @@ const Header = ({ onOpenModal }) => {
 
                 <button
                     className="text-[#F5F5FA] bg-[#219EBC] px-8 ml-4 text-[24px] py-2 rounded-lg hover:bg-[#1A7F8C]"
-                    onClick={onOpenModal} // Use the correct prop name here
+                    onClick={onOpenModal}
                 >
                     &#43; Add News
                 </button>

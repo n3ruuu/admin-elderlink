@@ -3,7 +3,7 @@ import Header from "./Header"
 import FormsCategories from "./FormsCategories"
 import FormsContainer from "./FormsContainer"
 import Table from "./Table" // Import Table component
-import SuccessModal from "../common/SuccessModal"
+import SuccessModal from "./SuccessModal"
 
 const Forms = () => {
     const [formsData, setFormsData] = useState([]) // State to store forms data
@@ -12,6 +12,7 @@ const Forms = () => {
     const [modalTitle, setModalTitle] = useState("") // State for modal title
     const [modalMessage, setModalMessage] = useState("") // State for modal message
     const [searchQuery, setSearchQuery] = useState("") // State for search query
+
 
     useEffect(() => {
         fetchFormsData()
@@ -90,6 +91,8 @@ const Forms = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false)
     }
+
+ 
 
     // Grouping forms by category
     const groupedForms = filteredFormsData.reduce((acc, form) => {

@@ -8,6 +8,7 @@ import CityIcon from "../../assets/city.png"
 import ArchiveIcon from "../../assets/icons/archive2.svg" // Import Archive Icon
 import ArchiveModal from "./ArchiveModal" // Import your ArchiveModal
 import SuccessModal from "../common/SuccessModal" // Import your SuccessModal
+import { useNavigate } from "react-router-dom" // Import useNavigate
 
 const Table = ({ formsData, fetchFormsData }) => {
     const [isModalOpen, setIsModalOpen] = useState(false) // For archive modal visibility
@@ -15,6 +16,8 @@ const Table = ({ formsData, fetchFormsData }) => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // Success modal visibility
     const [modalTitle, setModalTitle] = useState("") // Success modal title
     const [modalMessage, setModalMessage] = useState("") // Success modal message
+
+    const navigate = useNavigate() // Initialize useNavigate hook
 
     // Helper function to get the appropriate icon based on category
     const getCategoryIcon = (category) => {
@@ -38,20 +41,29 @@ const Table = ({ formsData, fetchFormsData }) => {
         setIsModalOpen(true)
     }
 
+    const handleGoToArchives = () => {
+        // Navigate to the Archives page
+        navigate("/admin-elderlink/archives")
+    }
+
     // Close the modal
     const closeModal = () => {
         setIsModalOpen(false)
         setSelectedForm(null)
     }
 
-    // Handle archiving form (send PUT request)
     const handleArchiveConfirm = async () => {
         if (!selectedForm) return
 
+        // Toggle the new status based on current form's status
+        const newStatus =
+            selectedForm.status === "Archived" ? "Active" : "Archived"
+
         try {
-            // Send PUT request to archive the form
+            // Send PUT request to archive the form with the new status
             const response = await axios.put(
                 `http://localhost:5000/forms/archive/${selectedForm.id}`,
+                { newStatus }, // Send the new status in the request body
             )
             console.log(response.data.message) // Log success message
 
@@ -152,10 +164,8 @@ const Table = ({ formsData, fetchFormsData }) => {
                 onClose={() => setIsSuccessModalOpen(false)}
                 title={modalTitle}
                 message={modalMessage}
+                onGoToArchives={handleGoToArchives}
                 isArchiving={true}
-                onGoToArchives={() => {
-                    console.log("Navigate to archives page")
-                }}
             />
         </div>
     )
