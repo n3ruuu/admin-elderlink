@@ -5,6 +5,7 @@ import Header from "./Header"
 import Table from "./Table"
 import SuccessModal from "../common/SuccessModal"
 import ArchiveModal from "./ArchiveModal" // Import ArchiveModal component
+import moment from "moment"
 
 const News = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -30,6 +31,29 @@ const News = () => {
         }
     }
 
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
+        }
+    }
+
     const filteredNews = newsData.filter(
         (news) =>
             news.headline.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,7 +61,7 @@ const News = () => {
             news.body.toLowerCase().includes(searchQuery.toLowerCase()),
     )
 
-    const handleSaveNews = (updatedNews) => {
+    const handleSaveNews = async (updatedNews) => {
         if (updatedNews.id) {
             // Editing existing news
             setNewsData(
@@ -47,11 +71,13 @@ const News = () => {
             )
             setModalTitle("News Updated!")
             setModalMessage("The news has been successfully updated.")
+            await logAction(`Update News`)
         } else {
             // Adding new news
             setNewsData([updatedNews, ...newsData])
             setModalTitle("News Published!")
             setModalMessage("The news has been successfully published.")
+            await logAction(`Publish News`)
         }
         setSuccessModalOpen(true) // Open the success modal
         fetchNews() // Optionally refresh the news data
@@ -95,6 +121,7 @@ const News = () => {
                 setModalMessage("The news has been successfully archived.")
                 setSuccessModalOpen(true) // Show success modal
                 closeArchiveModal() // Close archive modal
+                await logAction(`Archive News`)
             } catch (error) {
                 console.error("Error archiving news:", error)
             }

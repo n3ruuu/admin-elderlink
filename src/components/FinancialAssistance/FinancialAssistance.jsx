@@ -23,6 +23,29 @@ const FinancialAssistance = () => {
         setSearchTerm(e.target.value)
     }
 
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
+        }
+    }
+
     const filteredBenefit = membersData.filter((member) => {
         const searchTermLower = searchTerm.toLowerCase() // Convert searchTerm to lowercase once to optimize performance
         return (
@@ -134,6 +157,14 @@ const FinancialAssistance = () => {
 
             const savedRecord = await response.json()
 
+            // Determine action based on whether it's a new record or an update
+            const action = currentMember
+                ? "Update Financial Record"
+                : "New Financial Record"
+
+            // Log the action
+            await logAction(action)
+
             setMembersData((prevData) => {
                 if (currentMember) {
                     return prevData.map((member) =>
@@ -178,6 +209,8 @@ const FinancialAssistance = () => {
                     body: JSON.stringify({ status: selectedReason }),
                 },
             )
+
+            await logAction(`Archive Financial Record`)
 
             setSuccessTitle("Financial Assistance Record Archived!")
             setSuccessMessage(

@@ -4,6 +4,7 @@ import FormsCategories from "./FormsCategories"
 import FormsContainer from "./FormsContainer"
 import Table from "./Table" // Import Table component
 import SuccessModal from "./SuccessModal"
+import moment from "moment"
 
 const Forms = () => {
     const [formsData, setFormsData] = useState([]) // State to store forms data
@@ -12,7 +13,6 @@ const Forms = () => {
     const [modalTitle, setModalTitle] = useState("") // State for modal title
     const [modalMessage, setModalMessage] = useState("") // State for modal message
     const [searchQuery, setSearchQuery] = useState("") // State for search query
-
 
     useEffect(() => {
         fetchFormsData()
@@ -29,6 +29,29 @@ const Forms = () => {
             setFormsData(data)
         } catch (error) {
             console.error("Error fetching forms data:", error)
+        }
+    }
+
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
         }
     }
 
@@ -69,6 +92,7 @@ const Forms = () => {
             setModalTitle("Upload Successful")
             setModalMessage("The form has been added successfully.")
             setIsModalOpen(true)
+            await logAction(`New Form`)
         } catch (error) {
             console.error("Error uploading file:", error)
         }
@@ -91,8 +115,6 @@ const Forms = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false)
     }
-
- 
 
     // Grouping forms by category
     const groupedForms = filteredFormsData.reduce((acc, form) => {
@@ -131,6 +153,7 @@ const Forms = () => {
                         groupedForms={groupedForms}
                         selectedCategory={selectedCategory}
                         fetchFormsData={fetchFormsData}
+                        logAction={logAction}
                     />
                 </>
             ) : (

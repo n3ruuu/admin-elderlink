@@ -7,6 +7,7 @@ import Header from "./Header"
 import Table from "./Table"
 import ViewModeSwitcher from "./ViewModeSwitcher"
 import SuccessModal from "../common/SuccessModal"
+import moment from "moment"
 
 const Events = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -31,6 +32,29 @@ const Events = () => {
             setEventsData(response.data)
         } catch (error) {
             console.error("Error fetching events:", error)
+        }
+    }
+
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
         }
     }
 
@@ -66,6 +90,7 @@ const Events = () => {
                 )
                 setModalTitle("Event Updated!")
                 setModalMessage("The event has been successfully edited.")
+                await logAction(`Update Event`)
             } else {
                 const response = await axios.post(
                     "http://localhost:5000/events",
@@ -76,6 +101,7 @@ const Events = () => {
                 setModalMessage(
                     "The event has been successfully added to the event list.",
                 )
+                await logAction(`New Event`)
             }
         } catch (error) {
             console.error("Error saving event:", error)
@@ -106,6 +132,8 @@ const Events = () => {
                 console.log("Updated Events Data:", updatedData)
                 return updatedData
             })
+
+            await logAction(`Archive Event`)
 
             // Close the confirmation modal
             setIsConfirmModalOpen(false)

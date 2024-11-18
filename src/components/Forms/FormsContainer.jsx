@@ -7,7 +7,12 @@ import ArchiveModal from "./ArchiveModal" // Import the ArchiveModal component
 import axios from "axios" // Import axios for making API requests
 import SuccessModal from "../common/SuccessModal"
 
-const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData }) => {
+const FormsContainer = ({
+    groupedForms,
+    selectedCategory,
+    fetchFormsData,
+    logAction,
+}) => {
     const [activeFormId, setActiveFormId] = useState(null) // Track the active form
     const [isModalOpen, setIsModalOpen] = useState(false) // Modal visibility state
     const [formTitle, setFormTitle] = useState("") // Store form title to display in modal
@@ -49,6 +54,7 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData }) => {
                 // Optionally, update the UI after the successful update
                 setIsEditing(false) // Exit editing mode
                 fetchFormsData()
+                await logAction(`Update Form`)
             } catch (error) {
                 console.error(
                     "Error updating title:",
@@ -73,7 +79,7 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData }) => {
             setModalTitle("Form Archived")
             setModalMessage("The form has been successfully archived.")
             setIsSuccessModalOpen(true)
-
+            await logAction(`Archive Form`)
             fetchFormsData()
         } catch (error) {
             console.error(
