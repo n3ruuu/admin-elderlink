@@ -13,6 +13,8 @@ import {
     ResponsiveContainer,
 } from "recharts"
 
+import moment from "moment"
+
 import DashboardHeader from "./DashboardHeader"
 import DashboardCard from "./DashboardCard"
 import ServiceRequests from "./ServiceRequests"
@@ -21,8 +23,6 @@ import History from "./History"
 import TotalNumberIcon from "../../assets/icons/total-number.svg"
 import UpcomingEventsIcon from "../../assets/icons/upcoming-events.svg"
 import TransactionIcon from "../../assets/icons/transaction.svg"
-
-import ApplicationsData from "../../data/applications.json"
 
 const Dashboard = () => {
     // eslint-disable-next-line no-unused-vars
@@ -117,14 +117,24 @@ const Dashboard = () => {
                 console.error("Error fetching upcoming events:", error)
             }
         }
-        // Fetch pending applications
-        const fetchPendingApplications = () => {
-            const pendingApps = ApplicationsData.filter(
-                (application) => application.status === "Pending",
-            )
-            setPendingApplications(pendingApps.length)
-            setPendingApplicationsDetails(pendingApps) // Set pending applications details
+
+        // Fetch pending applications from the backend
+        const fetchPendingApplications = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:5000/application",
+                )
+                const pendingApps = response.data?.data.filter(
+                    (application) => application.status === "Pending",
+                )
+
+                setPendingApplications(pendingApps.length)
+                setPendingApplicationsDetails(pendingApps)
+            } catch (error) {
+                console.error("Error fetching pending applications:", error)
+            }
         }
+
         fetchTotalSeniorCitizens()
         fetchUpcomingEvents()
         fetchPendingApplications()
@@ -339,8 +349,7 @@ const Dashboard = () => {
                                                                 key={index}
                                                                 className="flex-shrink-0 w-64 p-4 bg-[#219dbc79] rounded-lg shadow-sm"
                                                             >
-                                                                <p className="font-semibold">
-                                                                    •{" "}
+                                                                <p className="font-semibold text-center pb-2">
                                                                     <strong>
                                                                         {
                                                                             event.title
@@ -399,17 +408,16 @@ const Dashboard = () => {
                                     bgColor="bg-[#E1FFE1]"
                                 />
                                 {isTransactionsHovered && (
-                                    <div className="absolute top-0 left-0 w-full h-full bg-white p-6 shadow-lg rounded-lg z-10 flex flex-col space-y-4">
+                                    <div className="absolute mb-4 top-0 left-0 w-full h-full bg-white p-6 shadow-lg rounded-lg z-10 flex flex-col space-y-4">
                                         <h3 className="font-bold text-2xl text-[#333]">
                                             Pending Applications Details
                                         </h3>
-                                        <div className="flex flex-wrap gap-4">
-                                            {/* Loop through the applications and display them in pairs */}
+                                        <div className="flex flex-wrap gap-5 gap-x-8 overflow-x-hidden justify-center">
                                             {pendingApplicationsDetails.map(
                                                 (application, index) => (
                                                     <div
                                                         key={index}
-                                                        className="w-full sm:w-1/2 lg:w-1/2 xl:w-1/2"
+                                                        className="bg-gray-100 p-4 rounded-lg shadow-md w-[400px] mb-2"
                                                     >
                                                         <div className="mb-4 border-b pb-3">
                                                             <p className="text-gray-700">
@@ -425,9 +433,11 @@ const Dashboard = () => {
                                                                     Date
                                                                     Submitted:
                                                                 </strong>{" "}
-                                                                {
-                                                                    application.date_submitted
-                                                                }
+                                                                {moment(
+                                                                    application.date_submitted,
+                                                                ).format(
+                                                                    "MMMM D, YYYY",
+                                                                )}
                                                             </p>
                                                             <p className="text-gray-700">
                                                                 <strong>

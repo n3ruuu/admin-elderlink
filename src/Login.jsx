@@ -2,11 +2,13 @@
 import axios from "axios"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { FaEye, FaEyeSlash } from "react-icons/fa" // Import eye icons
 import ElderlinkLogo from "./assets/elderlink-logo.png"
 
 const Login = ({ onLogin }) => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [showPassword, setShowPassword] = useState(false) // State to toggle password visibility
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate()
 
@@ -14,23 +16,18 @@ const Login = ({ onLogin }) => {
         e.preventDefault()
 
         try {
-            // Make the login request
             const response = await axios.post("http://localhost:5000/login", {
                 username,
                 password,
             })
 
-            // Check if login is successful
             if (response.status === 200) {
                 const { token } = response.data
-                // Store token in localStorage
-                localStorage.setItem("authToken", token) // Store the auth token
+                localStorage.setItem("authToken", token)
                 onLogin()
-                // Redirect to dashboard
                 navigate("/admin-elderlink/dashboard")
             }
         } catch (error) {
-            // Handle errors
             setErrorMessage(
                 error.response?.data?.message ||
                     "An error occurred. Please try again.",
@@ -80,7 +77,7 @@ const Login = ({ onLogin }) => {
                             />
                         </div>
 
-                        <div>
+                        <div className="relative">
                             <label
                                 htmlFor="password"
                                 className="block text-sm font-medium text-[#1F1F29]"
@@ -89,11 +86,18 @@ const Login = ({ onLogin }) => {
                             </label>
                             <input
                                 id="password"
-                                type="password"
+                                type={showPassword ? "text" : "password"} // Toggle input type
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="mt-1 block w-full bg-[#F5F5FA] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-[#219EBC] sm:text-sm"
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)} // Toggle state
+                                className="absolute inset-y-0 top-6 right-3 flex items-center text-gray-500"
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </button>
                         </div>
 
                         <button
