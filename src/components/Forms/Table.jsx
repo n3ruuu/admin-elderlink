@@ -11,7 +11,7 @@ import SuccessModal from "../common/SuccessModal" // Import your SuccessModal
 import { useNavigate } from "react-router-dom" // Import useNavigate
 import moment from "moment"
 
-const Table = ({ formsData, fetchFormsData }) => {
+const Table = ({ formsData, fetchFormsData, logAction }) => {
     const [isModalOpen, setIsModalOpen] = useState(false) // For archive modal visibility
     const [selectedForm, setSelectedForm] = useState(null) // Track the selected form
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // Success modal visibility
@@ -75,6 +75,8 @@ const Table = ({ formsData, fetchFormsData }) => {
             setModalTitle("Form Archived")
             setModalMessage("The form has been successfully archived.")
             setIsSuccessModalOpen(true)
+
+            await logAction("Archive Form")
 
             // Re-fetch forms data after archiving
             fetchFormsData()

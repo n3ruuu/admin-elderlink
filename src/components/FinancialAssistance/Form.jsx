@@ -85,24 +85,13 @@ const Form = ({
                     <label className="block text-lg font-medium text-gray-700 mb-1">
                         Benefit Type <span className="text-red-500">*</span>
                     </label>
-                    <select
+                    <input
+                        type="text"
                         className="w-full border-gray-300 rounded-md shadow-sm bg-[#F5F5FA] h-[45px] px-4"
+                        placeholder="Enter benefit type"
                         value={benefitType}
                         onChange={(e) => setBenefitType(e.target.value)}
-                    >
-                        <option value="">Select benefit type</option>
-                        <option value="SSS">SSS Benefit</option>
-                        <option value="GSIS">GSIS Benefit</option>
-                        <option value="Social Pension">Social Pension</option>
-                        <option value="Medical Needs">Medical Needs</option>
-                        <option value="Burial Assistance">
-                            Burial Assistance
-                        </option>
-                        <option value="Emergency Cash">Emergency Cash</option>
-                        <option value="Centenarian Benefit">
-                            Centenarian Benefit
-                        </option>
-                    </select>
+                    />
                 </div>
 
                 {/* Date of Claim */}

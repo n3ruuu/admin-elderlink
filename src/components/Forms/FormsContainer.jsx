@@ -70,6 +70,7 @@ const FormsContainer = ({
             // Send PUT request to archive the form
             const response = await axios.put(
                 `http://localhost:5000/forms/archive/${activeFormId}`,
+                { newStatus: "Archived" }, // Match the backend's expected key
             )
             console.log(response.data.message) // Log success message
             // Close the modal after confirming
@@ -79,7 +80,7 @@ const FormsContainer = ({
             setModalTitle("Form Archived")
             setModalMessage("The form has been successfully archived.")
             setIsSuccessModalOpen(true)
-            await logAction(`Archive Form`)
+            await logAction("Archive Form")
             fetchFormsData()
         } catch (error) {
             console.error(

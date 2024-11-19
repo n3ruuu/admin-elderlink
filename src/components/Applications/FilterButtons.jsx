@@ -5,7 +5,7 @@ const FilterButtons = ({ filter, setFilter }) => (
         <div className="flex gap-2 items-center">
             <div className="flex items-center">
                 <div className="flex border border-[#219EBC] rounded-2xl ml-2">
-                    {["all", "pending", "approved", "denied"].map(
+                    {["all", "pending", "approved", "rejected"].map(
                         (status, index, array) => (
                             <button
                                 key={status}

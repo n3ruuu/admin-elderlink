@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import SearchIcon from "../../assets/icons/search.svg"
-import FilterIcon from "../../assets/icons/filter-icon.svg"
 
 const Header = ({ handleOpenModal, setSearchTerm }) => {
     const handleSearchChange = (event) => {
@@ -34,11 +33,6 @@ const Header = ({ handleOpenModal, setSearchTerm }) => {
                                 className="absolute left-5 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none"
                             />
                         </div>
-                        <img
-                            src={FilterIcon}
-                            alt="Filter Icon"
-                            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none"
-                        />
                     </div>
                 </div>
 

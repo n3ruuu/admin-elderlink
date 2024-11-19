@@ -16,24 +16,54 @@ const HealthRecords = () => {
     const [searchTerm, setSearchTerm] = useState("")
     const [successTitle, setSuccessTitle] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
-    const [recentUpdatesCount, setRecentUpdatesCount] = useState(0)
     const [recordToArchive, setRecordToArchive] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [isArchiving, setIsArchiving] = useState(false)
+    const [recentUpdates, setRecentUpdates] = useState([])
 
     const chronicConditions = [
-        "Diabetes Mellitus",
+        // Cardiovascular Conditions
         "Hypertension",
-        "Asthma",
-        "Chronic Obstructive Pulmonary Disease (COPD)",
         "Heart Disease",
-        "Chronic Kidney Disease",
-        "Arthritis",
-        "Cancer",
-        "HIV/AIDS",
         "Stroke",
-    ] // Define chronic conditions array
+
+        // Metabolic and Endocrine Disorders
+        "Diabetes Mellitus",
+
+        // Respiratory Conditions
+        "Chronic Obstructive Pulmonary Disease",
+        "Asthma",
+
+        // Neurological and Cognitive Conditions
+        "Alzheimer's Disease",
+        "Dementia",
+        "Parkinson's Disease",
+
+        // Renal and Liver Conditions
+        "Chronic Kidney Disease",
+        "Hepatitis B",
+        "Hepatitis C",
+
+        // Cancers
+        "Lung Cancer",
+        "Breast Cancer",
+        "Liver Cancer",
+        "Colorectal Cancer",
+        "Cervical Cancer",
+        "Ovarian Cancer",
+        "Prostate Cancer",
+
+        // Infectious Diseases
+        "HIV/AIDS",
+
+        // Musculoskeletal and Rheumatic Conditions
+        "Arthritis",
+
+        // Chronic Pain and Disability
+        "Chronic Back Pain",
+        "Osteoporosis",
+    ]
 
     const priorityCareCount = [
         ...new Set(
@@ -51,14 +81,6 @@ const HealthRecords = () => {
         ),
     ].length
 
-    // Fetch recentUpdatesCount from localStorage on initial render
-    useEffect(() => {
-        const storedUpdatesCount = localStorage.getItem("recentUpdatesCount")
-        if (storedUpdatesCount) {
-            setRecentUpdatesCount(Number(storedUpdatesCount)) // Convert to number if stored as string
-        }
-    }, [])
-
     const fetchMembersData = async () => {
         setLoading(true)
         try {
@@ -75,8 +97,26 @@ const HealthRecords = () => {
         }
     }
 
+    const fetchRecentUpdates = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/log")
+            if (!response.ok) {
+                throw new Error("Failed to fetch logs")
+            }
+
+            const logs = await response.json()
+            const healthUpdates = logs.filter((log) =>
+                log.action.includes("Health"),
+            )
+            setRecentUpdates(healthUpdates)
+        } catch (error) {
+            console.error("Error fetching recent updates:", error)
+        }
+    }
+
     useEffect(() => {
         fetchMembersData()
+        fetchRecentUpdates()
     }, [])
 
     const logAction = async (action) => {
@@ -139,14 +179,6 @@ const HealthRecords = () => {
         setCurrentRecord(null)
     }
 
-    const incrementUpdatesCount = () => {
-        setRecentUpdatesCount((prevCount) => {
-            const newCount = prevCount + 1
-            localStorage.setItem("recentUpdatesCount", newCount) // Save to localStorage
-            return newCount
-        })
-    }
-
     const handleSave = async (updatedMember) => {
         try {
             const now = new Date().toISOString()
@@ -169,7 +201,6 @@ const HealthRecords = () => {
                 setSuccessMessage(
                     "Member health record has been successfully updated.",
                 )
-                incrementUpdatesCount() // Increment count after update
 
                 // Log the update action
                 await logAction(`Update Health Record`)
@@ -187,7 +218,6 @@ const HealthRecords = () => {
                 setSuccessMessage(
                     "The health record has been successfully added to the list.",
                 )
-                incrementUpdatesCount() // Increment count after adding
 
                 // Log the add action
                 await logAction(`New Health Record`)
@@ -238,15 +268,8 @@ const HealthRecords = () => {
             setSuccessMessage(
                 "The health record has been successfully archived.",
             )
-            incrementUpdatesCount() // Increment count after archiving
 
-            // Recalculate the recent updates count based on the filtered records
-            setRecentUpdatesCount((prevCount) => {
-                const updatedCount = prevCount - 1
-                localStorage.setItem("recentUpdatesCount", updatedCount)
-                return updatedCount
-            })
-
+            await logAction("Archive Health Record")
             fetchMembersData() // Refresh the member data after archiving
             setIsSuccessModalOpen(true)
         } catch (error) {
@@ -274,7 +297,7 @@ const HealthRecords = () => {
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards
                         totalRecords={totalRecords}
-                        recentUpdatesCount={recentUpdatesCount} // Pass recentUpdatesCount prop
+                        recentUpdatesCount={recentUpdates.length} // Pass recentUpdatesCount prop
                         priorityCareCount={priorityCareCount}
                     />
                     {loading ? (

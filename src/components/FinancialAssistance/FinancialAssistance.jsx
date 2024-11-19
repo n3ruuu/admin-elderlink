@@ -234,8 +234,11 @@ const FinancialAssistance = () => {
 
         return membersData.filter((member) => {
             const claimDate = moment(member.date_of_claim)
-            return claimDate.isBetween(startOfMonth, endOfMonth, null, "[]")
-        }).length // Return the number of records (payouts) in this month
+            return (
+                member.status === "Active" && // Check if the status is "Active"
+                claimDate.isBetween(startOfMonth, endOfMonth, null, "[]")
+            )
+        }).length // Return the number of active payouts in this month
     }
 
     const handleCloseSuccessModal = () => {
@@ -249,8 +252,11 @@ const FinancialAssistance = () => {
 
         return membersData.filter((member) => {
             const claimDate = moment(member.date_of_claim)
-            return claimDate.isBetween(startOfWeek, endOfWeek, null, "[]")
-        }).length
+            return (
+                member.status === "Active" && // Check if the status is "Active"
+                claimDate.isBetween(startOfWeek, endOfWeek, null, "[]")
+            )
+        }).length // Return the number of active payouts in this week
     }
 
     const totalBeneficiaries = filteredBenefit.length

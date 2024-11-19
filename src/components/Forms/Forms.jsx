@@ -169,6 +169,7 @@ const Forms = () => {
                     <Table
                         formsData={filteredFormsData} // Pass filtered forms data to Table
                         fetchFormsData={fetchFormsData}
+                        logAction={logAction}
                     />
                 </>
             )}

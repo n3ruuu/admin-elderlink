@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
 import moment from "moment"
-import EditIcon from "../../assets/icons/edit.svg"
 import ApproveIcon from "../../assets/icons/approve.svg"
 import RejectIcon from "../../assets/icons/reject.svg"
 import PreviewIcon from "../../assets/icons/preview.svg"
-import PrintIcon from "../../assets/icons/print.svg"
+import UndoIcon from "../../assets/icons/cancel.svg"
 
-const Table = ({ filteredData }) => (
+const Table = ({ filteredData, onStatusUpdate }) => (
     <table className="w-full bg-[#FFFFFF] shadow-xl rounded-xl">
         <thead className="text-[#767171CC]">
             <tr className="border-b">
@@ -37,6 +36,18 @@ const Table = ({ filteredData }) => (
                         <button
                             className="p-2 rounded-full hover:bg-gray-200"
                             aria-label="Preview"
+                            onClick={() => {
+                                if (item.file_path) {
+                                    window.open(
+                                        `http://localhost:5000/${item.file_path}`,
+                                        "_blank",
+                                    )
+                                } else {
+                                    alert(
+                                        "No PDF file available for this item.",
+                                    )
+                                }
+                            }}
                         >
                             <img
                                 src={PreviewIcon}
@@ -50,6 +61,9 @@ const Table = ({ filteredData }) => (
                                 <button
                                     className="p-2 rounded-full hover:bg-gray-200"
                                     aria-label="Approve"
+                                    onClick={() =>
+                                        onStatusUpdate(item.id, "Approved")
+                                    }
                                 >
                                     <img
                                         src={ApproveIcon}
@@ -60,6 +74,9 @@ const Table = ({ filteredData }) => (
                                 <button
                                     className="p-2 rounded-full hover:bg-gray-200"
                                     aria-label="Reject"
+                                    onClick={() =>
+                                        onStatusUpdate(item.id, "Rejected")
+                                    }
                                 >
                                     <img
                                         src={RejectIcon}
@@ -70,39 +87,35 @@ const Table = ({ filteredData }) => (
                             </>
                         )}
 
-                        {item.status === "Incomplete" && (
+                        {item.status === "Approved" && (
                             <>
                                 <button
                                     className="p-2 rounded-full hover:bg-gray-200"
-                                    aria-label="Edit"
+                                    aria-label="Cancel"
+                                    onClick={() =>
+                                        onStatusUpdate(item.id, "Pending")
+                                    }
                                 >
                                     <img
-                                        src={EditIcon}
-                                        alt="Edit Icon"
-                                        className="w-5 h-5"
-                                    />
-                                </button>
-                                <button
-                                    className="p-2 rounded-full hover:bg-gray-200"
-                                    aria-label="Delete"
-                                >
-                                    <img
-                                        src={RejectIcon}
-                                        alt="Delete Icon"
+                                        src={UndoIcon}
+                                        alt="Cancel Icon"
                                         className="w-5 h-5"
                                     />
                                 </button>
                             </>
                         )}
 
-                        {item.status === "Approved" && (
+                        {item.status === "Rejected" && (
                             <button
                                 className="p-2 rounded-full hover:bg-gray-200"
-                                aria-label="Print"
+                                aria-label="Cancel"
+                                onClick={() =>
+                                    onStatusUpdate(item.id, "Pending")
+                                }
                             >
                                 <img
-                                    src={PrintIcon}
-                                    alt="Print Icon"
+                                    src={UndoIcon}
+                                    alt="Cancel Icon"
                                     className="w-5 h-5"
                                 />
                             </button>

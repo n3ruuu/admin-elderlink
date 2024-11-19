@@ -83,7 +83,9 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
             `${newMember.firstName} ${newMember.lastName}`.toLowerCase()
         const isDuplicate = existingMembers.some((member) => {
             const existingName = member.name.toLowerCase()
-            return existingName === newName
+            const isNameDuplicate = existingName === newName
+            const isIdNoDuplicate = member.idNo === newMember.idNo
+            return isNameDuplicate || isIdNoDuplicate
         })
         return isDuplicate
     }
@@ -125,7 +127,9 @@ const Modal = ({ isOpen, onClose, onSave, member, existingMembers }) => {
         }
 
         if (!member && checkForDuplicates(formattedData)) {
-            setDuplicateError("A member with the same name already exists.")
+            setDuplicateError(
+                "A member with the same name or ID number already exists.",
+            )
             return
         } else {
             setDuplicateError("")

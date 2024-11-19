@@ -155,7 +155,7 @@ const MembersList = () => {
                 )
 
                 // Log the action
-                await logAction(`New Registration`)
+                await logAction(`New Member Register`)
             } catch (error) {
                 console.error("Error adding member:", error)
             }
@@ -189,7 +189,7 @@ const MembersList = () => {
 
         // Update the members data with new members if no duplicates
         setMembersData((prevMembers) => [...prevMembers, ...newMembers])
-        await logAction(`Imported ${newMembers.length} new members from CSV`)
+        await logAction(`Imported ${newMembers.length} new members`)
     }
 
     return (

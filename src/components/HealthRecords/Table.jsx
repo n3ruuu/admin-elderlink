@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react"
 import EditIcon from "../../assets/icons/edit2.svg"
-import ViewIcon from "../../assets/icons/view.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
 import HeartIcon from "../../assets/icons/heart.svg"
@@ -52,7 +51,6 @@ const Table = ({
         // Export the workbook to an Excel file
         XLSX.writeFile(wb, "health_records_report.xlsx")
     }
-
     return (
         <div>
             <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
@@ -149,8 +147,11 @@ const Table = ({
                             <td className="whitespace-nowrap">
                                 {row.relationship}
                             </td>
-                            <td className="whitespace-nowrap">
-                                {row.emergency_contact}
+                            <td className="text-left">
+                                {row.emergency_contact &&
+                                row.emergency_contact.startsWith("+639")
+                                    ? `0${row.emergency_contact.slice(3)}`
+                                    : row.emergency_contact}
                             </td>
 
                             <td className="flex gap-3 items-center py-4">
@@ -159,12 +160,6 @@ const Table = ({
                                     onClick={() => onOpenModal(row)}
                                 >
                                     <img src={EditIcon} alt="Edit" />
-                                </button>
-                                <button
-                                    aria-label="View"
-                                    onClick={() => onOpenModal(row)}
-                                >
-                                    <img src={ViewIcon} alt="View" />
                                 </button>
                                 <button
                                     aria-label="Archive"

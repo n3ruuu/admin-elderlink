@@ -54,12 +54,17 @@ const News = () => {
         }
     }
 
-    const filteredNews = newsData.filter(
-        (news) =>
-            news.headline.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            news.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            news.body.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
+    const filteredNews = newsData.filter((news) => {
+        const headline = news?.headline?.toLowerCase() || "" // Ensure it's a string
+        const author = news?.author?.toLowerCase() || "" // Ensure it's a string
+        const body = news?.body?.toLowerCase() || "" // Ensure it's a string
+
+        return (
+            headline.includes(searchQuery.toLowerCase()) ||
+            author.includes(searchQuery.toLowerCase()) ||
+            body.includes(searchQuery.toLowerCase())
+        )
+    })
 
     const handleSaveNews = async (updatedNews) => {
         if (updatedNews.id) {
