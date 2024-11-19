@@ -1,11 +1,26 @@
 /* eslint-disable react/prop-types */
+import { useState } from "react"
 import moment from "moment"
 import { AiOutlineMessage } from "react-icons/ai" // Importing SMS icon from React Icons
+import SMSModal from "./SmsModal" // Import the SMSModal component
 
 const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
+    const [isSMSModalOpen, setIsSMSModalOpen] = useState(false)
+    const [selectedMember, setSelectedMember] = useState(null)
+
     if (!isOpen) return null // Don't render if modal is not open
 
     const today = moment().format("MM-DD") // Get today's date in MM-DD format
+
+    const openSMSModal = (member) => {
+        setSelectedMember(member)
+        setIsSMSModalOpen(true)
+    }
+
+    const closeSMSModal = () => {
+        setIsSMSModalOpen(false)
+        setSelectedMember(null)
+    }
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -29,7 +44,10 @@ const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
                                 className="flex items-center justify-between mb-2"
                             >
                                 <div className="flex items-center">
-                                    <AiOutlineMessage className="mr-2 text-blue-500" />
+                                    <AiOutlineMessage
+                                        className="mr-2 text-blue-500 cursor-pointer"
+                                        onClick={() => openSMSModal(member)} // Open SMS modal on icon click
+                                    />
                                     <span
                                         className={
                                             memberBirthday === today
@@ -54,6 +72,15 @@ const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
                     })}
                 </ul>
             </div>
+
+            {/* SMSModal for sending message */}
+            {selectedMember && (
+                <SMSModal
+                    isOpen={isSMSModalOpen}
+                    onClose={closeSMSModal}
+                    member={selectedMember} // Pass selected member to SMSModal
+                />
+            )}
         </div>
     )
 }
