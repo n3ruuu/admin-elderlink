@@ -12,27 +12,32 @@ const Login = ({ onLogin }) => {
     const [errorMessage, setErrorMessage] = useState("")
     const navigate = useNavigate()
 
-    const handleLogin = async (e) => {
-        e.preventDefault()
+    // const handleLogin = async (e) => {
+    //     e.preventDefault()
 
-        try {
-            const response = await axios.post("http://localhost:5000/login", {
-                username,
-                password,
-            })
+    //     try {
+    //         const response = await axios.post("http://localhost:5000/login", {
+    //             username,
+    //             password,
+    //         })
 
-            if (response.status === 200) {
-                const { token } = response.data
-                localStorage.setItem("authToken", token)
-                onLogin()
-                navigate("/admin-elderlink/dashboard")
-            }
-        } catch (error) {
-            setErrorMessage(
-                error.response?.data?.message ||
-                    "An error occurred. Please try again.",
-            )
-        }
+    //         if (response.status === 200) {
+    //             const { token } = response.data
+    //             localStorage.setItem("authToken", token)
+    //             onLogin()
+    //             navigate("/admin-elderlink/dashboard")
+    //         }
+    //     } catch (error) {
+    //         setErrorMessage(
+    //             error.response?.data?.message ||
+    //                 "An error occurred. Please try again.",
+    //         )
+    //     }
+    // }
+
+    const goToDashboard = () => {
+        onLogin()
+        navigate("/admin-elderlink/dashboard")
     }
 
     return (
@@ -59,7 +64,7 @@ const Login = ({ onLogin }) => {
 
                     <form
                         className="w-full h-full flex flex-col gap-5"
-                        onSubmit={handleLogin}
+                        onSubmit={goToDashboard}
                     >
                         <div>
                             <label
