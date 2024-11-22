@@ -21,6 +21,7 @@ const Events = () => {
     const [modalTitle, setModalTitle] = useState("")
     const [modalMessage, setModalMessage] = useState("")
     const [searchQuery, setSearchQuery] = useState("") // State for the search query
+    const [modalFromRowClick, setModalFromRowClick] = useState(false)
 
     useEffect(() => {
         fetchEvents()
@@ -58,9 +59,10 @@ const Events = () => {
         }
     }
 
-    const handleOpenModal = (event = null) => {
+    const handleOpenModal = (event = null, isRowClick = false) => {
         setCurrentEvent(event)
         setIsModalOpen(true)
+        setModalFromRowClick(isRowClick) // New state to track modal origin
     }
 
     const handleCloseModal = () => {
@@ -72,35 +74,28 @@ const Events = () => {
         try {
             const eventData = {
                 title: updatedEvent.title,
+                description: updatedEvent.description, // Add description
                 date: updatedEvent.date,
+                time: updatedEvent.time, // Add time
                 location: updatedEvent.location,
                 organizer: updatedEvent.organizer,
                 category: updatedEvent.category,
+                recurrence: updatedEvent.recurrence, // Add recurrence
             }
 
             if (updatedEvent.id) {
-                const response = await axios.put(
-                    `http://localhost:5000/events/${updatedEvent.id}`,
-                    eventData,
-                )
+                const response = await axios.put(`http://localhost:5000/events/${updatedEvent.id}`, eventData)
                 setEventsData((prevData) =>
-                    prevData.map((event) =>
-                        event.id === updatedEvent.id ? response.data : event,
-                    ),
+                    prevData.map((event) => (event.id === updatedEvent.id ? response.data : event)),
                 )
                 setModalTitle("Event Updated!")
                 setModalMessage("The event has been successfully edited.")
                 await logAction(`Update Event`)
             } else {
-                const response = await axios.post(
-                    "http://localhost:5000/events",
-                    eventData,
-                )
+                const response = await axios.post("http://localhost:5000/events", eventData)
                 setEventsData((prevData) => [...prevData, response.data])
                 setModalTitle("Event Added!")
-                setModalMessage(
-                    "The event has been successfully added to the event list.",
-                )
+                setModalMessage("The event has been successfully added to the event list.")
                 await logAction(`New Event`)
             }
         } catch (error) {
@@ -119,16 +114,11 @@ const Events = () => {
     const handleConfirmArchive = async () => {
         try {
             // Archive the event in the backend
-            await axios.put(
-                `http://localhost:5000/events/archive/${eventToArchive.id}`,
-                { status: "Archived" },
-            )
+            await axios.put(`http://localhost:5000/events/archive/${eventToArchive.id}`, { status: "Archived" })
 
             // Update local state by filtering out the archived event
             setEventsData((prevData) => {
-                const updatedData = prevData.filter(
-                    (event) => event.id !== eventToArchive.id,
-                )
+                const updatedData = prevData.filter((event) => event.id !== eventToArchive.id)
                 console.log("Updated Events Data:", updatedData)
                 return updatedData
             })
@@ -168,22 +158,10 @@ const Events = () => {
     // Filter the events based on the search query
     const filteredEvents = eventsData.filter((event) => {
         return (
-            (event.title &&
-                event.title
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase())) ||
-            (event.location &&
-                event.location
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase())) ||
-            (event.organizer &&
-                event.organizer
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase())) ||
-            (event.category &&
-                event.category
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase()))
+            (event.title && event.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (event.location && event.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (event.organizer && event.organizer.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (event.category && event.category.toLowerCase().includes(searchQuery.toLowerCase()))
         )
     })
 
@@ -198,10 +176,7 @@ const Events = () => {
             />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
-                    <ViewModeSwitcher
-                        viewMode={viewMode}
-                        handleViewModeChange={handleViewModeChange}
-                    />
+                    <ViewModeSwitcher viewMode={viewMode} handleViewModeChange={handleViewModeChange} />
                     {viewMode === "list" ? (
                         <Table
                             eventsData={filteredEvents} // Use filtered events
@@ -210,8 +185,7 @@ const Events = () => {
                         />
                     ) : (
                         <div className="mt-8">
-                            <Calendar events={filteredEvents} />{" "}
-                            {/* Use filtered events */}
+                            <Calendar events={filteredEvents} /> {/* Use filtered events */}
                         </div>
                     )}
                 </div>
@@ -222,6 +196,7 @@ const Events = () => {
                     onClose={handleCloseModal}
                     onSave={handleSave}
                     event={currentEvent}
+                    isRowClick={modalFromRowClick}
                 />
             )}
             {isConfirmModalOpen && (

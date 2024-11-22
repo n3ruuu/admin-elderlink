@@ -61,13 +61,13 @@ const FormFields = ({ formData, onChange }) => {
                 </div>
 
                 <div className="w-full">
-                    <label htmlFor="eventRecurrence" className="block text-lg font-medium text-gray-700 mb-1">
+                    <label htmlFor="recurrence" className="block text-lg font-medium text-gray-700 mb-1">
                         Event Recurrence <span className="text-red-500">*</span>
                     </label>
                     <select
-                        id="eventRecurrence"
-                        name="eventRecurrence"
-                        value={formData.eventRecurrence}
+                        id="recurrence"
+                        name="recurrence"
+                        value={formData.recurrence}
                         onChange={onChange}
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         required
@@ -75,7 +75,7 @@ const FormFields = ({ formData, onChange }) => {
                         <option value="" disabled>
                             Select Recurrence
                         </option>
-                        <option value="One-time">One-time</option>
+                        <option value="One-Time">One-time</option>
                         <option value="Daily">Daily</option>
                         <option value="Weekly">Weekly</option>
                         <option value="Monthly">Monthly</option>

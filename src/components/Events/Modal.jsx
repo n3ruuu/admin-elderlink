@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react"
 import moment from "moment"
 import FormFields from "./FormFields"
-import ScheduleModal from "./ScheduleModal"
 
 const Modal = ({ isOpen, onClose, onSave, event }) => {
     const [formData, setFormData] = useState({
@@ -14,14 +13,9 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
         time: "",
         location: "",
         organizer: "",
-        eventType: "",
-        scheduledDate: "",
-        scheduledTime: "",
     })
 
     const [isModified, setIsModified] = useState(false)
-    const [isScheduled, setIsScheduled] = useState(false)
-    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
 
     const isEditMode = !!event
 
@@ -36,9 +30,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 time: event.time || "",
                 location: event.location || "",
                 organizer: event.organizer || "",
-                eventType: event.eventType || "",
             })
-            setIsScheduled(event.scheduledDate && event.scheduledTime)
             setIsModified(false)
         } else {
             setFormData({
@@ -50,9 +42,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 time: "",
                 location: "",
                 organizer: "",
-                eventType: "",
             })
-            setIsScheduled(false)
         }
     }, [event, isEditMode])
 
@@ -67,30 +57,9 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
         setIsModified(true)
     }
 
-    const handleScheduleClick = () => {
-        setIsScheduleModalOpen(true)
-    }
-
-    const handleSchedule = (scheduledDate, scheduledTime) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            date: scheduledDate,
-            time: scheduledTime,
-        }))
-        setIsScheduled(true)
-        setIsScheduleModalOpen(false)
-    }
-
     const isFormValid = () => {
-        return (
-            formData.title &&
-            formData.date &&
-            formData.time &&
-            formData.location &&
-            formData.organizer &&
-            formData.category &&
-            formData.eventType
-        )
+        const requiredFields = ["title", "description", "category", "date", "time", "location", "organizer"]
+        return requiredFields.every((field) => formData[field]?.trim() !== "")
     }
 
     const handleSave = () => {
@@ -103,9 +72,10 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
             location: formData.location,
             organizer: formData.organizer,
             category: formData.category,
-            eventType: formData.eventType,
+            recurrence: formData.recurrence,
         }
         onSave(updatedEvent)
+        console.log(formData)
     }
 
     return (
@@ -113,31 +83,10 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
             <div className="bg-white p-8 rounded-lg shadow-lg w-[40%]">
                 <h2 className="text-3xl font-bold mb-6">{isEditMode && event.id ? "Edit Event" : "Add Event"}</h2>
                 <form>
-                    <FormFields
-                        formData={formData}
-                        onChange={handleChange}
-                        isScheduled={isScheduled}
-                        setIsScheduled={setIsScheduled}
-                        handleScheduleClick={handleScheduleClick}
-                    />
+                    <FormFields formData={formData} onChange={handleChange} />
 
                     {/* Action Buttons */}
-                    <div className="flex justify-between mt-5">
-                        {/* Conditional Rendering for the Schedule Button */}
-                        {!isFormValid() && (
-                            <button
-                                type="button"
-                                onClick={handleScheduleClick}
-                                className={`${
-                                    isScheduled
-                                        ? "bg-green-500 text-white hover:bg-green-600"
-                                        : "bg-yellow-500 text-white hover:bg-yellow-600"
-                                } py-2 px-4 rounded-md transition-colors duration-300`}
-                            >
-                                {isScheduled ? "Scheduled Posting" : "Schedule for Later"}
-                            </button>
-                        )}
-
+                    <div className="flex justify-end mt-5">
                         <div className="flex gap-5">
                             <button
                                 type="button"
@@ -150,7 +99,9 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                                 type="button"
                                 onClick={handleSave}
                                 disabled={!isFormValid() || (isEditMode && !isModified)}
-                                className={`bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px] ${!isFormValid() || (isEditMode && !isModified) ? "opacity-50 cursor-not-allowed" : ""}`}
+                                className={`bg-[#219EBC] hover:bg-[#1A7A8A] text-white font-bold py-2 px-4 rounded transition-colors duration-300 w-[100px] ${
+                                    !isFormValid() || (isEditMode && !isModified) ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
                             >
                                 {isEditMode && event.id ? "Save" : "Add"}
                             </button>
@@ -158,13 +109,6 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                     </div>
                 </form>
             </div>
-
-            {/* Schedule Modal */}
-            <ScheduleModal
-                isOpen={isScheduleModalOpen}
-                onClose={() => setIsScheduleModalOpen(false)}
-                onSchedule={handleSchedule}
-            />
         </div>
     )
 }

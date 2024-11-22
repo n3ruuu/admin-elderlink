@@ -9,21 +9,45 @@ import SmsModal from "./SmsModal"
 const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const [isSMSModalOpen, setSMSModalOpen] = useState(false)
-    const itemsPerPage = 9
+    const itemsPerPage = 5
 
     // Filter events with status "Active"
-    const activeEventsData = eventsData.filter(
-        (event) => event.status === "Active",
-    )
-    const totalPages = Math.ceil(activeEventsData.length / itemsPerPage)
+    const activeEventsData = eventsData.filter((event) => event.status === "Active")
+
+    // Sort the events by date (ascending)
+    const sortedEvents = activeEventsData.sort((a, b) => (moment(a.date).isBefore(moment(b.date)) ? -1 : 1))
+
+    const totalPages = Math.ceil(sortedEvents.length / itemsPerPage)
     const startIndex = (currentPage - 1) * itemsPerPage
-    const currentEvents = activeEventsData.slice(
-        startIndex,
-        startIndex + itemsPerPage,
-    )
+    const currentEvents = sortedEvents.slice(startIndex, startIndex + itemsPerPage)
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
+    }
+
+    // Function to calculate the next occurrence based on recurrence type
+    const getNextOccurrence = (event) => {
+        if (event.recurrence === "Weekly") {
+            // Add 7 days to the current date for weekly recurrence
+            return moment(event.date).add(7, "days").format("MMMM D, YYYY")
+        }
+
+        if (event.recurrence === "Daily") {
+            // Add 1 day to the current date for daily recurrence
+            return moment(event.date).add(1, "days").format("MMMM D, YYYY")
+        }
+
+        if (event.recurrence === "Monthly") {
+            // Add 1 month to the current date for monthly recurrence
+            return moment(event.date).add(1, "months").format("MMMM D, YYYY")
+        }
+
+        if (event.recurrence === "Yearly") {
+            // Add 1 year to the current date for yearly recurrence
+            return moment(event.date).add(1, "years").format("MMMM D, YYYY")
+        }
+
+        return event.date
     }
 
     return (
@@ -31,70 +55,53 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
             <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
                 <thead className="text-[#767171CC] border-b">
                     <tr>
-                        <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
-                            Event Title
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Date
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Location
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Organizer
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Category
-                        </th>
-                        <th className="px-8 w-[150px] text-left font-medium whitespace-nowrap">
-                            Actions
-                        </th>
+                        <th className="px-8 py-4 text-left font-medium">Title</th>
+                        <th className="text-left font-medium">Date and Time</th>
+                        <th className="text-left font-medium">Location</th>
+                        <th className="text-left font-medium">Organizer</th>
+                        <th className="text-left font-medium">Category</th>
+                        <th className="text-left font-medium">Recurrence</th>
+                        <th className="px-8 w-[150px] text-left font-medium">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {currentEvents.map((event, index) => (
                         <tr
-                            className={`text-[#333333] font-[500] ${
-                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
-                            }`}
+                            className={`text-[#333333] h-[100px] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                             key={event.id}
                         >
-                            <td className="px-16 py-4 text-left whitespace-nowrap">
-                                {event.title}
+                            <td className="px-8 align-top w-[300px] py-4 text-left">{event.title}</td>
+                            <td className="text-left align-top w-[280px] py-4 whitespace-nowrap">
+                                {moment(event.date).format("MMMM D, YYYY")} |{" "}
+                                {moment(event.time, "HH:mm").format("h:mm A")}
+                                {event.recurrence && (
+                                    <div className="text-sm text-[#767171]">(Next: {getNextOccurrence(event)})</div>
+                                )}
                             </td>
-                            <td className="text-left whitespace-nowrap">
-                                {moment(event.date).format("MMMM D, YYYY")}
+                            <td className="text-left align-top py-4">{event.location}</td>
+                            <td className="text-left align-top py-4">{event.organizer}</td>
+                            <td className="text-left align-top py-4">{event.category}</td>
+                            <td className="text-left align-top py-4">
+                                {event.recurrence === "Weekly"
+                                    ? `Every ${moment(event.date).format("dddd")}` // Weekly recurrence
+                                    : event.recurrence === "Monthly"
+                                      ? `Every ${moment(event.date).format("Do")} of the month` // Monthly recurrence
+                                      : event.recurrence === "Yearly"
+                                        ? `Every ${moment(event.date).format("MMMM D")}` // Yearly recurrence (e.g., Every January 1st)
+                                        : event.recurrence === "Daily"
+                                          ? `Every day`
+                                          : event.recurrence}
                             </td>
-                            <td className="text-left whitespace-nowrap">
-                                {event.location}
-                            </td>
-                            <td className="text-left whitespace-nowrap">
-                                {event.organizer}
-                            </td>
-                            <td className="text-left whitespace-nowrap">
-                                {event.category}
-                            </td>
-                            <td className="px-8 pt-4 text-left whitespace-nowrap flex gap-3">
+
+                            <td className="px-8 pt-4 align-top py-4 text-left flex gap-3">
                                 <button onClick={() => handleOpenModal(event)}>
-                                    <img
-                                        src={EditIcon}
-                                        alt="Edit Icon"
-                                        className="w-[20px]"
-                                    />
+                                    <img src={EditIcon} alt="Edit Icon" className="w-[20px]" />
                                 </button>
                                 <button onClick={() => onArchiveClick(event)}>
-                                    <img
-                                        src={ArchiveIcon}
-                                        alt="Archive Icon"
-                                        className="w-[20px]"
-                                    />
+                                    <img src={ArchiveIcon} alt="Archive Icon" className="w-[20px]" />
                                 </button>
                                 <button onClick={() => setSMSModalOpen(true)}>
-                                    <img
-                                        src={SendIcon}
-                                        alt="Send Icon"
-                                        className="w-[20px]"
-                                    />
+                                    <img src={SendIcon} alt="Send Icon" className="w-[20px]" />
                                 </button>
                             </td>
                         </tr>
@@ -143,10 +150,7 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
             </div>
 
             {/* Compose SMS Modal */}
-            <SmsModal
-                isOpen={isSMSModalOpen}
-                onClose={() => setSMSModalOpen(false)}
-            />
+            <SmsModal isOpen={isSMSModalOpen} onClose={() => setSMSModalOpen(false)} />
         </div>
     )
 }
