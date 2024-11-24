@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
 import SendIcon from "../../assets/icons/news-send.svg"
@@ -5,49 +6,58 @@ import PhotoIcon from "../../assets/icons/photo.svg"
 import axios from "axios"
 
 const Modal = ({ onClose, onSubmit, news }) => {
+    const loggedInUsername = localStorage.getItem("username") || ""
+
     const [headline, setHeadline] = useState(news?.headline || "")
-    const [author, setAuthor] = useState(news?.author || "")
+    const [author, setAuthor] = useState(news?.author || loggedInUsername)
     const [date, setDate] = useState(news?.date || "")
     const [body, setBody] = useState(news?.body || "")
-    const [image, setImage] = useState(null)
-    const [imagePreview, setImagePreview] = useState(null)
+    const [images, setImages] = useState(news.images || "")
+    const [imagePreviews, setImagePreviews] = useState(
+        news?.images
+            ? Array.isArray(news.images)
+                ? news.images.map((img) => `http://localhost:5000/uploads/${img}`)
+                : JSON.parse(news.images).map((img) => `http://localhost:5000/uploads/${img}`)
+            : [],
+    )
+
     const [hasChanges, setHasChanges] = useState(false)
 
-    // If news is being edited and has an image, set the imagePreview
-    useEffect(() => {
-        if (news?.image) {
-            setImagePreview(`http://localhost:5000/uploads/${news.image}`) // Assuming news.image contains the URL of the image
-        }
-    }, [news])
-
-    // Update hasChanges state whenever the form inputs or image change
+    // Update hasChanges state whenever the form inputs or images change
     useEffect(() => {
         setHasChanges(
             headline !== news?.headline ||
                 author !== news?.author ||
                 date !== news?.date ||
                 body !== news?.body ||
-                image !== null,
+                images.length !== (news?.images?.length || 0),
         )
-    }, [headline, author, date, body, image, news])
+    }, [headline, author, date, body, images, news])
 
     const handleImageChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0]
-            setImage(file)
-            setImagePreview(URL.createObjectURL(file))
+        if (e.target.files) {
+            const files = Array.from(e.target.files)
+            setImages((prevImages) => [...prevImages, ...files])
+            setImagePreviews((prevPreviews) => [...prevPreviews, ...files.map((file) => URL.createObjectURL(file))])
         }
     }
 
-    const handleRemoveImage = () => {
-        setImage(null)
-        setImagePreview(null)
-        setHasChanges(true) // Indicate change if the image is removed
+    const handleRemoveImage = (index) => {
+        const updatedImagePreviews = [...imagePreviews]
+
+        updatedImagePreviews.splice(index, 1)
+
+        setImages(updatedImagePreviews) // Update the state for images
+        setImagePreviews(updatedImagePreviews) // Update the state for imagePreviews
+
+        console.log(updatedImagePreviews)
+
+        setHasChanges(true) // Mark as changed after removing an image
     }
 
     // Function to check if all required fields are filled (used for adding a new article)
     const isFormValid = () => {
-        return headline && author && date && body && image
+        return headline && author && date && body && images.length > 0
     }
 
     const handleSubmit = async () => {
@@ -56,26 +66,32 @@ const Modal = ({ onClose, onSubmit, news }) => {
         formData.append("author", author)
         formData.append("date", date)
         formData.append("body", body)
-        if (image) formData.append("image", image)
+
+        // Add only the newly selected images
+        if (Array.isArray(images) && images.length > 0) {
+            images.forEach((image) => formData.append("images", image))
+        }
+
+        // If there are no new images but existing images need to be kept, send the existing ones
+        if (!images.length && news?.images) {
+            const existingImages = JSON.parse(news.images) // Assuming it's stored as a JSON string
+            existingImages.forEach((image) => formData.append("images", image))
+        }
+
+        console.log(images)
 
         try {
             const response = news?.id
-                ? await axios.put(
-                      `http://localhost:5000/news/${news.id}`,
-                      formData,
-                      { headers: { "Content-Type": "multipart/form-data" } },
-                  )
+                ? await axios.put(`http://localhost:5000/news/${news.id}`, formData, {
+                      headers: { "Content-Type": "multipart/form-data" },
+                  })
                 : await axios.post("http://localhost:5000/news", formData, {
                       headers: { "Content-Type": "multipart/form-data" },
                   })
 
-            // If updating, use the updated article, otherwise use the newly created article
-            const article = news?.id
-                ? response.data.updatedArticle
-                : response.data
-
-            onSubmit(article) // Pass the correct article object
-            onClose() // Close the modal after submission
+            const article = news?.id ? response.data.updatedArticle : response.data
+            onSubmit(article)
+            onClose()
         } catch (error) {
             console.error("Error saving news:", error)
         }
@@ -91,9 +107,7 @@ const Modal = ({ onClose, onSubmit, news }) => {
                 >
                     &times;
                 </button>
-                <h2 className="text-3xl font-bold mb-4">
-                    {news?.id ? "Edit" : "Add"} News
-                </h2>
+                <h2 className="text-3xl font-bold mb-4">{news?.id ? "Edit" : "Add"} News</h2>
 
                 <div className="space-y-4">
                     <div>
@@ -116,13 +130,11 @@ const Modal = ({ onClose, onSubmit, news }) => {
                             />
                         </div>
                         <div>
-                            <label className="block text-gray-700">
-                                Author:
-                            </label>
+                            <label className="block text-gray-700">Author:</label>
                             <input
                                 type="text"
                                 value={author}
-                                onChange={(e) => setAuthor(e.target.value)}
+                                readOnly
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                             />
                         </div>
@@ -137,36 +149,35 @@ const Modal = ({ onClose, onSubmit, news }) => {
                         ></textarea>
                     </div>
 
-                    {imagePreview && (
-                        <div className="relative mt-4 w-32 h-32">
-                            <img
-                                src={imagePreview}
-                                alt="Image Preview"
-                                className="w-full h-full object-cover rounded-md"
-                            />
-                            <button
-                                className="absolute top-1 right-1 bg-gray-700 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                                onClick={handleRemoveImage}
-                                aria-label="Remove image"
-                            >
-                                &times;
-                            </button>
+                    {imagePreviews.length > 0 && (
+                        <div className="flex space-x-4 mt-4">
+                            {imagePreviews.map((preview, index) => (
+                                <div key={index} className="relative w-32 h-32">
+                                    <img
+                                        src={preview}
+                                        alt="Image Preview"
+                                        className="w-full h-full object-cover rounded-md"
+                                    />
+                                    <button
+                                        className="absolute top-1 right-1 bg-gray-700 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                                        onClick={() => handleRemoveImage(index)}
+                                        aria-label="Remove image"
+                                    >
+                                        &times;
+                                    </button>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
 
                 <div className="flex items-center justify-end gap-2 mt-6">
-                    <label className="flex items-center px-4 py-2 border border-[#219EBC] text-[#219EBC] rounded-md cursor-pointer">
+                    <label className="flex items-center px-4 py-2 border border-[#219EBC] text-[#219EBC] rounded-md cursor-pointer hover:bg-[#E0F7FA] transition-all duration-200">
                         <span className="mr-2">
                             <img src={PhotoIcon} alt="Upload Photo" />
                         </span>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className="hidden"
-                        />
-                        Upload Photo
+                        <input type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" />
+                        Upload Photos
                     </label>
 
                     <button

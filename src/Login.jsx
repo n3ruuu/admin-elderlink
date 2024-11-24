@@ -22,16 +22,14 @@ const Login = ({ onLogin }) => {
             })
 
             if (response.status === 200) {
-                const { token } = response.data
+                const { token, username } = response.data // Expect username in the response
                 localStorage.setItem("authToken", token)
+                localStorage.setItem("username", username) // Save the username in localStorage
                 onLogin()
                 navigate("/admin-elderlink/dashboard")
             }
         } catch (error) {
-            setErrorMessage(
-                error.response?.data?.message ||
-                    "An error occurred. Please try again.",
-            )
+            setErrorMessage(error.response?.data?.message || "An error occurred. Please try again.")
         }
     }
 
@@ -42,30 +40,14 @@ const Login = ({ onLogin }) => {
 
             <div className="relative z-10 w-full max-w-md bg-[#FFFFFF] p-8 rounded-lg shadow-lg h-fit">
                 <div className="flex flex-col items-center">
-                    <img
-                        src={ElderlinkLogo}
-                        alt="Elderlink Logo"
-                        className="h-16 mb-4"
-                    />
-                    <p className="text-[32px] font-bold mb-6 self-start">
-                        Admin Login
-                    </p>
+                    <img src={ElderlinkLogo} alt="Elderlink Logo" className="h-16 mb-4" />
+                    <p className="text-[32px] font-bold mb-6 self-start">Admin Login</p>
 
-                    {errorMessage && (
-                        <div className="text-red-500 text-sm mb-4">
-                            {errorMessage}
-                        </div>
-                    )}
+                    {errorMessage && <div className="text-red-500 text-sm mb-4">{errorMessage}</div>}
 
-                    <form
-                        className="w-full h-full flex flex-col gap-5"
-                        onSubmit={handleLogin}
-                    >
+                    <form className="w-full h-full flex flex-col gap-5" onSubmit={handleLogin}>
                         <div>
-                            <label
-                                htmlFor="username"
-                                className="block text-sm font-medium text-[#1F1F29]"
-                            >
+                            <label htmlFor="username" className="block text-sm font-medium text-[#1F1F29]">
                                 Username
                             </label>
                             <input
@@ -78,10 +60,7 @@ const Login = ({ onLogin }) => {
                         </div>
 
                         <div className="relative">
-                            <label
-                                htmlFor="password"
-                                className="block text-sm font-medium text-[#1F1F29]"
-                            >
+                            <label htmlFor="password" className="block text-sm font-medium text-[#1F1F29]">
                                 Password
                             </label>
                             <input

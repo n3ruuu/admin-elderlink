@@ -28,6 +28,7 @@ const News = () => {
             setNewsData(response.data)
         } catch (error) {
             console.error("Error fetching news:", error)
+            // Optionally, set an error message to show the user
         }
     }
 
@@ -67,25 +68,27 @@ const News = () => {
     })
 
     const handleSaveNews = async (updatedNews) => {
-        if (updatedNews.id) {
-            // Editing existing news
-            setNewsData(
-                newsData.map((news) =>
-                    news.id === updatedNews.id ? updatedNews : news,
-                ),
-            )
-            setModalTitle("News Updated!")
-            setModalMessage("The news has been successfully updated.")
-            await logAction(`Update News`)
-        } else {
-            // Adding new news
-            setNewsData([updatedNews, ...newsData])
-            setModalTitle("News Published!")
-            setModalMessage("The news has been successfully published.")
-            await logAction(`Publish News`)
+        try {
+            if (updatedNews.id) {
+                // Editing existing news
+                setNewsData(newsData.map((news) => (news.id === updatedNews.id ? updatedNews : news)))
+                setModalTitle("News Updated!")
+                setModalMessage("The news has been successfully updated.")
+                await logAction(`Update News`)
+            } else {
+                // Adding new news
+                setNewsData([updatedNews, ...newsData])
+                setModalTitle("News Published!")
+                setModalMessage("The news has been successfully published.")
+                await logAction(`Publish News`)
+            }
+            setSuccessModalOpen(true) // Open the success modal
+        } catch (error) {
+            console.error("Error saving news:", error)
+            setModalTitle("Error")
+            setModalMessage("There was an issue saving the news.")
+            setSuccessModalOpen(true) // Show error message
         }
-        setSuccessModalOpen(true) // Open the success modal
-        fetchNews() // Optionally refresh the news data
     }
 
     const handleOpenModal = (news = null) => {
@@ -112,15 +115,9 @@ const News = () => {
         if (selectedNews) {
             try {
                 // Update the status of the news to "Archived" in the backend
-                await axios.put(
-                    `http://localhost:5000/news/archive/${selectedNews.id}`,
-                )
+                await axios.put(`http://localhost:5000/news/archive/${selectedNews.id}`)
                 setNewsData(
-                    newsData.map((news) =>
-                        news.id === selectedNews.id
-                            ? { ...news, status: "Archived" }
-                            : news,
-                    ),
+                    newsData.map((news) => (news.id === selectedNews.id ? { ...news, status: "Archived" } : news)),
                 )
                 setModalTitle("News Archived!")
                 setModalMessage("The news has been successfully archived.")
@@ -129,17 +126,16 @@ const News = () => {
                 await logAction(`Archive News`)
             } catch (error) {
                 console.error("Error archiving news:", error)
+                setModalTitle("Error")
+                setModalMessage("There was an issue archiving the news.")
+                setSuccessModalOpen(true) // Show error message
             }
         }
     }
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header
-                onOpenModal={handleOpenModal}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-            />
+            <Header onOpenModal={handleOpenModal} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
