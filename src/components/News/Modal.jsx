@@ -22,8 +22,8 @@ const Modal = ({ onClose, onSubmit, news }) => {
     )
 
     const [hasChanges, setHasChanges] = useState(false)
+    const [dateError, setDateError] = useState("") // State for date error
 
-    // Update hasChanges state whenever the form inputs or images change
     useEffect(() => {
         setHasChanges(
             headline !== news?.headline ||
@@ -42,43 +42,34 @@ const Modal = ({ onClose, onSubmit, news }) => {
         }
     }
 
-    const handleRemoveImage = (index) => {
-        const updatedImagePreviews = [...imagePreviews]
-
-        updatedImagePreviews.splice(index, 1)
-
-        setImages(updatedImagePreviews) // Update the state for images
-        setImagePreviews(updatedImagePreviews) // Update the state for imagePreviews
-
-        console.log(updatedImagePreviews)
-
-        setHasChanges(true) // Mark as changed after removing an image
+    const isFormValid = () => {
+        return headline && author && date && body && images.length > 0 && !dateError
     }
 
-    // Function to check if all required fields are filled (used for adding a new article)
-    const isFormValid = () => {
-        return headline && author && date && body && images.length > 0
+    const handleDateChange = (e) => {
+        const selectedDate = e.target.value
+        const today = new Date().toISOString().split("T")[0] // Today's date in YYYY-MM-DD format
+
+        if (selectedDate < today) {
+            setDateError("The date cannot be in the past.")
+        } else {
+            setDateError("") // Clear the error if the date is valid
+        }
+
+        setDate(selectedDate)
     }
 
     const handleSubmit = async () => {
+        if (dateError) return // Prevent submission if there's a date error
+
         const formData = new FormData()
         formData.append("headline", headline)
         formData.append("author", author)
         formData.append("date", date)
         formData.append("body", body)
-
-        // Add only the newly selected images
-        if (Array.isArray(images) && images.length > 0) {
+        if (Array.isArray(images)) {
             images.forEach((image) => formData.append("images", image))
         }
-
-        // If there are no new images but existing images need to be kept, send the existing ones
-        if (!images.length && news?.images) {
-            const existingImages = JSON.parse(news.images) // Assuming it's stored as a JSON string
-            existingImages.forEach((image) => formData.append("images", image))
-        }
-
-        console.log(images)
 
         try {
             const response = news?.id
@@ -125,9 +116,10 @@ const Modal = ({ onClose, onSubmit, news }) => {
                             <input
                                 type="date"
                                 value={date}
-                                onChange={(e) => setDate(e.target.value)}
+                                onChange={handleDateChange}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                             />
+                            {dateError && <p className="text-red-500 text-sm mt-1">{dateError}</p>}
                         </div>
                         <div>
                             <label className="block text-gray-700">Author:</label>
@@ -158,13 +150,6 @@ const Modal = ({ onClose, onSubmit, news }) => {
                                         alt="Image Preview"
                                         className="w-full h-full object-cover rounded-md"
                                     />
-                                    <button
-                                        className="absolute top-1 right-1 bg-gray-700 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                                        onClick={() => handleRemoveImage(index)}
-                                        aria-label="Remove image"
-                                    >
-                                        &times;
-                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -176,8 +161,22 @@ const Modal = ({ onClose, onSubmit, news }) => {
                         <span className="mr-2">
                             <img src={PhotoIcon} alt="Upload Photo" />
                         </span>
-                        <input type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" />
-                        Upload Photos
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={(e) => {
+                                if (news?.id) {
+                                    const files = Array.from(e.target.files)
+                                    setImages(files)
+                                    setImagePreviews(files.map((file) => URL.createObjectURL(file)))
+                                } else {
+                                    handleImageChange(e)
+                                }
+                            }}
+                            className="hidden"
+                        />
+                        {news?.id ? "Replace Photos" : "Upload Photos"}
                     </label>
 
                     <button

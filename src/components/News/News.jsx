@@ -83,6 +83,7 @@ const News = () => {
                 await logAction(`Publish News`)
             }
             setSuccessModalOpen(true) // Open the success modal
+            fetchNews()
         } catch (error) {
             console.error("Error saving news:", error)
             setModalTitle("Error")
