@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import Modal from "./AddNewMemberModal/Modal" // Import your AddNewMemberModal
+import Modal from "./Modal" // Import your AddNewMemberModal
 import SuccessModal from "./SuccessModal" // Import your SuccessModal
 import Header from "./Header" // Import your Header component
 import Cards from "./Cards" // Import your Cards component
@@ -44,21 +44,12 @@ const MembersList = () => {
         return (
             member.status === "Active" && // Ensure the member's status is "Active"
             (member.name.toLowerCase().includes(searchTermLower) ||
-                (member.idNo &&
-                    member.idNo.toLowerCase().includes(searchTermLower)) ||
-                (member.dob &&
-                    member.dob.toLowerCase().includes(searchTermLower)) ||
-                (member.gender &&
-                    member.gender.toLowerCase().includes(searchTermLower)) ||
-                (member.address &&
-                    member.address.toLowerCase().includes(searchTermLower)) ||
-                (member.age &&
-                    member.age
-                        .toString()
-                        .toLowerCase()
-                        .includes(searchTermLower)) ||
-                (member.phone &&
-                    member.phone.toLowerCase().includes(searchTermLower)))
+                (member.idNo && member.idNo.toLowerCase().includes(searchTermLower)) ||
+                (member.dob && member.dob.toLowerCase().includes(searchTermLower)) ||
+                (member.gender && member.gender.toLowerCase().includes(searchTermLower)) ||
+                (member.address && member.address.toLowerCase().includes(searchTermLower)) ||
+                (member.age && member.age.toString().toLowerCase().includes(searchTermLower)) ||
+                (member.phone && member.phone.toLowerCase().includes(searchTermLower)))
         )
     })
 
@@ -100,31 +91,24 @@ const MembersList = () => {
         if (currentMember) {
             // Editing an existing member
             try {
-                const response = await fetch(
-                    `http://localhost:5000/members/${currentMember.id}`,
-                    {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(updatedMember),
+                const response = await fetch(`http://localhost:5000/members/${currentMember.id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
                     },
-                )
+                    body: JSON.stringify(updatedMember),
+                })
 
                 if (!response.ok) {
                     throw new Error("Failed to update member")
                 }
 
                 setMembersData((prevMembers) =>
-                    prevMembers.map((member) =>
-                        member.id === currentMember.id ? updatedMember : member,
-                    ),
+                    prevMembers.map((member) => (member.id === currentMember.id ? updatedMember : member)),
                 )
 
                 setSuccessModalTitle("Update Completed!")
-                setSuccessModalMessage(
-                    "Member information has been successfully updated.",
-                )
+                setSuccessModalMessage("Member information has been successfully updated.")
 
                 // Log the action
                 await logAction(`Update Member Info`)
@@ -150,9 +134,7 @@ const MembersList = () => {
                 setMembersData((prevMembers) => [...prevMembers, newMember])
 
                 setSuccessModalTitle("Member Added!")
-                setSuccessModalMessage(
-                    "Member has been successfully added to the member list.",
-                )
+                setSuccessModalMessage("Member has been successfully added to the member list.")
 
                 // Log the action
                 await logAction(`New Member Register`)
@@ -167,9 +149,7 @@ const MembersList = () => {
 
     const handleArchiveMember = (archivedMemberId) => {
         // Remove archived member from state
-        setMembersData((prevMembers) =>
-            prevMembers.filter((member) => member.id !== archivedMemberId),
-        )
+        setMembersData((prevMembers) => prevMembers.filter((member) => member.id !== archivedMemberId))
     }
 
     const handleImportCSV = async (newMembers) => {
@@ -194,10 +174,7 @@ const MembersList = () => {
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header
-                handleOpenModal={() => handleOpenModal(null)}
-                setSearchTerm={setSearchTerm}
-            />
+            <Header handleOpenModal={() => handleOpenModal(null)} setSearchTerm={setSearchTerm} />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards membersData={filteredMembers} />

@@ -22,6 +22,7 @@ import Forms from "./components/Forms/Forms"
 import Applications from "./components/Applications/Applications"
 import News from "./components/News/News"
 import Archives from "./components/Archives/Archives"
+import Reports from "./components/Reports/Reports"
 import Login from "./Login"
 
 const Sidebar = () => {
@@ -63,11 +64,7 @@ const Sidebar = () => {
     return (
         <section className="flex">
             <div className="pl-12 pt-12 font-bold w-[25%] bg-[#FFFFFF] text-[#1F1F29] font-inter h-screen relative">
-                <img
-                    className="h-[60px] mb-8"
-                    src={ElderlinkLogo}
-                    alt="Elderlink Logo"
-                />
+                <img className="h-[60px] mb-8" src={ElderlinkLogo} alt="Elderlink Logo" />
                 <div className="flex flex-col gap-2 w-[98%]">
                     {/* Dashboard Link */}
                     <Link
@@ -82,8 +79,7 @@ const Sidebar = () => {
                             src={DashboardIcon}
                             alt="Dashboard Icon"
                             className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                isActive("/admin-elderlink/dashboard") &&
-                                "filter brightness-0 invert"
+                                isActive("/admin-elderlink/dashboard") && "filter brightness-0 invert"
                             }`}
                         />
                         <p>Admin Dashboard</p>
@@ -109,9 +105,7 @@ const Sidebar = () => {
                                 <Link
                                     to="admin-elderlink/members-list"
                                     className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
-                                        isActive(
-                                            "/admin-elderlink/members-list",
-                                        )
+                                        isActive("/admin-elderlink/members-list")
                                             ? "bg-[#219EBC] text-[#F5F5FA]"
                                             : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                                     }`}
@@ -120,9 +114,7 @@ const Sidebar = () => {
                                         src={ListIcon}
                                         alt="List Icon"
                                         className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                            isActive(
-                                                "/admin-elderlink/members-list",
-                                            ) && "filter brightness-0 invert"
+                                            isActive("/admin-elderlink/members-list") && "filter brightness-0 invert"
                                         }`}
                                     />
                                     <p>Members List</p>
@@ -132,9 +124,7 @@ const Sidebar = () => {
                                 <Link
                                     to="admin-elderlink/health-records"
                                     className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
-                                        isActive(
-                                            "/admin-elderlink/health-records",
-                                        )
+                                        isActive("/admin-elderlink/health-records")
                                             ? "bg-[#219EBC] text-[#F5F5FA]"
                                             : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                                     }`}
@@ -143,9 +133,7 @@ const Sidebar = () => {
                                         src={HealthIcon}
                                         alt="Health Icon"
                                         className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                            isActive(
-                                                "/admin-elderlink/health-records",
-                                            ) && "filter brightness-0 invert"
+                                            isActive("/admin-elderlink/health-records") && "filter brightness-0 invert"
                                         }`}
                                     />
                                     <p>Health Records</p>
@@ -155,9 +143,7 @@ const Sidebar = () => {
                                 <Link
                                     to="admin-elderlink/financial-assistance"
                                     className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
-                                        isActive(
-                                            "/admin-elderlink/financial-assistance",
-                                        )
+                                        isActive("/admin-elderlink/financial-assistance")
                                             ? "bg-[#219EBC] text-[#F5F5FA]"
                                             : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                                     }`}
@@ -166,9 +152,8 @@ const Sidebar = () => {
                                         src={FinancialIcon}
                                         alt="Financial Icon"
                                         className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                            isActive(
-                                                "/admin-elderlink/financial-assistance",
-                                            ) && "filter brightness-0 invert"
+                                            isActive("/admin-elderlink/financial-assistance") &&
+                                            "filter brightness-0 invert"
                                         }`}
                                     />
                                     <p>Financial Assistance</p>
@@ -190,11 +175,29 @@ const Sidebar = () => {
                             src={EventsIcon}
                             alt="Events Icon"
                             className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                isActive("/admin-elderlink/events") &&
-                                "filter brightness-0 invert"
+                                isActive("/admin-elderlink/events") && "filter brightness-0 invert"
                             }`}
                         />
                         <p>Events</p>
+                    </Link>
+
+                    {/* News */}
+                    <Link
+                        to="admin-elderlink/news"
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                            isActive("/admin-elderlink/news")
+                                ? "bg-[#219EBC] text-[#F5F5FA]"
+                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
+                        }`}
+                    >
+                        <img
+                            src={NewsIcon}
+                            alt="News Icon"
+                            className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                isActive("/admin-elderlink/news") && "filter brightness-0 invert"
+                            }`}
+                        />
+                        <p>News</p>
                     </Link>
 
                     {/* Forms & Applications */}
@@ -225,9 +228,7 @@ const Sidebar = () => {
                                         src={FormsIcon}
                                         alt="Forms Icon"
                                         className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                            isActive(
-                                                "/admin-elderlink/forms",
-                                            ) && "filter brightness-0 invert"
+                                            isActive("/admin-elderlink/forms") && "filter brightness-0 invert"
                                         }`}
                                     />
                                     <p>Forms</p>
@@ -236,9 +237,7 @@ const Sidebar = () => {
                                 <Link
                                     to="admin-elderlink/applications"
                                     className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
-                                        isActive(
-                                            "/admin-elderlink/applications",
-                                        )
+                                        isActive("/admin-elderlink/applications")
                                             ? "bg-[#219EBC] text-[#F5F5FA]"
                                             : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                                     }`}
@@ -247,9 +246,7 @@ const Sidebar = () => {
                                         src={ApplicationIcon}
                                         alt="Applications Icon"
                                         className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                            isActive(
-                                                "/admin-elderlink/applications",
-                                            ) && "filter brightness-0 invert"
+                                            isActive("/admin-elderlink/applications") && "filter brightness-0 invert"
                                         }`}
                                     />
                                     <p>Applications</p>
@@ -258,24 +255,23 @@ const Sidebar = () => {
                         )}
                     </div>
 
-                    {/* News */}
+                    {/* Reports */}
                     <Link
-                        to="admin-elderlink/news"
+                        to="admin-elderlink/reports"
                         className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
-                            isActive("/admin-elderlink/news")
+                            isActive("/admin-elderlink/reports")
                                 ? "bg-[#219EBC] text-[#F5F5FA]"
                                 : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                         }`}
                     >
                         <img
                             src={NewsIcon}
-                            alt="News Icon"
+                            alt="Reports Icon"
                             className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                isActive("/admin-elderlink/news") &&
-                                "filter brightness-0 invert"
+                                isActive("/admin-elderlink/reports") && "filter brightness-0 invert"
                             }`}
                         />
-                        <p>News</p>
+                        <p>Reports</p>
                     </Link>
 
                     {/* Archive */}
@@ -291,8 +287,7 @@ const Sidebar = () => {
                             src={ArchiveIcon}
                             alt="Archive Icon"
                             className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
-                                isActive("/admin-elderlink/archives") &&
-                                "filter brightness-0 invert"
+                                isActive("/admin-elderlink/archives") && "filter brightness-0 invert"
                             }`}
                         />
                         <p>Archive</p>
@@ -322,33 +317,16 @@ const Sidebar = () => {
             {/* Routes */}
             <div className="w-full">
                 <Routes>
-                    <Route
-                        path="admin-elderlink/dashboard"
-                        element={<Dashboard />}
-                    />
-                    <Route
-                        path="admin-elderlink/members-list"
-                        element={<MembersList />}
-                    />
-                    <Route
-                        path="admin-elderlink/health-records"
-                        element={<HealthRecords />}
-                    />
-                    <Route
-                        path="admin-elderlink/financial-assistance"
-                        element={<FinancialAssistance />}
-                    />
+                    <Route path="admin-elderlink/dashboard" element={<Dashboard />} />
+                    <Route path="admin-elderlink/members-list" element={<MembersList />} />
+                    <Route path="admin-elderlink/health-records" element={<HealthRecords />} />
+                    <Route path="admin-elderlink/financial-assistance" element={<FinancialAssistance />} />
                     <Route path="admin-elderlink/events" element={<Events />} />
                     <Route path="admin-elderlink/forms" element={<Forms />} />
-                    <Route
-                        path="admin-elderlink/applications"
-                        element={<Applications />}
-                    />
+                    <Route path="admin-elderlink/applications" element={<Applications />} />
                     <Route path="admin-elderlink/news" element={<News />} />
-                    <Route
-                        path="admin-elderlink/archives"
-                        element={<Archives />}
-                    />
+                    <Route path="admin-elderlink/archives" element={<Archives />} />
+                    <Route path="admin-elderlink/reports" element={<Reports />} />
                 </Routes>
             </div>
         </section>

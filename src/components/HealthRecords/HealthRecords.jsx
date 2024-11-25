@@ -73,9 +73,7 @@ const HealthRecords = () => {
                         member.status === "Active" &&
                         member.medical_conditions
                             ?.split(",")
-                            .some((condition) =>
-                                chronicConditions.includes(condition.trim()),
-                            ),
+                            .some((condition) => chronicConditions.includes(condition.trim())),
                 )
                 .map((member) => member.health_record_id),
         ),
@@ -105,9 +103,7 @@ const HealthRecords = () => {
             }
 
             const logs = await response.json()
-            const healthUpdates = logs.filter((log) =>
-                log.action.includes("Health"),
-            )
+            const healthUpdates = logs.filter((log) => log.action.includes("Health"))
             setRecentUpdates(healthUpdates)
         } catch (error) {
             console.error("Error fetching recent updates:", error)
@@ -147,25 +143,12 @@ const HealthRecords = () => {
         return (
             member.status === "Active" &&
             (member.member_name.toLowerCase().includes(searchTermLower) ||
-                (member.medical_conditions &&
-                    member.medical_conditions
-                        .toLowerCase()
-                        .includes(searchTermLower)) ||
-                (member.medications &&
-                    member.medications
-                        .toLowerCase()
-                        .includes(searchTermLower)) ||
-                (member.guardian &&
-                    member.guardian.toLowerCase().includes(searchTermLower)) ||
-                (member.relationship &&
-                    member.relationship
-                        .toLowerCase()
-                        .includes(searchTermLower)) ||
+                (member.medical_conditions && member.medical_conditions.toLowerCase().includes(searchTermLower)) ||
+                (member.medications && member.medications.toLowerCase().includes(searchTermLower)) ||
+                (member.guardian && member.guardian.toLowerCase().includes(searchTermLower)) ||
+                (member.relationship && member.relationship.toLowerCase().includes(searchTermLower)) ||
                 (member.emergency_contact &&
-                    member.emergency_contact
-                        .toString()
-                        .toLowerCase()
-                        .includes(searchTermLower)))
+                    member.emergency_contact.toString().toLowerCase().includes(searchTermLower)))
         )
     })
 
@@ -186,21 +169,16 @@ const HealthRecords = () => {
 
             if (currentRecord) {
                 // Updating existing health record
-                await fetch(
-                    `http://localhost:5000/health-records/${updatedMember.id}`,
-                    {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(updatedMember),
+                await fetch(`http://localhost:5000/health-records/${updatedMember.id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
                     },
-                )
+                    body: JSON.stringify(updatedMember),
+                })
 
                 setSuccessTitle("Health Record Updated!")
-                setSuccessMessage(
-                    "Member health record has been successfully updated.",
-                )
+                setSuccessMessage("Member health record has been successfully updated.")
 
                 // Log the update action
                 await logAction(`Update Health Record`)
@@ -215,9 +193,7 @@ const HealthRecords = () => {
                 })
 
                 setSuccessTitle("Health Record Added!")
-                setSuccessMessage(
-                    "The health record has been successfully added to the list.",
-                )
+                setSuccessMessage("The health record has been successfully added to the list.")
 
                 // Log the add action
                 await logAction(`New Health Record`)
@@ -258,16 +234,12 @@ const HealthRecords = () => {
             const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(
-                    data.message || "Failed to archive the health record",
-                )
+                throw new Error(data.message || "Failed to archive the health record")
             }
 
             // Update success message and modal state
             setSuccessTitle("Health Record Archived!")
-            setSuccessMessage(
-                "The health record has been successfully archived.",
-            )
+            setSuccessMessage("The health record has been successfully archived.")
 
             await logAction("Archive Health Record")
             fetchMembersData() // Refresh the member data after archiving
@@ -288,11 +260,7 @@ const HealthRecords = () => {
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header
-                onOpenModal={handleOpenModal}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-            />
+            <Header onOpenModal={handleOpenModal} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards

@@ -50,44 +50,21 @@ const FinancialAssistance = () => {
         const searchTermLower = searchTerm.toLowerCase() // Convert searchTerm to lowercase once to optimize performance
         return (
             member.status === "Active" && // Only include records with status "Active"
-            ((member.financial_assistance_id &&
-                member.financial_assistance_id
-                    .toString()
-                    .includes(searchTermLower)) ||
-                (member.member_id &&
-                    member.member_id.toString().includes(searchTermLower)) ||
-                (member.member_name &&
-                    member.member_name
-                        .toLowerCase()
-                        .includes(searchTermLower)) ||
-                (member.benefit_type &&
-                    member.benefit_type
-                        .toLowerCase()
-                        .includes(searchTermLower)) ||
-                (member.date_of_claim &&
-                    member.date_of_claim
-                        .toLowerCase()
-                        .includes(searchTermLower)) ||
-                (member.benefit_status &&
-                    member.benefit_status
-                        .toLowerCase()
-                        .includes(searchTermLower)) ||
-                (member.claimer &&
-                    member.claimer.toLowerCase().includes(searchTermLower)) ||
-                (member.relationship &&
-                    member.relationship
-                        .toLowerCase()
-                        .includes(searchTermLower)) ||
-                (member.status &&
-                    member.status.toLowerCase().includes(searchTermLower)))
+            ((member.financial_assistance_id && member.financial_assistance_id.toString().includes(searchTermLower)) ||
+                (member.member_id && member.member_id.toString().includes(searchTermLower)) ||
+                (member.member_name && member.member_name.toLowerCase().includes(searchTermLower)) ||
+                (member.benefit_type && member.benefit_type.toLowerCase().includes(searchTermLower)) ||
+                (member.date_of_claim && member.date_of_claim.toLowerCase().includes(searchTermLower)) ||
+                (member.benefit_status && member.benefit_status.toLowerCase().includes(searchTermLower)) ||
+                (member.claimer && member.claimer.toLowerCase().includes(searchTermLower)) ||
+                (member.relationship && member.relationship.toLowerCase().includes(searchTermLower)) ||
+                (member.status && member.status.toLowerCase().includes(searchTermLower)))
         )
     })
 
     const fetchMemberById = async (id) => {
         try {
-            const response = await fetch(
-                `http://localhost:5000/financial-assistance/${id}`,
-            )
+            const response = await fetch(`http://localhost:5000/financial-assistance/${id}`)
             if (!response.ok) throw new Error("Failed to fetch member data")
             return await response.json()
         } catch (error) {
@@ -97,9 +74,7 @@ const FinancialAssistance = () => {
     }
 
     const handleEditClick = async (row) => {
-        const fetchedMemberData = await fetchMemberById(
-            row.financial_assistance_id,
-        )
+        const fetchedMemberData = await fetchMemberById(row.financial_assistance_id)
         if (fetchedMemberData) {
             setCurrentMember(fetchedMemberData)
             setIsModalOpen(true)
@@ -112,9 +87,7 @@ const FinancialAssistance = () => {
 
     const fetchMembersData = async () => {
         try {
-            const response = await fetch(
-                "http://localhost:5000/financial-assistance",
-            )
+            const response = await fetch("http://localhost:5000/financial-assistance")
             if (!response.ok) throw new Error("Network response was not ok")
             const data = await response.json()
             setMembersData(data)
@@ -152,15 +125,12 @@ const FinancialAssistance = () => {
                 body: JSON.stringify(newRecord),
             })
 
-            if (!response.ok)
-                throw new Error("Failed to save financial assistance record.")
+            if (!response.ok) throw new Error("Failed to save financial assistance record.")
 
             const savedRecord = await response.json()
 
             // Determine action based on whether it's a new record or an update
-            const action = currentMember
-                ? "Update Financial Record"
-                : "New Financial Record"
+            const action = currentMember ? "Update Financial Record" : "New Financial Record"
 
             // Log the action
             await logAction(action)
@@ -168,10 +138,7 @@ const FinancialAssistance = () => {
             setMembersData((prevData) => {
                 if (currentMember) {
                     return prevData.map((member) =>
-                        member.financial_assistance_id ===
-                        savedRecord.financial_assistance_id
-                            ? savedRecord
-                            : member,
+                        member.financial_assistance_id === savedRecord.financial_assistance_id ? savedRecord : member,
                     )
                 }
                 return [...prevData, savedRecord]
@@ -213,9 +180,7 @@ const FinancialAssistance = () => {
             await logAction(`Archive Financial Record`)
 
             setSuccessTitle("Financial Assistance Record Archived!")
-            setSuccessMessage(
-                "The financial assistance record has been successfully archived.",
-            )
+            setSuccessMessage("The financial assistance record has been successfully archived.")
             fetchMembersData()
             setIsSuccessModalOpen(true)
             setIsArchiving(true)
@@ -289,12 +254,7 @@ const FinancialAssistance = () => {
             </div>
 
             {isModalOpen && (
-                <Modal
-                    modalData={currentMember}
-                    onCancel={handleCloseModal}
-                    onAdd={handleSave}
-                    onSave={handleSave}
-                />
+                <Modal modalData={currentMember} onCancel={handleCloseModal} onAdd={handleSave} onSave={handleSave} />
             )}
 
             {isConfirmModalOpen && (
