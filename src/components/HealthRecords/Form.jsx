@@ -1,8 +1,5 @@
-/* eslint-disable react/no-unescaped-entities */
-/* eslint-disable react/prop-types */
-/* eslint-disable react/prop-types */
-import { useState } from "react"
-import FinancialRecordsModal from "../FinancialAssistance/Modal"
+import { useState } from "react";
+import ErrorModal from "../MembersList/ErrorModal"; // Assuming it's in the same folder
 
 const Form = ({
     formData,
@@ -12,23 +9,47 @@ const Form = ({
     removeCondition,
     removeMedication,
     onClose,
+    onNext
 }) => {
-    // Ensure controlled inputs by handling onChange
+    // State for managing validation errors
+    const [errors, setErrors] = useState([]);
+
+    // Handle form input changes
     const handleChange = (e) => {
-        const { name, value } = e.target
+        const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value || "", // Ensure no undefined values
-        }))
-    }
+            [name]: value || "",
+        }));
+    };
 
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    // Validate form fields
+    const validateForm = () => {
+        let formErrors = [];
 
-    const handleNextClick = () => {
-        if (isFormValid) {
-            setIsModalOpen(true) // Open the modal when Next is clicked
+        // Check if first and last names have digits or special characters
+        const nameRegex = /^[A-Za-z\s]+$/;
+        if (!nameRegex.test(formData.guardian_first_name)) {
+            formErrors.push("First name must only contain letters and spaces.");
         }
-    }
+        if (!nameRegex.test(formData.guardian_last_name)) {
+            formErrors.push("Last name must only contain letters and spaces.");
+        }
+
+        // Validate email format
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(formData.guardian_email)) {
+            formErrors.push("Invalid email address.");
+        }
+
+        // Validate contact number format
+        const contactRegex = /^\+63 \d{3} \d{3} \d{4}$/;
+        if (!contactRegex.test(formData.guardian_contact)) {
+            formErrors.push("Contact number must be in the format +63 912 345 6789.");
+        }
+
+        return formErrors;
+    };
 
     // Check if all required fields are filled
     const isFormValid = () => {
@@ -38,8 +59,10 @@ const Form = ({
             formData.guardian_email &&
             formData.guardian_contact &&
             formData.relationship
-        )
-    }
+        );
+    };
+
+   
 
     return (
         <div className="p-2 bg-white">
@@ -111,7 +134,6 @@ const Form = ({
 
             {/* Guardian's Information */}
             <div className="mb-6">
-                {/* Guardian Information */}
                 <label className="block text-xl font-semibold text-gray-700 mb-3">GUARDIAN'S INFORMATION</label>
                 <div className="flex space-x-4">
                     {/* First Name */}
@@ -166,7 +188,6 @@ const Form = ({
 
             {/* Contact No and Email Address */}
             <div className="flex space-x-4 mb-6">
-                {/* Email Address (full width) */}
                 <div className="w-full">
                     <label htmlFor="guardian_email" className="block text-lg font-medium text-gray-700 mb-1">
                         Email Address <span className="text-red-500">*</span>
@@ -186,7 +207,6 @@ const Form = ({
 
             {/* Contact Number and Relationship side by side */}
             <div className="flex space-x-4 mb-6">
-                {/* Contact Number */}
                 <div className="w-1/2">
                     <label htmlFor="guardian_contact" className="block text-lg font-medium text-gray-700 mb-1">
                         Contact Number <span className="text-red-500">*</span>
@@ -202,8 +222,6 @@ const Form = ({
                         required
                     />
                 </div>
-
-                {/* Relationship */}
                 <div className="w-1/2">
                     <label htmlFor="relationship" className="block text-lg font-medium text-gray-700 mb-1">
                         Relationship <span className="text-red-500">*</span>
@@ -216,48 +234,41 @@ const Form = ({
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         required
                     >
-                        <option value="" disabled>
-                            Select relationship
-                        </option>
+                        <option value="">Select Relationship</option>
                         <option value="Parent">Parent</option>
-                        <option value="Sibling">Sibling</option>
-                        <option value="Spouse">Spouse</option>
                         <option value="Guardian">Guardian</option>
                         <option value="Other">Other</option>
                     </select>
                 </div>
             </div>
 
-            {/* Save and Cancel Buttons */}
-            <div className="flex justify-end gap-5 items-center mt-8">
-                <button
-                    type="button"
-                    onClick={onClose}
-                    className="border w-[100px] h-[45px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
-                >
-                    Cancel
-                </button>
-                <button
-                    disabled={!isFormValid()}
-                    onClick={handleNextClick}
-                    type="button"
-                    className={`${
-                        isFormValid()
-                            ? "bg-[#219EBC] w-[100px] h-[45px] hover:bg-[#1A7A8A] text-white"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed w-[100px] h-[45px]"
-                    } text-white font-bold py-2 px-4 rounded transition-colors duration-300`}
-                >
-                    Next
-                </button>
-            </div>
-            {/* Conditionally render the modal */}
-            {isModalOpen && (
-                <FinancialRecordsModal
-                    onClose={() => setIsModalOpen(false)} // Close modal
-                />
-            )}
-        </div>
-    )
-}
+          {/* Save and Cancel Buttons */}
+<div className="flex justify-end gap-5 items-center mt-8">
+    <button
+        type="button"
+        onClick={onClose}
+        className="border w-[100px] h-[45px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
+    >
+        Cancel
+    </button>
+    <button
+        // disabled={!isFormValid()}
+        onClick={onNext}
+        type="button"
+        className={`${
+            isFormValid()
+                ? "bg-[#219EBC] w-[100px] h-[45px] hover:bg-[#1A7A8A] text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed w-[100px] h-[45px]"
+        } text-white font-bold py-2 px-4 rounded transition-colors duration-300`}
+    >
+        Next
+    </button>
+</div>
 
-export default Form
+            {/* Error Modal */}
+            {errors.length > 0 && <ErrorModal errors={errors} />}
+        </div>
+    );
+};
+
+export default Form;

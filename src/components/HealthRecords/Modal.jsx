@@ -2,7 +2,7 @@
 import { useState } from "react"
 import Form from "./Form"
 
-const Modal = ({ onClose }) => {
+const Modal = ({ onClose, onNext }) => {
     const [formData, setFormData] = useState({
         medicalConditions: [],
         medications: [],
@@ -64,6 +64,7 @@ const Modal = ({ onClose }) => {
                     removeCondition={removeCondition}
                     removeMedication={removeMedication}
                     onClose={onClose}
+                    onNext={onNext}
                 />
             </div>
         </div>
