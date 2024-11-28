@@ -7,7 +7,6 @@ const Form = ({ onClose }) => {
     const [benefitType, setBenefitType] = useState("No Benefit"); // State for Benefit Type
     const [monthOfClaim, setMonthOfClaim] = useState(""); // State for Month of Claim
     const [benefitName, setBenefitName] = useState(""); // State for Benefit Name
-    const [benefitDescription, setBenefitDescription] = useState(""); // State for Benefit Description
     const [dob, setDob] = useState(""); // State for DOB
     const [claimer, setClaimer] = useState(""); // State for Claimer
     const [relationship, setRelationship] = useState(""); // State for Relationship
@@ -16,7 +15,6 @@ const Form = ({ onClose }) => {
     useEffect(() => {
         if (benefitType === "No Benefit" || benefitType === "") {
             setBenefitName("");
-            setBenefitDescription("");
             setMonthOfClaim("");
             setDob("");
             setClaimer("");
@@ -138,7 +136,7 @@ const isFormValid = () => {
             
             {/* Additional Fields for Financial Assistance */}
             {benefitType === "Financial Assistance" && (
-                <div className="mb-6 grid grid-cols-2 gap-4">
+                <div className="mb-6 gap-4">
                     {/* Program Name */}
                     <div className="w-full">
                         <label className="block text-lg font-medium text-gray-700 mb-1">
@@ -150,20 +148,6 @@ const isFormValid = () => {
                             placeholder="Enter benefit program name"
                             value={benefitName}
                             onChange={(e) => setBenefitName(e.target.value)}
-                        />
-                    </div>
-
-                    {/* Program Description */}
-                    <div className="w-full">
-                        <label className="block text-lg font-medium text-gray-700 mb-1">
-                            Program Description (optional)
-                        </label>
-                        <input
-                            type="text"
-                            className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="Enter description"
-                            value={benefitDescription}
-                            onChange={(e) => setBenefitDescription(e.target.value)}
                         />
                     </div>
                 </div>
@@ -241,7 +225,6 @@ const isFormValid = () => {
 
                     <p><strong>Claimer:</strong> {benefit.claimer}</p>
                     <p><strong>Relationship:</strong> {benefit.relationship}</p>
-                    {benefit.benefitDescription && <p><strong>Description:</strong> {benefit.benefitDescription}</p>}
                 </li>
             ))}
         </ul>

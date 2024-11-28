@@ -22,49 +22,6 @@ const HealthRecords = () => {
     const [isArchiving, setIsArchiving] = useState(false)
     const [recentUpdates, setRecentUpdates] = useState([])
 
-    const chronicConditions = [
-        // Cardiovascular Conditions
-        "Hypertension",
-        "Heart Disease",
-        "Stroke",
-
-        // Metabolic and Endocrine Disorders
-        "Diabetes Mellitus",
-
-        // Respiratory Conditions
-        "Chronic Obstructive Pulmonary Disease",
-        "Asthma",
-
-        // Neurological and Cognitive Conditions
-        "Alzheimer's Disease",
-        "Dementia",
-        "Parkinson's Disease",
-
-        // Renal and Liver Conditions
-        "Chronic Kidney Disease",
-        "Hepatitis B",
-        "Hepatitis C",
-
-        // Cancers
-        "Lung Cancer",
-        "Breast Cancer",
-        "Liver Cancer",
-        "Colorectal Cancer",
-        "Cervical Cancer",
-        "Ovarian Cancer",
-        "Prostate Cancer",
-
-        // Infectious Diseases
-        "HIV/AIDS",
-
-        // Musculoskeletal and Rheumatic Conditions
-        "Arthritis",
-
-        // Chronic Pain and Disability
-        "Chronic Back Pain",
-        "Osteoporosis",
-    ]
-
     const priorityCareCount = [
         ...new Set(
             membersData

@@ -191,7 +191,7 @@ const Form = ({ onClose, onNext }) => {
 
             <div className="mb-4">
                 <label htmlFor="address" className="block text-lg font-medium text-gray-700 mb-1">
-                    Address <span className="text-red-500">*</span>
+                    Address  <span className="text-red-500">*</span>
                 </label>
                 <input
                     type="text"
@@ -200,7 +200,7 @@ const Form = ({ onClose, onNext }) => {
                     value={formValues.address}
                     onChange={handleInputChange}
                     className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Barangay, City, Province"
+                    placeholder="House No, Street or Subdivision "
                     required
                 />
             </div>

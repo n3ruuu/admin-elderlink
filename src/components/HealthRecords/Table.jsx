@@ -8,9 +8,7 @@ import * as XLSX from "xlsx" // Import the XLSX library
 
 const Table = ({
     membersData,
-    onOpenModal,
-    onArchiveClick,
-    chronicConditions,
+ 
 }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
@@ -26,31 +24,6 @@ const Table = ({
         setCurrentPage(page)
     }
 
-    const handleGenerateReport = () => {
-        // Prepare data for Excel report
-        const reportData = currentMembers.map((row) => ({
-            health_record_id: row.health_record_id,
-            member_id: row.member_id,
-            member_name: row.name,
-            record_date: row.record_date,
-            medical_conditions: row.medical_conditions,
-            medications: row.medications,
-            guardian_name: row.guardian_name,
-            relationship: row.relationship,
-            emergency_contact: row.emergency_contact,
-            status: row.status,
-        }))
-
-        // Convert data to a worksheet
-        const ws = XLSX.utils.json_to_sheet(reportData)
-
-        // Create a workbook and append the worksheet
-        const wb = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, "Health Records")
-
-        // Export the workbook to an Excel file
-        XLSX.writeFile(wb, "health_records_report.xlsx")
-    }
     return (
         <div>
             <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
