@@ -3,9 +3,8 @@ import moment from "moment"
 import { useState } from "react"
 import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
-import Modal from "./Modal" // Import the Modal component
 
-const Table = ({ membersData }) => {
+const Table = ({ membersData, onEdit }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6
 
@@ -13,16 +12,8 @@ const Table = ({ membersData }) => {
     const startIndex = (currentPage - 1) * itemsPerPage
     const currentMembers = membersData.slice(startIndex, startIndex + itemsPerPage)
 
-    const [selectedMember, setSelectedMember] = useState(null) // Store selected member data
-    const [showModal, setShowModal] = useState(false) // Control modal visibility
-
     const handlePageChange = (page) => {
         setCurrentPage(page)
-    }
-
-    const handleEditClick = (member) => {
-        setSelectedMember(member) // Set the selected member's data
-        setShowModal(true) // Show the modal
     }
 
     return (
@@ -72,7 +63,7 @@ const Table = ({ membersData }) => {
                             <td className="px-4 py-4 flex gap-2">
                                 <button
                                     className="text-blue-500 hover:text-blue-700"
-                                    onClick={() => handleEditClick(member)} // Trigger edit click
+                                    onClick={() => onEdit(member)} // Trigger the edit action
                                 >
                                     <img src={EditIcon} alt="Edit Icon" className="w-5 h-5" />
                                 </button>
@@ -123,9 +114,6 @@ const Table = ({ membersData }) => {
                     Next
                 </button>
             </div>
-
-            {/* Display Modal */}
-            {showModal && <Modal member={selectedMember} closeModal={() => setShowModal(false)} />}
         </div>
     )
 }

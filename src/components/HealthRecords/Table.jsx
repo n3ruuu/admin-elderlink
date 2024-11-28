@@ -4,9 +4,8 @@ import EditIcon from "../../assets/icons/edit2.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
 import HeartIcon from "../../assets/icons/heart.svg"
-import * as XLSX from "xlsx" // Import the XLSX library
 
-const Table = ({ membersData }) => {
+const Table = ({ membersData, chronicConditions }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
 
