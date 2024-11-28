@@ -22,6 +22,32 @@ const HealthRecords = () => {
     const [isArchiving, setIsArchiving] = useState(false)
     const [recentUpdates, setRecentUpdates] = useState([])
 
+    const chronicConditions = [
+        "Hypertension",
+        "Diabetes Mellitus",
+        "Heart Disease (e.g., Coronary Artery Disease)",
+        "Stroke",
+        "Chronic Obstructive Pulmonary Disease (COPD)",
+        "Asthma",
+        "Cancer (e.g., Lung, Breast, Colon)",
+        "Chronic Kidney Disease",
+        "Hepatitis (e.g., Chronic Hepatitis B and C)",
+        "Tuberculosis (TB, drug-resistant and latent forms)",
+        "Arthritis (e.g., Rheumatoid Arthritis, Osteoarthritis)",
+        "Dementia (e.g., Alzheimer's Disease)",
+        "Mental Health Disorders (e.g., Depression, Anxiety)",
+        "Chronic Liver Disease (e.g., Cirrhosis)",
+        "Thyroid Disorders (e.g., Hyperthyroidism, Hypothyroidism)",
+        "Parkinson's Disease",
+        "HIV/AIDS",
+        "Gastroesophageal Reflux Disease (GERD)",
+        "Obesity",
+        "Dyslipidemia (e.g., High Cholesterol)",
+        "Psoriasis",
+        "Epilepsy",
+        "Gout",
+    ]
+
     const priorityCareCount = [
         ...new Set(
             membersData

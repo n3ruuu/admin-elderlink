@@ -6,19 +6,13 @@ import ReportIcon from "../../assets/icons/report.svg"
 import HeartIcon from "../../assets/icons/heart.svg"
 import * as XLSX from "xlsx" // Import the XLSX library
 
-const Table = ({
-    membersData,
- 
-}) => {
+const Table = ({ membersData }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
 
     const totalPages = Math.ceil(membersData.length / itemsPerPage) // Calculate total pages
     const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
-    const currentMembers = membersData.slice(
-        startIndex,
-        startIndex + itemsPerPage,
-    ) // Get current active members for display
+    const currentMembers = membersData.slice(startIndex, startIndex + itemsPerPage) // Get current active members for display
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
@@ -29,36 +23,20 @@ const Table = ({
             <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
                 <thead className="text-[#767171CC]">
                     <tr>
-                        <th className="text-left font-medium whitespace-nowrap px-16 py-4 w-[20%]">
-                            Name
-                        </th>
-                        <th className="text-left font-medium whitespace-normal">
-                            Medical Conditions
-                        </th>
-                        <th className="text-left font-medium whitespace-normal">
-                            Medications
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Guardian
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Relationship
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Emergency Contact
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Actions
-                        </th>
+                        <th className="text-left font-medium whitespace-nowrap px-16 py-4 w-[20%]">Name</th>
+                        <th className="text-left font-medium whitespace-normal">Medical Conditions</th>
+                        <th className="text-left font-medium whitespace-normal">Medications</th>
+                        <th className="text-left font-medium whitespace-nowrap">Guardian</th>
+                        <th className="text-left font-medium whitespace-nowrap">Relationship</th>
+                        <th className="text-left font-medium whitespace-nowrap">Emergency Contact</th>
+                        <th className="text-left font-medium whitespace-nowrap">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {currentMembers.map((row, index) => (
                         <tr
-                            className={`text-[#333333] font-[500] ${
-                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
-                            }`}
+                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                             key={row.id}
                         >
                             <td className="px-16 py-4 whitespace-nowrap">
@@ -66,11 +44,7 @@ const Table = ({
                                     {row.medical_conditions &&
                                         row.medical_conditions
                                             .split(",")
-                                            .some((condition) =>
-                                                chronicConditions.includes(
-                                                    condition.trim(),
-                                                ),
-                                            ) && (
+                                            .some((condition) => chronicConditions.includes(condition.trim())) && (
                                             <img
                                                 src={HeartIcon}
                                                 alt="Heart"
@@ -84,60 +58,39 @@ const Table = ({
 
                             <td className="whitespace-normal py-4">
                                 {row.medical_conditions
-                                    ? row.medical_conditions
-                                          .split(",")
-                                          .map((condition, idx) => (
-                                              <div
-                                                  key={idx}
-                                                  className={`${
-                                                      chronicConditions.includes(
-                                                          condition.trim(),
-                                                      )
-                                                          ? "text-red-500"
-                                                          : ""
-                                                  }`}
-                                              >
-                                                  {condition.trim()}
-                                              </div>
-                                          ))
+                                    ? row.medical_conditions.split(",").map((condition, idx) => (
+                                          <div
+                                              key={idx}
+                                              className={`${
+                                                  chronicConditions.includes(condition.trim()) ? "text-red-500" : ""
+                                              }`}
+                                          >
+                                              {condition.trim()}
+                                          </div>
+                                      ))
                                     : ""}
                             </td>
                             <td className="whitespace-normal py-4">
                                 {row.medications
                                     ? row.medications
                                           .split(",")
-                                          .map((medication, idx) => (
-                                              <div key={idx}>
-                                                  {medication.trim()}
-                                              </div>
-                                          ))
+                                          .map((medication, idx) => <div key={idx}>{medication.trim()}</div>)
                                     : ""}
                             </td>
 
-                            <td className="whitespace-nowrap">
-                                {row.guardian_name}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {row.relationship}
-                            </td>
+                            <td className="whitespace-nowrap">{row.guardian_name}</td>
+                            <td className="whitespace-nowrap">{row.relationship}</td>
                             <td className="text-left">
-                                {row.emergency_contact &&
-                                row.emergency_contact.startsWith("+639")
+                                {row.emergency_contact && row.emergency_contact.startsWith("+639")
                                     ? `0${row.emergency_contact.slice(3)}`
                                     : row.emergency_contact}
                             </td>
 
                             <td className="flex gap-3 items-center py-4">
-                                <button
-                                    aria-label="Edit"
-                                    onClick={() => onOpenModal(row)}
-                                >
+                                <button aria-label="Edit" onClick={() => onOpenModal(row)}>
                                     <img src={EditIcon} alt="Edit" />
                                 </button>
-                                <button
-                                    aria-label="Archive"
-                                    onClick={() => onArchiveClick(row)}
-                                >
+                                <button aria-label="Archive" onClick={() => onArchiveClick(row)}>
                                     <img src={ArchiveIcon} alt="Archive" />
                                 </button>
                             </td>
@@ -187,10 +140,7 @@ const Table = ({
                 </div>
 
                 {/* Generate Report button at bottom-right */}
-                <button
-                    className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
-                    onClick={handleGenerateReport} // Call the new function for generating the report
-                >
+                <button className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group">
                     <img
                         src={ReportIcon}
                         alt="Report Icon"

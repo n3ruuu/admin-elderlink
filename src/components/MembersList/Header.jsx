@@ -1,30 +1,26 @@
-import { useState } from "react";
-import SearchIcon from "../../assets/icons/search.svg";
-import Modal from "./Modal";
-import HealthRecordsModal from "../HealthRecords/Modal";
-import FinancialRecordsModal from "../FinancialAssistance/Modal";
+import { useState } from "react"
+import SearchIcon from "../../assets/icons/search.svg"
+import Modal from "./Modal"
+import HealthRecordsModal from "../HealthRecords/Modal"
+import FinancialRecordsModal from "../FinancialAssistance/Modal"
 
-const Header = ({ handleOpenModal, setSearchTerm }) => {
-    const [currentStep, setCurrentStep] = useState(0); // Track modal steps
-
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value); // Update search term on change
-    };
+const Header = () => {
+    const [currentStep, setCurrentStep] = useState(0) // Track modal steps
 
     const openNextModal = () => {
-        setCurrentStep((prevStep) => prevStep + 1);
-    };
+        setCurrentStep((prevStep) => prevStep + 1)
+    }
 
     const closeAllModals = () => {
-        setCurrentStep(0);
-    };
+        setCurrentStep(0)
+    }
 
     const openPrevModal = () => {
-        setCurrentStep(1);
+        setCurrentStep(1)
     }
 
     const openSecondModal = () => {
-        setCurrentStep(2);
+        setCurrentStep(2)
     }
 
     return (
@@ -32,9 +28,7 @@ const Header = ({ handleOpenModal, setSearchTerm }) => {
             <div className="p-16 w-full pb-8 flex">
                 <div className="w-1/2">
                     <h1 className="text-6xl font-bold">Members List</h1>
-                    <p className="text-[#767171CC] mt-3">
-                        Access and update member profiles
-                    </p>
+                    <p className="text-[#767171CC] mt-3">Access and update member profiles</p>
                 </div>
                 <div className="flex w-1/2 justify-end gap-5 items-start text-[#333333]">
                     {/* Search Bar */}
@@ -46,7 +40,6 @@ const Header = ({ handleOpenModal, setSearchTerm }) => {
                                 id="search"
                                 className="p-3 pl-12 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full"
                                 placeholder="Search..."
-                                onChange={handleSearchChange}
                             />
                             <img
                                 src={SearchIcon}
@@ -65,24 +58,11 @@ const Header = ({ handleOpenModal, setSearchTerm }) => {
             </div>
 
             {/* Modals */}
-            {currentStep === 1 && (
-                <Modal
-                    isOpen={currentStep === 1}
-                    onClose={closeAllModals}
-                    onNext={openNextModal}
-                />
-            )}
-            {currentStep === 2 && (
-                <HealthRecordsModal
-                    onClose={openPrevModal}
-                    onNext={openNextModal}
-                />
-            )}
-            {currentStep === 3 && (
-                <FinancialRecordsModal onClose={openSecondModal} />
-            )}
+            {currentStep === 1 && <Modal isOpen={currentStep === 1} onClose={closeAllModals} onNext={openNextModal} />}
+            {currentStep === 2 && <HealthRecordsModal onClose={openPrevModal} onNext={openNextModal} />}
+            {currentStep === 3 && <FinancialRecordsModal onClose={openSecondModal} />}
         </>
-    );
-};
+    )
+}
 
-export default Header;
+export default Header

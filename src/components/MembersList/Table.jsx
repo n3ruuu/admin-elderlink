@@ -1,98 +1,83 @@
-import moment from "moment";
+/* eslint-disable react/prop-types */
+import moment from "moment"
 import { useState } from "react"
 import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
+import Modal from "./Modal" // Import the Modal component
 
-const Table = ({
-    membersData,
-}) => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6;
+const Table = ({ membersData }) => {
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 6
 
-    const totalPages = Math.ceil(membersData.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentMembers = membersData.slice(
-        startIndex,
-        startIndex + itemsPerPage
-    );
+    const totalPages = Math.ceil(membersData.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const currentMembers = membersData.slice(startIndex, startIndex + itemsPerPage)
+
+    const [selectedMember, setSelectedMember] = useState(null) // Store selected member data
+    const [showModal, setShowModal] = useState(false) // Control modal visibility
 
     const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
+        setCurrentPage(page)
+    }
+
+    const handleEditClick = (member) => {
+        setSelectedMember(member) // Set the selected member's data
+        setShowModal(true) // Show the modal
+    }
 
     return (
         <div>
             <table className="min-w-full bg-[#FFFFFF] rounded-xl shadow-lg">
-                <thead className="text-[#767171CC]">
+                <thead className="text-[#767171CC] h-[80px] align-baseline">
                     <tr>
-                        <th className="pl-16 py-4 text-left font-medium whitespace-nowrap w-[10%]">
-                            Control No.
+                        <th className="pl-8 py-4 text-left font-medium whitespace-nowrap w-[10%]">Control No.</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Full Name</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Birthdate</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[5%]">Sex</th>
+                        <th className="text-left font-medium whitespace-nowrap w-fit">Civil Status</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[12%]">Address</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Contact Number</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[7%]">
+                            Purchase <br /> Booklet No.
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[15%]">
-                            Full Name
+                        <th className="text-left font-medium whitespace-nowrap w-[8%]">
+                            Medicine <br /> Booklet No.
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[15%]">
-                            Date of Birth
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
-                            Sex
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
-                            Civil Status
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[20%]">
-                            House Number and Sitio
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[15%]">
-                            Contact Number
-                        </th>
-                        <th className="pr-16 text-left font-medium whitespace-nowrap w-[15%]">
-                            Actions
-                        </th>
+                        <th className="text-left font-medium whitespace-nowrap w-[5%]">Date Issued</th>
+                        <th className="px-4 text-left font-medium whitespace-nowrap">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {currentMembers.map((member, index) => (
-                        <tr
-                            key={member.id}
-                            className={`${
-                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
-                            }`}
-                        >
-                            <td className="px-16 py-4 text-left">
-                                {member.controlNo}
-                            </td>
-                            <td className="text-left">{member.fullName}</td>
+                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
+                            <td className="px-8 py-4 text-left">{member.controlNo}</td>
                             <td className="text-left whitespace-nowrap">
-                                {moment(member.dob).format("MMMM D, YYYY")}
+                                {member.firstName} {member.middleName && `${member.middleName} `} {member.lastName}{" "}
+                                {member.extension}
                             </td>
+                            <td className="text-left whitespace-nowrap">{moment(member.dob).format("MMMM D, YYYY")}</td>
                             <td className="text-left">{member.sex}</td>
                             <td className="text-left">{member.civilStatus}</td>
-                            <td className="text-left">{member.address}</td>
+                            <td className="text-left whitespace-nowrap">{member.address}</td>
                             <td className="text-left">
-                                {member.contactNumber &&
-                                member.contactNumber.startsWith("+639")
+                                {member.contactNumber && member.contactNumber.startsWith("+639")
                                     ? `0${member.contactNumber.slice(3)}`
                                     : member.contactNumber}
                             </td>
-                            <td className="py-4 flex gap-2">
+                            <td className="text-left">{member.purchaseBookletNo || "N/A"}</td>
+                            <td className="text-left">{member.medicineBookletNo || "N/A"}</td>
+                            <td className="text-left whitespace-nowrap">
+                                {member.dateIssued ? moment(member.dateIssued).format("MMMM D, YYYY") : "N/A"}
+                            </td>
+                            <td className="px-4 py-4 flex gap-2">
                                 <button
                                     className="text-blue-500 hover:text-blue-700"
+                                    onClick={() => handleEditClick(member)} // Trigger edit click
                                 >
-                                    <img
-                                        src={EditIcon}
-                                        alt="Edit Icon"
-                                        className="w-5 h-5"
-                                    />
+                                    <img src={EditIcon} alt="Edit Icon" className="w-5 h-5" />
                                 </button>
-                                <button
-                                    className="text-red-500 hover:text-red-700"
-                                >
-                                    <img
-                                        src={ArchiveIcon}
-                                        alt="Archive Icon"
-                                        className="w-5 h-5"
-                                    />
+                                <button className="text-red-500 hover:text-red-700">
+                                    <img src={ArchiveIcon} alt="Archive Icon" className="w-5 h-5" />
                                 </button>
                             </td>
                         </tr>
@@ -100,6 +85,7 @@ const Table = ({
                 </tbody>
             </table>
 
+            {/* Pagination Controls */}
             <div className="flex fixed bottom-5 mt-4">
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -137,8 +123,11 @@ const Table = ({
                     Next
                 </button>
             </div>
-        </div>
-    );
-};
 
-export default Table;
+            {/* Display Modal */}
+            {showModal && <Modal member={selectedMember} closeModal={() => setShowModal(false)} />}
+        </div>
+    )
+}
+
+export default Table

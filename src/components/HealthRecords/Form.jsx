@@ -1,5 +1,6 @@
-import { useState } from "react";
-import ErrorModal from "../MembersList/ErrorModal"; // Assuming it's in the same folder
+/* eslint-disable react/prop-types */
+import { useState } from "react"
+import ErrorModal from "../MembersList/ErrorModal" // Assuming it's in the same folder
 
 const Form = ({
     formData,
@@ -9,47 +10,62 @@ const Form = ({
     removeCondition,
     removeMedication,
     onClose,
-    onNext
+    onNext,
 }) => {
     // State for managing validation errors
-    const [errors, setErrors] = useState([]);
+    const [errors, setErrors] = useState([])
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false) // Track error modal state
 
     // Handle form input changes
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target
         setFormData((prevData) => ({
             ...prevData,
             [name]: value || "",
-        }));
-    };
+        }))
+    }
+
+    const handleSubmit = () => {
+        const validationErrors = validateForm()
+        if (validationErrors.length > 0) {
+            setErrors(validationErrors)
+            setIsErrorModalOpen(true) // Open the error modal
+        } else {
+            onNext()
+        }
+    }
+
+    const handleCloseErrorModal = () => {
+        setIsErrorModalOpen(false) // Close the error modal
+    }
 
     // Validate form fields
     const validateForm = () => {
-        let formErrors = [];
+        let formErrors = []
 
         // Check if first and last names have digits or special characters
-        const nameRegex = /^[A-Za-z\s]+$/;
+        const nameRegex = /^[A-Za-z\s]+$/
         if (!nameRegex.test(formData.guardian_first_name)) {
-            formErrors.push("First name must only contain letters and spaces.");
+            formErrors.push("First name must only contain letters and spaces.")
         }
         if (!nameRegex.test(formData.guardian_last_name)) {
-            formErrors.push("Last name must only contain letters and spaces.");
+            formErrors.push("Last name must only contain letters and spaces.")
         }
 
         // Validate email format
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         if (!emailRegex.test(formData.guardian_email)) {
-            formErrors.push("Invalid email address.");
+            formErrors.push("Invalid email address.")
         }
 
         // Validate contact number format
-        const contactRegex = /^\+63 \d{3} \d{3} \d{4}$/;
+        const contactRegex = /^\+63 \d{3} \d{3} \d{4}$/
         if (!contactRegex.test(formData.guardian_contact)) {
-            formErrors.push("Contact number must be in the format +63 912 345 6789.");
+            formErrors.push("Contact number must be in the format +63 912 345 6789.")
         }
 
-        return formErrors;
-    };
+        return formErrors
+    }
 
     // Check if all required fields are filled
     const isFormValid = () => {
@@ -59,10 +75,8 @@ const Form = ({
             formData.guardian_email &&
             formData.guardian_contact &&
             formData.relationship
-        );
-    };
-
-   
+        )
+    }
 
     return (
         <div className="p-2 bg-white">
@@ -242,33 +256,33 @@ const Form = ({
                 </div>
             </div>
 
-          {/* Save and Cancel Buttons */}
-<div className="flex justify-end gap-5 items-center mt-8">
-    <button
-        type="button"
-        onClick={onClose}
-        className="border w-[100px] h-[45px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
-    >
-        Cancel
-    </button>
-    <button
-        // disabled={!isFormValid()}
-        onClick={onNext}
-        type="button"
-        className={`${
-            isFormValid()
-                ? "bg-[#219EBC] w-[100px] h-[45px] hover:bg-[#1A7A8A] text-white"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed w-[100px] h-[45px]"
-        } text-white font-bold py-2 px-4 rounded transition-colors duration-300`}
-    >
-        Next
-    </button>
-</div>
+            {/* Save and Cancel Buttons */}
+            <div className="flex justify-end gap-5 items-center mt-8">
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="border w-[100px] h-[45px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
+                >
+                    Cancel
+                </button>
+                <button
+                    disabled={!isFormValid()}
+                    onClick={handleSubmit}
+                    type="button"
+                    className={`${
+                        isFormValid()
+                            ? "bg-[#219EBC] w-[100px] h-[45px] hover:bg-[#1A7A8A] text-white"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed w-[100px] h-[45px]"
+                    } text-white font-bold py-2 px-4 rounded transition-colors duration-300`}
+                >
+                    Next
+                </button>
+            </div>
 
             {/* Error Modal */}
-            {errors.length > 0 && <ErrorModal errors={errors} />}
+            {isErrorModalOpen && <ErrorModal errors={errors} onClose={handleCloseErrorModal} />}
         </div>
-    );
-};
+    )
+}
 
-export default Form;
+export default Form
