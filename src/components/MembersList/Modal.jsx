@@ -89,10 +89,10 @@ const Modal = ({ onClose, member, onSave }) => {
             try {
                 if (member) {
                     // Edit existing member in the database
-                    await axios.put(`http://localhost:5000/members/${member.id}`, formValues)
+                    await axios.put(`http://localhost:5000/members/members-list/${member.id}`, formValues)
                 } else {
                     // Add new member to the database
-                    await axios.post("http://localhost:5000/members", formValues)
+                    await axios.post("http://localhost:5000/members/members-list", formValues)
                 }
                 onSave() // Notify parent to refresh data
             } catch (error) {
@@ -112,11 +112,14 @@ const Modal = ({ onClose, member, onSave }) => {
                     {isEditMode ? "Edit Member" : "Add New Member"}
                 </h2>
                 <div className="mb-6">
-                    <div className="w-full h-2 bg-gray-200 rounded-full">
-                        <div className="h-2 bg-[#219EBC] rounded-full w-1/3"></div>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-2">Step 1 of 3</p>
+                    {!isEditMode && (
+                        <div className="w-full h-2 bg-gray-200 rounded-full">
+                            <div className="h-2 bg-[#219EBC] rounded-full w-1/3"></div>
+                        </div>
+                    )}
+                    {!isEditMode && <p className="text-sm text-gray-600 mt-2 mb-6">Step 1 of 3</p>}
                 </div>
+
                 {isErrorModalOpen && <ErrorModal errors={errors} onClose={handleCloseErrorModal} />}
                 <form>
                     <Form
