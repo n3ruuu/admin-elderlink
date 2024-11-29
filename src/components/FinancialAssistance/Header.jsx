@@ -1,14 +1,12 @@
 /* eslint-disable react/prop-types */
 import SearchIcon from "../../assets/icons/search.svg"
 
-const Header = ({ onOpenModal, searchTerm, onSearchChange }) => {
+const Header = ({ onOpenModal }) => {
     return (
         <div className="p-16 w-full pb-8 flex justify-between">
             <div className="w-1/2">
                 <h1 className="text-6xl font-bold">Financial Assistance</h1>
-                <p className="text-[#767171CC] mt-3">
-                    Manage finances and benefits
-                </p>
+                <p className="text-[#767171CC] mt-3">Manage finances and benefits</p>
             </div>
             <div className="flex justify-end gap-5 w-1/2 items-start text-[#333333]">
                 <div className="w-[60%]">
@@ -18,8 +16,6 @@ const Header = ({ onOpenModal, searchTerm, onSearchChange }) => {
                                 type="search"
                                 name="search"
                                 id="search"
-                                value={searchTerm} // Bind the search term here
-                                onChange={onSearchChange} // Call onSearchChange to update state
                                 className="p-3 pl-12 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full"
                                 placeholder="Search..."
                             />

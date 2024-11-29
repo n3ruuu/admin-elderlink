@@ -174,11 +174,11 @@ const Form = ({
                     >
                         <option value="">Relationship</option>
                         <option value="Parent">Parent</option>
-                        <option value="Guardian">Guardian</option>
-                        <option value="Wife">Wife</option>
+                        <option value="Spouse">Spouse</option>
+                        <option value="Child">Child</option>
                         <option value="Sibling">Sibling</option>
-                        <option value="Son">Son</option>
-                        <option value="Daughter">Daughter</option>
+                        <option value="Relative">Relative</option>
+                        <option value="Guardian">Guardian</option>
                     </select>
                 </div>
             </div>
