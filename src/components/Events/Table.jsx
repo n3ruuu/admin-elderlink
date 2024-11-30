@@ -4,7 +4,7 @@ import EditIcon from "../../assets/icons/edit.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import SendIcon from "../../assets/icons/send-icon.svg"
 import moment from "moment"
-import SmsModal from "./SmsModal"
+import EmailModal from "./EmailModal"
 
 const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
@@ -150,7 +150,7 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
             </div>
 
             {/* Compose SMS Modal */}
-            <SmsModal isOpen={isSMSModalOpen} onClose={() => setSMSModalOpen(false)} />
+            <EmailModal isOpen={isSMSModalOpen} onClose={() => setSMSModalOpen(false)} />
         </div>
     )
 }

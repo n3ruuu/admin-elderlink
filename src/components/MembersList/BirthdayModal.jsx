@@ -2,7 +2,7 @@
 import { useState } from "react"
 import moment from "moment"
 import { AiOutlineMessage } from "react-icons/ai" // Importing SMS icon from React Icons
-import SMSModal from "./SmsModal" // Import the SMSModal component
+import EmailModal from "./EmailModal" // Import the EmailModal component
 
 const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
     const [isSMSModalOpen, setIsSMSModalOpen] = useState(false)
@@ -26,23 +26,17 @@ const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-xl w-[80%] text-left relative md:w-[30%]">
                 <h2 className="text-xl font-bold mb-4">Upcoming Birthdays</h2>
-                <button
-                    onClick={onClose}
-                    className="text-[#333333] text-2xl absolute top-4 right-5"
-                >
+                <button onClick={onClose} className="text-[#333333] text-2xl absolute top-4 right-5">
                     &times; {/* Close button */}
                 </button>
                 <ul>
                     {upcomingBirthdays.map((member) => {
-                        const memberBirthday = moment(member.dob).format(
-                            "MM-DD",
-                        ) // Format member's birthday to MM-DD
+                        const memberBirthday = moment(member.dob).format("MM-DD") // Format member's birthday to MM-DD
+                        const memberFullName =
+                            `${member.firstName || ""} ${member.middleName || ""} ${member.lastName || ""}`.trim()
 
                         return (
-                            <li
-                                key={member.id}
-                                className="flex items-center justify-between mb-2"
-                            >
+                            <li key={member.id} className="flex items-center justify-between mb-2">
                                 <div className="flex items-center">
                                     <AiOutlineMessage
                                         className="mr-2 text-blue-500 cursor-pointer"
@@ -55,7 +49,7 @@ const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
                                                 : ""
                                         }
                                     >
-                                        {member.name}
+                                        {memberFullName}
                                     </span>
                                 </div>
                                 <span
@@ -73,12 +67,12 @@ const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
                 </ul>
             </div>
 
-            {/* SMSModal for sending message */}
+            {/* EmailModal for sending message */}
             {selectedMember && (
-                <SMSModal
+                <EmailModal
                     isOpen={isSMSModalOpen}
                     onClose={closeSMSModal}
-                    member={selectedMember} // Pass selected member to SMSModal
+                    member={selectedMember} // Pass selected member to EmailModal
                 />
             )}
         </div>

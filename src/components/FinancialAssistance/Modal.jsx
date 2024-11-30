@@ -10,34 +10,111 @@ const Modal = ({ onClose, member, onSave }) => {
         programName: "",
         claimer: "",
         claimerRelationship: "",
+        claimDates: ["", "", "", ""],
+        claimers: ["", "", "", ""],
+        relationships: ["", "", "", ""],
     })
+
+    const formatDateToLocal = (dateStr) => {
+        const date = new Date(dateStr)
+        const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000) // Adjust to local time zone
+        return localDate.toISOString().split("T")[0] // Return the date in YYYY-MM-DD format
+    }
 
     useEffect(() => {
         if (member) {
             setFormValues({
-                benefitType: member.benefitType || "",
-                claimDate: member.claimDate ? member.claimDate.split("T")[0] : "",
+                benefitType: member.benefitType || "No Benefit",
+                claimDate: member.claimDate ? formatDateToLocal(member.claimDate) : "",
                 programName: member.programName || "",
                 claimer: member.claimer || "",
                 claimerRelationship: member.claimerRelationship || "",
+                claimDates: [
+                    member.claimDateQ1 ? formatDateToLocal(member.claimDateQ1) : "",
+                    member.claimDateQ2 ? formatDateToLocal(member.claimDateQ2) : "",
+                    member.claimDateQ3 ? formatDateToLocal(member.claimDateQ3) : "",
+                    member.claimDateQ4 ? formatDateToLocal(member.claimDateQ4) : "",
+                ],
+                claimers: [
+                    member.claimerQ1 || "",
+                    member.claimerQ2 || "",
+                    member.claimerQ3 || "",
+                    member.claimerQ4 || "",
+                ],
+                relationships: [
+                    member.relationshipQ1 || "",
+                    member.relationshipQ2 || "",
+                    member.relationshipQ3 || "",
+                    member.relationshipQ4 || "",
+                ],
             })
         }
     }, [member])
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
-        setFormValues({ ...formValues, [name]: value })
+        setFormValues((prev) => ({ ...prev, [name]: value }))
+    }
+
+    const handleSocialPensionChange = (index, field, value) => {
+        setFormValues((prev) => {
+            const updatedField = [...prev[field]]
+            updatedField[index] = value
+            return { ...prev, [field]: updatedField }
+        })
     }
 
     const handleSubmit = async () => {
+        const {
+            benefitType,
+            claimDates,
+            claimers,
+            relationships,
+            claimDate,
+            programName,
+            claimer,
+            claimerRelationship,
+        } = formValues
+
         try {
-            if (member) {
-                console.log(formValues)
-                // Edit existing member in the database
-                await axios.put(`http://localhost:5000/members/financial-assistance/${member.id}`, formValues)
+            if (benefitType === "Social Pension") {
+                // Filter out empty fields
+                const socialPensionData = {
+                    benefitType,
+                    claimDateQ1: claimDates[0] || null,
+                    claimerQ1: claimers[0] || null,
+                    relationshipQ1: relationships[0] || null,
+                    claimDateQ2: claimDates[1] || null,
+                    claimerQ2: claimers[1] || null,
+                    relationshipQ2: relationships[1] || null,
+                    claimDateQ3: claimDates[2] || null,
+                    claimerQ3: claimers[2] || null,
+                    relationshipQ3: relationships[2] || null,
+                    claimDateQ4: claimDates[3] || null,
+                    claimerQ4: claimers[3] || null,
+                    relationshipQ4: relationships[3] || null,
+                }
+                if (member) {
+                    await axios.put(`http://localhost:5000/members/social-pension/${member.id}`, socialPensionData)
+                } else {
+                    await axios.post("http://localhost:5000/members/social-pension", socialPensionData)
+                }
             } else {
-                // Add new member to the database
-                await axios.post("http://localhost:5000/members/financial-assistance", formValues)
+                const financialAssistanceData = {
+                    benefitType,
+                    claimDate: claimDate || null,
+                    programName: programName || null,
+                    claimer: claimer || null,
+                    claimerRelationship: claimerRelationship || null,
+                }
+                if (member) {
+                    await axios.put(
+                        `http://localhost:5000/members/financial-assistance/${member.id}`,
+                        financialAssistanceData,
+                    )
+                } else {
+                    await axios.post("http://localhost:5000/members/financial-assistance", financialAssistanceData)
+                }
             }
             onSave() // Notify parent to refresh data
         } catch (error) {
@@ -45,11 +122,15 @@ const Modal = ({ onClose, member, onSave }) => {
         }
     }
 
-    const isFormValid = () =>
-        formValues.benefitType &&
-        (formValues.claimDate || formValues.programName) &&
-        formValues.claimer &&
-        formValues.claimerRelationship
+    const isFormValid = () => {
+        return (
+            formValues.benefitType &&
+            formValues.claimDate &&
+            formValues.programName &&
+            formValues.claimer &&
+            formValues.claimerRelationship
+        )
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -61,6 +142,7 @@ const Modal = ({ onClose, member, onSave }) => {
                     isFormValid={isFormValid}
                     isEditMode={!!member}
                     handleSubmit={handleSubmit}
+                    handleSocialPensionChange={handleSocialPensionChange}
                 />
             </div>
         </div>
