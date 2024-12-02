@@ -1,52 +1,160 @@
 /* eslint-disable react/prop-types */
+import { useState } from "react"
 import moment from "moment"
+import axios from "axios" // Assuming you're using axios for API requests
 
-const ViewModal = ({ member, onClose }) => {
-    const renderQuarterData = (quarter) => {
-        return (
-            <tr>
-                <td>{moment(member[`claimDate${quarter}`]).format("MMMM D, YYYY") || "N/A"}</td>
-                <td>{quarter}</td>
-                <td>{member[`claimer${quarter}`] || "N/A"}</td>
-                <td>{member[`relationship${quarter}`] || "N/A"}</td>
-                <td>
-                    {member[`proof${quarter}`] ? (
-                        <a
-                            href={`http://localhost:5000/uploads/${member[`proof${quarter}`]}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 underline"
-                        >
-                            View Proof
-                        </a>
-                    ) : (
-                        "N/A"
-                    )}
-                </td>
-                <td>{member[`benefitStatus${quarter}`] || "Unclaimed"}</td>
-            </tr>
-        )
+const ViewModal = ({ member, membersData, onClose }) => {
+    const [fileUpload, setFileUpload] = useState({}) // Store files for each row
+    const memberRecords = membersData.filter((data) => data.member_id === member.member_id)
+
+    // Handle file input change for each row
+    const handleFileChange = async (e, recordIndex) => {
+        const file = e.target.files[0]
+        if (!file) {
+            alert("Please select a file to upload.")
+            return
+        }
+
+        setFileUpload((prevState) => ({
+            ...prevState,
+            [recordIndex]: file,
+        }))
+
+        // Upload the file immediately after selection
+        await handleFileUpload(recordIndex, file)
+    }
+
+    // Handle file upload
+    const handleFileUpload = async (recordIndex, file) => {
+        const formData = new FormData()
+        formData.append("proof", file)
+        formData.append("member_id", member.member_id)
+        formData.append("record_id", memberRecords[recordIndex].id) // Assuming there's an id for each record
+
+        try {
+            const response = await axios.post(
+                "http://localhost:5000/financial-assistance/social-pension/upload-proof",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                },
+            )
+
+            if (response.data.success) {
+                alert("Proof uploaded successfully.")
+            } else {
+                alert("Failed to upload proof.")
+            }
+        } catch (error) {
+            console.error("Error uploading proof:", error)
+            alert("An error occurred during the upload.")
+        }
+    }
+
+    // Function to remove the uploaded file
+    const handleRemoveFile = (recordIndex) => {
+        setFileUpload((prevState) => ({
+            ...prevState,
+            [recordIndex]: null,
+        }))
     }
 
     return (
         <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-md w-3/4 max-w-4xl">
-                <h2 className="text-xl font-semibold mb-4">
-                    {member.firstName} {member.middleName && `${member.middleName} `}
-                    {member.lastName} Social Pension Record
-                </h2>
+            <div className="bg-white p-6 rounded-md w-[1200px]">
+                <h2 className="text-xl font-semibold mb-4">{member.full_name} | Social Pension Record</h2>
                 <table className="min-w-full table-auto border-collapse">
                     <thead>
-                        <tr>
-                            <th>Month of Claim</th>
-                            <th>Quarter</th>
-                            <th>Claimer</th>
-                            <th>Relationship</th>
-                            <th>Proof</th>
-                            <th>Benefit Status</th>
+                        <tr className="bg-gray-100">
+                            <th className="px-4 py-2 text-left">Quarter</th>
+                            <th className="px-4 py-2 text-left">Year</th>
+                            <th className="px-4 py-2 text-left">Amount</th>
+                            <th className="px-4 py-2 text-left whitespace-nowrap">Disbursement Date</th>
+                            <th className="px-4 py-2 text-left">Claimer</th>
+                            <th className="px-4 py-2 text-left">Relationship</th>
+                            <th className="px-4 py-2 text-left">Status</th>
+                            <th className="px-4 py-2 text-left w-[200px]">Proof</th> {/* Added Proof column */}
                         </tr>
                     </thead>
-                    <tbody>{["Q1", "Q2", "Q3", "Q4"].map((quarter) => renderQuarterData(quarter))}</tbody>
+                    <tbody>
+                        {memberRecords.map((record, index) => (
+                            <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                <td className="px-4 py-2">{record.quarter}</td>
+                                <td className="px-4 py-2">{record.year}</td>
+                                <td className="px-4 py-2">{record.amount}</td>
+                                <td className="px-4 py-2">{moment(record.disbursement_date).format("MMMM D, YYYY")}</td>
+                                <td className="px-4 py-2 whitespace-nowrap">{record.claimer}</td>
+                                <td className="px-4 py-2">{record.relationship}</td>
+                                <td
+                                    className={`px-4 py-2 ${record.status === "Unclaimed" ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}`}
+                                >
+                                    {record.status}
+                                </td>
+                                <td className="px-4 py-2">
+                                    {/* Upload File button for each row */}
+                                    <div className="flex items-center">
+                                        {record.proof ? (
+                                            <>
+                                                {/* Display the uploaded proof file name with a link to view it */}
+                                                <a
+                                                    href={`http://localhost:5000/${record.proof}`} // Assuming the proof file is served from this path
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-[#219EBC] font-semibold underline"
+                                                >
+                                                    View Proof
+                                                </a>
+
+                                                {/* Optionally, allow removal of the proof */}
+                                                <button
+                                                    onClick={() => handleRemoveFile(index)}
+                                                    className="ml-5 text-red-500 font-semibold underline"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                {/* Show Upload button if no proof exists */}
+                                                <button
+                                                    onClick={() =>
+                                                        document.getElementById(`file-upload-${index}`).click()
+                                                    }
+                                                    className="text-[#219EBC] font-semibold underline"
+                                                >
+                                                    {fileUpload[index]
+                                                        ? fileUpload[index].name.length > 7
+                                                            ? `${fileUpload[index].name.substring(0, 7)}...`
+                                                            : fileUpload[index].name
+                                                        : "Upload File"}
+                                                </button>
+
+                                                {/* Remove button if a file is selected but not uploaded */}
+                                                {fileUpload[index] && (
+                                                    <button
+                                                        onClick={() => handleRemoveFile(index)}
+                                                        className="ml-5 text-red-500 font-semibold underline"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {/* Hidden file input for uploading files */}
+                                    <input
+                                        id={`file-upload-${index}`}
+                                        type="file"
+                                        onChange={(e) => handleFileChange(e, index)}
+                                        className="hidden"
+                                    />
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
                 <button onClick={onClose} className="mt-4 px-4 py-2 bg-gray-300 text-black rounded-md">
                     Close

@@ -1,47 +1,55 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react"
-import EditIcon from "../../assets/icons/edit.svg"
-import ViewIcon from "../../assets/icons/eye.svg"
-import ArchiveIcon from "../../assets/icons/archive2.svg"
+import { useState, useEffect } from "react"
 import moment from "moment"
-import ViewModal from "./ViewModal"
+import SocialPensionTable from "./SocialPensionTable"
+import ViewModal from "./ViewModal" // Import your ViewModal component
 
-const Table = ({ membersData, onEdit, handleFileUpload }) => {
-    const [currentPage, setCurrentPage] = useState(1)
-    const [selectedBenefitType, setSelectedBenefitType] = useState("Social Pension") // Default benefit type
-    const [selectedQuarter, setSelectedQuarter] = useState("Q1") // Default to Q1
-    const [modalOpen, setModalOpen] = useState(false) // Modal state
-    const [selectedMember, setSelectedMember] = useState(null) // State for selected member's data
+const Tables = ({ membersData, onEdit }) => {
+    const [selectedTable, setSelectedTable] = useState("Social Pension") // Default table
+    const [selectedMember, setSelectedMember] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [selectedQuarter, setSelectedQuarter] = useState("") // Initially empty
 
-    const itemsPerPage = 6
-    const totalPages = Math.ceil(membersData.length / itemsPerPage)
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const currentMembers = membersData
-        .filter((member) => member.benefitType === selectedBenefitType) // Filter members based on selected benefit type
-        .slice(startIndex, startIndex + itemsPerPage)
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page)
+    // Function to determine the current quarter using moment.js
+    const getCurrentQuarter = () => {
+        const currentMonth = moment().month() + 1 // Get the current month (1-12)
+        if (currentMonth >= 1 && currentMonth <= 3) return "Q1"
+        if (currentMonth >= 4 && currentMonth <= 6) return "Q2"
+        if (currentMonth >= 7 && currentMonth <= 9) return "Q3"
+        return "Q4" // for months 10-12
     }
 
-    const toggleBenefitType = () => {
-        // Toggle between "Social Pension" and "Financial Assistance"
-        setSelectedBenefitType((prev) => (prev === "Social Pension" ? "Financial Assistance" : "Social Pension"))
+    // Set the default quarter on component mount
+    useEffect(() => {
+        setSelectedQuarter(getCurrentQuarter()) // Set the quarter based on current date
+    }, []) // Empty dependency array to run only on initial mount
+
+    // Separate members based on the selected quarter
+    const socialPensionMembers = membersData.filter((member) => member.quarter === selectedQuarter)
+
+    // Function to handle table change
+    const handleTableChange = (tableType) => {
+        setSelectedTable(tableType)
     }
 
+    // Function to handle viewing a member's details
     const handleViewClick = (member) => {
-        setSelectedMember(member) // Set the selected member data
-        setModalOpen(true) // Open the modal
+        setSelectedMember(member)
+        setIsModalOpen(true)
+    }
+
+    // Function to close the modal
+    const handleCloseModal = () => {
+        setIsModalOpen(false)
     }
 
     return (
         <div>
-            <button
-                onClick={toggleBenefitType}
-                className="mb-4 px-6 py-2 bg-[#219EBC] text-white rounded-md hover:bg-[#1a7d8d] transition-colors duration-300"
-            >
-                Toggle Benefit Type ({selectedBenefitType})
-            </button>
+            {/* Table Selection Buttons */}
+            <div>
+                <button onClick={() => handleTableChange("Social Pension")}>Social Pension</button>
+                <button onClick={() => handleTableChange("Financial Assistance")}>Financial Assistance</button>
+            </div>
 
             {/* Dropdown for selecting Quarter */}
             <div className="mb-4">
@@ -61,156 +69,21 @@ const Table = ({ membersData, onEdit, handleFileUpload }) => {
                 </select>
             </div>
 
-            <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
-                <thead className="text-[#767171CC]">
-                    <tr>
-                        <th className="pl-8 py-4 text-left font-medium whitespace-nowrap w-[10%]">Control No.</th>
-                        <th className="text-left font-medium whitespace-nowrap">Full Name</th>
-                        <th className="text-left font-medium whitespace-nowrap">Program Name</th>
-                        <th className="text-left font-medium whitespace-nowrap">Claim Date</th>
-                        <th className="text-left font-medium whitespace-nowrap">Claimer</th>
-                        <th className="text-left font-medium whitespace-nowrap">Relationship</th>
-                        {selectedBenefitType !== "Social Pension" && (
-                            <>
-                                <th className="text-left font-medium whitespace-nowrap">Proof</th>
-                                <th className="text-left font-medium whitespace-nowrap">Benefit Status</th>
-                            </>
-                        )}
-                        <th className="px-8 text-left font-medium whitespace-nowrap">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentMembers.map((member, index) => (
-                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
-                            <td className="px-8 py-4 text-left">{member.controlNo}</td>
-                            <td className="text-left whitespace-nowrap">
-                                {member.firstName} {member.middleName && `${member.middleName} `} {member.lastName}{" "}
-                                {member.extension}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {member.benefitType === "Social Pension"
-                                    ? "Social Pension Program"
-                                    : member.programName}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {/* Show selected quarter's claim date */}
-                                {member.benefitType === "Social Pension" ? (
-                                    <div>{moment(member[`claimDate${selectedQuarter}`]).format("MMMM D, YYYY")}</div>
-                                ) : member.claimDate ? (
-                                    moment(member.claimDate).format("MMMM D, YYYY")
-                                ) : (
-                                    "N/A"
-                                )}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {/* Show selected quarter's claimer */}
-                                {member.benefitType === "Social Pension"
-                                    ? member[`claimer${selectedQuarter}`] || "N/A"
-                                    : member.claimer || "N/A"}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {/* Show selected quarter's relationship */}
-                                {member.benefitType === "Social Pension"
-                                    ? member[`relationship${selectedQuarter}`] || "N/A"
-                                    : member.claimerRelationship || "N/A"}
-                            </td>
+            {/* Render the selected table */}
+            {selectedTable === "Social Pension" && (
+                <SocialPensionTable
+                    socialPensionMembers={socialPensionMembers}
+                    onEdit={onEdit}
+                    handleViewClick={handleViewClick} // Pass handleViewClick here
+                />
+            )}
 
-                            {/* Conditional rendering for Proof and Benefit Status */}
-                            {selectedBenefitType !== "Social Pension" && (
-                                <>
-                                    <td className="whitespace-nowrap">
-                                        {member.proof ? (
-                                            <a
-                                                href={`http://localhost:5000/uploads/${member.proof}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-500 underline"
-                                            >
-                                                View Proof
-                                            </a>
-                                        ) : (
-                                            <label
-                                                htmlFor={`upload-proof-${member.id}`}
-                                                className="text-[#219EBC] underline cursor-pointer"
-                                            >
-                                                Upload File
-                                                <input
-                                                    type="file"
-                                                    id={`upload-proof-${member.id}`}
-                                                    className="hidden"
-                                                    onChange={(e) => handleFileUpload(e, member.id)}
-                                                />
-                                            </label>
-                                        )}
-                                    </td>
-                                    <td
-                                        className={`whitespace-nowrap font-[500] ${
-                                            member.benefitStatus === "Claimed" ? "text-green-500" : "text-red-500"
-                                        }`}
-                                    >
-                                        {member.benefitStatus || "Unclaimed"}
-                                    </td>
-                                </>
-                            )}
-
-                            <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">
-                                <button aria-label="Edit">
-                                    <img src={EditIcon} alt="Edit" onClick={() => onEdit(member)} />
-                                </button>
-                                <button aria-label="View" onClick={() => handleViewClick(member)}>
-                                    <img src={ViewIcon} alt="View" />
-                                </button>
-                                <button aria-label="Archive">
-                                    <img src={ArchiveIcon} alt="Archive" />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            <div className="flex fixed bottom-5 mt-4">
-                <div>
-                    <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className={`px-4 py-2 ${
-                            currentPage === 1
-                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
-                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
-                        } rounded-md`}
-                    >
-                        Previous
-                    </button>
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            onClick={() => handlePageChange(index + 1)}
-                            className={`px-4 py-2 ${
-                                currentPage === index + 1
-                                    ? "bg-[#219EBC] text-white"
-                                    : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
-                            } rounded-md mx-1`}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                    <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className={`px-4 py-2 ${
-                            currentPage === totalPages
-                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
-                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
-                        } rounded-md`}
-                    >
-                        Next
-                    </button>
-                </div>
-            </div>
-            {modalOpen && selectedMember && <ViewModal member={selectedMember} onClose={() => setModalOpen(false)} />}
+            {/* ViewModal to display member details */}
+            {isModalOpen && selectedMember && (
+                <ViewModal member={selectedMember} membersData={membersData} onClose={handleCloseModal} />
+            )}
         </div>
     )
 }
 
-export default Table
+export default Tables

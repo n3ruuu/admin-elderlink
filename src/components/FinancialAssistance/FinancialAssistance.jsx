@@ -20,7 +20,7 @@ const FinancialAssistance = () => {
 
     const fetchMembersData = async () => {
         try {
-            const response = await fetch("http://localhost:5000/members")
+            const response = await fetch("http://localhost:5000/financial-assistance")
             if (!response.ok) throw new Error("Network response was not ok")
             const data = await response.json()
             setMembersData(data)
@@ -66,30 +66,6 @@ const FinancialAssistance = () => {
         }).length // Return the number of active payouts in this week
     }
 
-    const handleFileUpload = (event, memberId) => {
-        const file = event.target.files[0]
-        if (file) {
-            // Logic to upload the file to the server
-            const formData = new FormData()
-            formData.append("file", file)
-            formData.append("memberId", memberId)
-
-            fetch("http://localhost:5000/members/upload-proof", {
-                method: "POST",
-                body: formData,
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log("File uploaded successfully", data)
-                    // Optionally, update state to show the uploaded file
-                    fetchMembersData()
-                })
-                .catch((error) => {
-                    console.error("Error uploading file:", error)
-                })
-        }
-    }
-
     const handleSave = async () => {
         await fetchMembersData() // Refresh the members data
         setIsModalOpen(false) // Close the modal
@@ -122,7 +98,8 @@ const FinancialAssistance = () => {
                         monthlyTotalPayouts={monthlyTotalPayouts}
                         upcomingPayouts={upcomingPayouts}
                     />
-                    <Table membersData={membersData} onEdit={handleOpenModal} handleFileUpload={handleFileUpload} />
+                    fetchMembersData()
+                    <Table membersData={membersData} onEdit={handleOpenModal} fetchMembersData={fetchMembersData} />
                 </div>
             </div>
 
