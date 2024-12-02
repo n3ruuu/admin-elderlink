@@ -1,56 +1,165 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react"
-import { FiEdit } from "react-icons/fi"
+import { useState } from "react";
+import { FiEdit } from "react-icons/fi";
+import jsPDF from "jspdf";
+import "jspdf-autotable"; // Import the jsPDF autotable plugin
 
 const Modal = ({ isOpen, onClose }) => {
-    const [filters, setFilters] = useState([{ field: "", condition: "", value: "" }])
-    const [reportName, setReportName] = useState("Report Name") // Default report name
-    const [isEditing, setIsEditing] = useState(false) // Editing state
-    const [selectedReportType, setSelectedReportType] = useState("")
-    const loggedInUsername = localStorage.getItem("username") || ""
+    const [filters, setFilters] = useState([{ field: "", condition: "", value: "" }]);
+    const [reportName, setReportName] = useState("Report Name");
+    const [isEditing, setIsEditing] = useState(false);
+    const [selectedReportType, setSelectedReportType] = useState("");
+    const [selectedColumns, setSelectedColumns] = useState([]);
+    const loggedInUsername = localStorage.getItem("username") || "";
+
+    const sampleData = [
+        {
+            controlNo: "CN12345",
+            firstName: "Juan",
+            middleName: "Dela",
+            lastName: "Cruz",
+            extension: "Jr.",
+            dob: "1945-12-15",
+            sex: "Male",
+            civilStatus: "Single",
+            address: "123 Barangay St, City, Philippines",
+            contactNumber: "09123456789",
+            purchaseBookletNo: "PB1001",
+            medicineBookletNo: "MB1001",
+            dateIssued: "2024-01-01",
+            medicalConditions: "Hypertension, Diabetes",
+            medications: "Amlodipine, Metformin",
+            guardianFirstName: "Maria",
+            guardianMiddleName: "Santos",
+            guardianLastName: "Dela Cruz",
+            guardianEmail: "maria@example.com",
+            guardianContact: "09187654321",
+            guardianRelationship: "Spouse"
+        },
+        {
+            controlNo: "CN12346",
+            firstName: "Josefa",
+            middleName: "Aquino",
+            lastName: "Santos",
+            extension: "N/A",
+            dob: "1950-08-21",
+            sex: "Female",
+            civilStatus: "Widowed",
+            address: "456 Barangay St, City, Philippines",
+            contactNumber: "09876543210",
+            purchaseBookletNo: "PB1002",
+            medicineBookletNo: "MB1002",
+            dateIssued: "2024-02-01",
+            medicalConditions: "Arthritis",
+            medications: "Ibuprofen",
+            guardianFirstName: "Juan",
+            guardianMiddleName: "Aquino",
+            guardianLastName: "Santos",
+            guardianEmail: "juan@example.com",
+            guardianContact: "09123456789",
+            guardianRelationship: "Son"
+        }
+    ];
 
     const addFilter = () => {
-        setFilters([...filters, { field: "", condition: "", value: "" }])
-    }
+        setFilters([...filters, { field: "", condition: "", value: "" }]);
+    };
 
     const removeFilter = (index) => {
-        setFilters(filters.filter((_, i) => i !== index))
-    }
+        setFilters(filters.filter((_, i) => i !== index));
+    };
 
     const handleFilterChange = (index, key, value) => {
-        const updatedFilters = [...filters]
-        updatedFilters[index][key] = value
-        setFilters(updatedFilters)
-    }
+        const updatedFilters = [...filters];
+        updatedFilters[index][key] = value;
+        setFilters(updatedFilters);
+    };
 
     const handleEditToggle = () => {
-        setIsEditing(!isEditing) // Toggle edit mode
-    }
+        setIsEditing(!isEditing);
+    };
 
     const handleNameChange = (e) => {
-        setReportName(e.target.value) // Update the report name
-    }
+        setReportName(e.target.value);
+    };
 
-    if (!isOpen) return null
+    const handleColumnToggle = (column) => {
+        setSelectedColumns((prevSelectedColumns) =>
+            prevSelectedColumns.includes(column)
+                ? prevSelectedColumns.filter((col) => col !== column)
+                : [...prevSelectedColumns, column]
+        );
+    };
+
+    const applyFilters = () => {
+        return sampleData.filter((item) => {
+            return filters.every((filter) => {
+                if (!filter.field || !filter.condition || !filter.value) return true; // Skip invalid filters
+    
+                const fieldValue = item[filter.field]?.toString() || "";
+                const filterValue = filter.value.toLowerCase();
+    
+                switch (filter.condition) {
+                    case "is equal to":
+                        return fieldValue.toLowerCase() !== filterValue; // "is equal to" condition
+                    case "is not equal to":
+                        return fieldValue.toLowerCase() === filterValue; // "is not equal to" condition
+                    case "has any value":
+                        return fieldValue.includes(filterValue); // "has any value" condition
+                    default:
+                        return true;
+                }
+            });
+        });
+    };
+    
+
+    const generatePDF = () => {
+        const filteredData = filters.length > 0 ? applyFilters() : sampleData; // Apply filters if any, else use all data
+        const doc = new jsPDF();
+
+        // Title
+        doc.setFontSize(18);
+        doc.text(reportName, 20, 20);
+
+        // Report generated by
+        doc.setFontSize(12);
+        doc.text(`Created By: ${loggedInUsername}`, 20, 30);
+
+        // Add table header for selected columns
+        const headers = selectedColumns.map((col) => col);
+        const rows = filteredData.map((item) =>
+            selectedColumns.map((column) => item[column])
+        );
+
+        doc.autoTable({
+            startY: 40, // Starting point for the table
+            head: [headers],
+            body: rows,
+        });
+
+        // Save the document as a PDF
+        doc.save(`${reportName}.pdf`);
+    };
+
+    const columnNames = Object.keys(sampleData[0]);
+
+    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
             <div className="bg-white relative rounded-lg shadow-lg w-[70%] h-[90%] p-6">
                 {/* Header */}
                 <div className="flex justify-between items-center border-b pb-4 mb-4">
-                    {/* Left Section: Report Name and Edit Icon */}
                     <div className="flex flex-col gap-2">
-                        {/* Label for the report */}
                         <p className="text-sm text-gray-500">Report Name</p>
-
-                        {/* Report Name and Edit Icon */}
                         <div className="flex items-center gap-2">
                             {isEditing ? (
                                 <input
                                     type="text"
                                     value={reportName}
                                     onChange={handleNameChange}
-                                    onBlur={handleEditToggle} // Exit edit mode on blur
+                                    onBlur={handleEditToggle}
                                     className="text-3xl font-bold text-[#333333] border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                                     autoFocus
                                 />
@@ -58,20 +167,18 @@ const Modal = ({ isOpen, onClose }) => {
                                 <h2 className="text-3xl font-bold text-[#333333]">{reportName}</h2>
                             )}
                             <button
-                                onClick={handleEditToggle} // Toggle edit mode
+                                onClick={handleEditToggle}
                                 className="text-[#333333] hover:text-gray-700"
                             >
                                 <FiEdit className="w-5 h-5" />
                             </button>
                         </div>
                     </div>
-                    {/* Right Section: Report Details */}
                     <div className="flex gap-10 text-left">
-                        {/* Report Type */}
                         <div>
                             <p className="text-sm text-gray-500">Report Type</p>
                             <select
-                                className="text-3xl font-bold text-[#333333] rounded-lg p-2 pl-0 w-full"
+                                className="text-3xl font-bold text-[#333333] rounded-lg bg-transparent p-2 pl-0 w-full"
                                 value={selectedReportType}
                                 onChange={(e) => setSelectedReportType(e.target.value)}
                             >
@@ -81,8 +188,6 @@ const Modal = ({ isOpen, onClose }) => {
                                 <option value="financial-assistance">Financial Assistance</option>
                             </select>
                         </div>
-
-                        {/* Created By */}
                         <div>
                             <p className="text-sm text-gray-500">Created By</p>
                             <h2 className="text-3xl font-bold text-[#333333]">{loggedInUsername} </h2>
@@ -94,16 +199,17 @@ const Modal = ({ isOpen, onClose }) => {
                 <div className="mb-6">
                     <label className="font-semibold mb-2 block">Columns</label>
                     <div className="flex flex-wrap gap-2">
-                        {["Name", "Medical Conditions", "Medications", "Guardian", "Relationship", "Contact"].map(
-                            (column) => (
-                                <span
-                                    key={column}
-                                    className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full cursor-pointer"
-                                >
-                                    {column}
-                                </span>
-                            ),
-                        )}
+                        {columnNames.map((column) => (
+                            <span
+                                key={column}
+                                className={`bg-gray-100 text-gray-800 px-3 py-1 rounded-full cursor-pointer ${
+                                    selectedColumns.includes(column) ? 'bg-blue-500 text-white' : ''
+                                }`}
+                                onClick={() => handleColumnToggle(column)}
+                            >
+                                {column}
+                            </span>
+                        ))}
                     </div>
                 </div>
 
@@ -122,20 +228,22 @@ const Modal = ({ isOpen, onClose }) => {
                                 onChange={(e) => handleFilterChange(index, "field", e.target.value)}
                             >
                                 <option value="">Select Field</option>
-                                <option value="Medical Conditions">Medical Conditions</option>
-                                {/* Add more options as needed */}
+                                {columnNames.map((column) => (
+                                    <option key={column} value={column}>
+                                        {column}
+                                    </option>
+                                ))}
                             </select>
 
                             <select
-                                className="border border-[#004365] text-[#004365] font-bold rounded-lg p-2 w-1/3"
+                                className="border border-gray-300 rounded-lg p-2 w-1/3"
                                 value={filter.condition}
                                 onChange={(e) => handleFilterChange(index, "condition", e.target.value)}
                             >
-                                <option value="">SELECT CONDITION</option>
-                                <option value="is equal to">IS EQUAL TO</option>
-                                <option value="is not equal to">IS NOT EQUAL TO</option>
-                                <option value="has any value">HAS ANY VALUE</option>
-                                <option value="has no value">HAS NO VALUE</option>
+                                <option value="">Condition</option>
+                                <option value="is equal to">is equal to</option>
+                                <option value="is not equal to">is not equal to</option>
+                                <option value="has any value">has any value</option>
                             </select>
 
                             <input
@@ -143,50 +251,36 @@ const Modal = ({ isOpen, onClose }) => {
                                 className="border border-gray-300 rounded-lg p-2 w-1/3"
                                 value={filter.value}
                                 onChange={(e) => handleFilterChange(index, "value", e.target.value)}
-                                placeholder="Value"
+                                placeholder="Filter value"
                             />
 
-                            {filters.length > 1 && (
-                                <button onClick={() => removeFilter(index)} className="text-red-500 hover:text-red-700">
-                                    &times;
-                                </button>
-                            )}
+                            <button
+                                className="text-red-500"
+                                onClick={() => removeFilter(index)}
+                            >
+                                Remove
+                            </button>
                         </div>
                     ))}
-                    <div className="flex gap-3 font-bold justify-center">
-                        <button
-                            onClick={addFilter}
-                            className="border border-[#004365] text-[#004365] px-4 py-2 rounded-lg transition duration-300 ease-in-out hover:bg-[#004365] hover:text-white"
-                        >
-                            CLEAR FILTERS
-                        </button>
-                        <button
-                            onClick={addFilter}
-                            className="bg-[#004365] text-white px-4 py-2 rounded-lg hover:bg-[#004365]"
-                        >
-                            ADD FILTERS
-                        </button>
-                    </div>
+
+                    <button
+                        className="text-blue-500 mt-4"
+                        onClick={addFilter}
+                    >
+                        Add Filter
+                    </button>
                 </div>
 
-                {/* Footer */}
-                <div className="flex absolute bottom-5 left-1/2 transform -translate-x-1/2 text-[#F5F5FA] font-bold gap-4">
-                    <button
-                        onClick={onClose}
-                        className="border border-[#004365] text-[#004365] px-4 py-2 rounded-lg transition duration-300 ease-in-out hover:bg-[#004365] hover:text-white"
-                    >
-                        CLOSE
-                    </button>
-                    <button className="bg-[#004365] text-white px-4 py-2 rounded-lg transition duration-300 ease-in-out hover:bg-[#00314d] hover:text-[#F5F5FA]">
-                        VIEW REPORT
-                    </button>
-                    <button className="bg-[#3EB742] text-white px-4 py-2 rounded-lg transition duration-300 ease-in-out hover:bg-[#36a736] hover:text-[#F5F5FA]">
-                        SAVE AND VIEW
-                    </button>
-                </div>
+                {/* Generate PDF Button */}
+                <button
+                    onClick={generatePDF}
+                    className="mt-4 bg-[#004365] text-white px-6 py-2 rounded-lg"
+                >
+                    Generate PDF
+                </button>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Modal
+export default Modal;

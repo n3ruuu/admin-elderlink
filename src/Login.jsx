@@ -4,12 +4,14 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { FaEye, FaEyeSlash } from "react-icons/fa" // Import eye icons
 import ElderlinkLogo from "./assets/elderlink-logo.png"
+import ForgotPasswordModal from "./ForgotPasswordModal" // Import the ForgotPasswordModal
 
 const Login = ({ onLogin }) => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false) // State to toggle password visibility
     const [errorMessage, setErrorMessage] = useState("")
+    const [isModalOpen, setIsModalOpen] = useState(false) // State to control modal visibility
     const navigate = useNavigate()
 
     const handleLogin = async (e) => {
@@ -33,7 +35,6 @@ const Login = ({ onLogin }) => {
         // }
         onLogin()
         navigate("/admin-elderlink/dashboard")
-
     }
 
     return (
@@ -82,15 +83,27 @@ const Login = ({ onLogin }) => {
                             </button>
                         </div>
 
+                        {/* Forgot Password Link */}
+                        <button
+                            type="button"
+                            onClick={() => setIsModalOpen(true)} // Open the modal
+                            className="text-blue-500 text-sm self-end"
+                        >
+                            Forgot Password?
+                        </button>
+
                         <button
                             type="submit"
-                            className="w-full py-2 px-4 bg-[#219EBC] text-white font-semibold rounded-md shadow-sm mt-2"
+                            className="w-full py-2 px-4 bg-[#219EBC] text-white font-semibold rounded-md shadow-sm"
                         >
                             Login
                         </button>
                     </form>
                 </div>
             </div>
+
+            {/* Modal */}
+            {isModalOpen && <ForgotPasswordModal closeModal={() => setIsModalOpen(false)} />}
         </section>
     )
 }
