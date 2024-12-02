@@ -1,16 +1,16 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
-import { FiEdit } from "react-icons/fi";
-import jsPDF from "jspdf";
-import "jspdf-autotable"; // Import the jsPDF autotable plugin
+import { useState } from "react"
+import { FiEdit } from "react-icons/fi"
+import jsPDF from "jspdf"
+import "jspdf-autotable" // Import the jsPDF autotable plugin
 
 const Modal = ({ isOpen, onClose }) => {
-    const [filters, setFilters] = useState([{ field: "", condition: "", value: "" }]);
-    const [reportName, setReportName] = useState("Report Name");
-    const [isEditing, setIsEditing] = useState(false);
-    const [selectedReportType, setSelectedReportType] = useState("");
-    const [selectedColumns, setSelectedColumns] = useState([]);
-    const loggedInUsername = localStorage.getItem("username") || "";
+    const [filters, setFilters] = useState([{ field: "", condition: "", value: "" }])
+    const [reportName, setReportName] = useState("Report Name")
+    const [isEditing, setIsEditing] = useState(false)
+    const [selectedReportType, setSelectedReportType] = useState("")
+    const [selectedColumns, setSelectedColumns] = useState([])
+    const loggedInUsername = localStorage.getItem("username") || ""
 
     const sampleData = [
         {
@@ -34,7 +34,7 @@ const Modal = ({ isOpen, onClose }) => {
             guardianLastName: "Dela Cruz",
             guardianEmail: "maria@example.com",
             guardianContact: "09187654321",
-            guardianRelationship: "Spouse"
+            guardianRelationship: "Spouse",
         },
         {
             controlNo: "CN12346",
@@ -57,107 +57,103 @@ const Modal = ({ isOpen, onClose }) => {
             guardianLastName: "Santos",
             guardianEmail: "juan@example.com",
             guardianContact: "09123456789",
-            guardianRelationship: "Son"
-        }
-    ];
+            guardianRelationship: "Son",
+        },
+    ]
 
     const addFilter = () => {
-        setFilters([...filters, { field: "", condition: "", value: "" }]);
-    };
+        setFilters([...filters, { field: "", condition: "", value: "" }])
+    }
 
     const removeFilter = (index) => {
-        setFilters(filters.filter((_, i) => i !== index));
-    };
+        setFilters(filters.filter((_, i) => i !== index))
+    }
 
     const handleFilterChange = (index, key, value) => {
-        const updatedFilters = [...filters];
-        updatedFilters[index][key] = value;
-        setFilters(updatedFilters);
-    };
+        const updatedFilters = [...filters]
+        updatedFilters[index][key] = value
+        setFilters(updatedFilters)
+    }
 
     const handleEditToggle = () => {
-        setIsEditing(!isEditing);
-    };
+        setIsEditing(!isEditing)
+    }
 
     const handleNameChange = (e) => {
-        setReportName(e.target.value);
-    };
+        setReportName(e.target.value)
+    }
 
     const handleColumnToggle = (column) => {
         setSelectedColumns((prevSelectedColumns) =>
             prevSelectedColumns.includes(column)
                 ? prevSelectedColumns.filter((col) => col !== column)
-                : [...prevSelectedColumns, column]
-        );
-    };
+                : [...prevSelectedColumns, column],
+        )
+    }
 
     const applyFilters = () => {
         return sampleData.filter((item) => {
             return filters.every((filter) => {
-                if (!filter.field || !filter.condition || !filter.value) return true; // Skip invalid filters
-    
-                const fieldValue = item[filter.field]?.toString() || "";
-                const filterValue = filter.value.toLowerCase();
-    
+                if (!filter.field || !filter.condition || !filter.value) return true // Skip invalid filters
+
+                const fieldValue = item[filter.field]?.toString() || ""
+                const filterValue = filter.value.toLowerCase()
+
                 switch (filter.condition) {
                     case "is equal to":
-                        return fieldValue.toLowerCase() === filterValue; // "is equal to" condition
+                        return fieldValue.toLowerCase() === filterValue // "is equal to" condition
                     case "is not equal to":
-                        return fieldValue.toLowerCase() !== filterValue; // "is not equal to" condition
+                        return fieldValue.toLowerCase() !== filterValue // "is not equal to" condition
                     case "has any value":
-                        return fieldValue.includes(filterValue); // "has any value" condition
+                        return fieldValue.includes(filterValue) // "has any value" condition
                     default:
-                        return true;
+                        return true
                 }
-            });
-        });
-    };
-    
+            })
+        })
+    }
 
     const generatePDF = () => {
-        const filteredData = filters.length > 0 ? applyFilters() : sampleData; // Apply filters if any, else use all data
-        const doc = new jsPDF();
+        const filteredData = filters.length > 0 ? applyFilters() : sampleData // Apply filters if any, else use all data
+        const doc = new jsPDF()
 
         // Title
-        doc.setFontSize(18);
-        doc.text(reportName, 20, 20);
+        doc.setFontSize(18)
+        doc.text(reportName, 20, 20)
 
         // Report generated by
-        doc.setFontSize(12);
-        doc.text(`Created By: ${loggedInUsername}`, 20, 30);
+        doc.setFontSize(12)
+        doc.text(`Created By: ${loggedInUsername}`, 20, 30)
 
         // Add table header for selected columns
-        const headers = selectedColumns.map((col) => formatColumnName(col));
-        const rows = filteredData.map((item) =>
-            selectedColumns.map((column) => item[column])
-        );
+        const headers = selectedColumns.map((col) => formatColumnName(col))
+        const rows = filteredData.map((item) => selectedColumns.map((column) => item[column]))
 
         doc.autoTable({
             startY: 40, // Starting point for the table
             head: [headers],
             body: rows,
-        });
+        })
 
         // Save the document as a PDF
-        doc.save(`${reportName}.pdf`);
-    };
+        doc.save(`${reportName}.pdf`)
+    }
 
     const formatColumnName = (columnName) => {
         if (columnName === "dob") {
-            return "Date of Birth";
+            return "Date of Birth"
         }
 
         return columnName
             .replace(/([a-z0-9])([A-Z])/g, "$1 $2") // Add a space before uppercase letters
             .replace(/_/g, " ") // Replace underscores with spaces
             .toLowerCase()
-            .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
-    };
-    
+            .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize the first letter of each word
+    }
 
-    const columnNames = Object.keys(sampleData[0]);
+    const columnNames = Object.keys(sampleData[0])
 
-    if (!isOpen) return null;
+    if (!isOpen) return null
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
@@ -179,10 +175,7 @@ const Modal = ({ isOpen, onClose }) => {
                             ) : (
                                 <h2 className="text-3xl font-bold text-[#333333]">{reportName}</h2>
                             )}
-                            <button
-                                onClick={handleEditToggle}
-                                className="text-[#333333] hover:text-gray-700"
-                            >
+                            <button onClick={handleEditToggle} className="text-[#333333] hover:text-gray-700">
                                 <FiEdit className="w-5 h-5" />
                             </button>
                         </div>
@@ -216,11 +209,11 @@ const Modal = ({ isOpen, onClose }) => {
                             <span
                                 key={column}
                                 className={`bg-gray-100 text-gray-800 px-3 py-1 rounded-full cursor-pointer ${
-                                    selectedColumns.includes(column) ? 'bg-blue-500 text-white' : ''
+                                    selectedColumns.includes(column) ? "bg-blue-500 text-white" : ""
                                 }`}
                                 onClick={() => handleColumnToggle(column)}
                             >
-                              {formatColumnName(column)}
+                                {formatColumnName(column)}
                             </span>
                         ))}
                     </div>
@@ -267,33 +260,24 @@ const Modal = ({ isOpen, onClose }) => {
                                 placeholder="Filter value"
                             />
 
-                            <button
-                                className="text-red-500"
-                                onClick={() => removeFilter(index)}
-                            >
+                            <button className="text-red-500" onClick={() => removeFilter(index)}>
                                 Remove
                             </button>
                         </div>
                     ))}
 
-                    <button
-                        className="text-blue-500 mt-4"
-                        onClick={addFilter}
-                    >
+                    <button className="text-blue-500 mt-4" onClick={addFilter}>
                         Add Filter
                     </button>
                 </div>
 
                 {/* Generate PDF Button */}
-                <button
-                    onClick={generatePDF}
-                    className="mt-4 bg-[#004365] text-white px-6 py-2 rounded-lg"
-                >
+                <button onClick={generatePDF} className="mt-4 bg-[#004365] text-white px-6 py-2 rounded-lg">
                     Generate PDF
                 </button>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default Modal;
+export default Modal

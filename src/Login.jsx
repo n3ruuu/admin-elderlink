@@ -77,7 +77,7 @@ const Login = ({ onLogin }) => {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)} // Toggle state
-                                className="absolute inset-y-0 top-6 right-3 flex items-center text-gray-500"
+                                className="absolute inset-y-0 top-6 right-3 flex items-center text-gray-500 hover:text-[#219EBC] transition duration-200"
                             >
                                 {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
@@ -87,14 +87,14 @@ const Login = ({ onLogin }) => {
                         <button
                             type="button"
                             onClick={() => setIsModalOpen(true)} // Open the modal
-                            className="text-blue-500 text-sm self-end"
+                            className="text-[#219EBC] text-sm self-end hover:text-[#1A7A89] transition duration-200"
                         >
                             Forgot Password?
                         </button>
 
                         <button
                             type="submit"
-                            className="w-full py-2 px-4 bg-[#219EBC] text-white font-semibold rounded-md shadow-sm"
+                            className="w-full py-2 px-4 bg-[#219EBC] text-white font-semibold rounded-md shadow-sm hover:bg-[#1A7A89] transition duration-200"
                         >
                             Login
                         </button>
