@@ -101,9 +101,9 @@ const Modal = ({ isOpen, onClose }) => {
     
                 switch (filter.condition) {
                     case "is equal to":
-                        return fieldValue.toLowerCase() !== filterValue; // "is equal to" condition
+                        return fieldValue.toLowerCase() === filterValue; // "is equal to" condition
                     case "is not equal to":
-                        return fieldValue.toLowerCase() === filterValue; // "is not equal to" condition
+                        return fieldValue.toLowerCase() !== filterValue; // "is not equal to" condition
                     case "has any value":
                         return fieldValue.includes(filterValue); // "has any value" condition
                     default:
@@ -127,7 +127,7 @@ const Modal = ({ isOpen, onClose }) => {
         doc.text(`Created By: ${loggedInUsername}`, 20, 30);
 
         // Add table header for selected columns
-        const headers = selectedColumns.map((col) => col);
+        const headers = selectedColumns.map((col) => formatColumnName(col));
         const rows = filteredData.map((item) =>
             selectedColumns.map((column) => item[column])
         );
@@ -141,6 +141,19 @@ const Modal = ({ isOpen, onClose }) => {
         // Save the document as a PDF
         doc.save(`${reportName}.pdf`);
     };
+
+    const formatColumnName = (columnName) => {
+        if (columnName === "dob") {
+            return "Date of Birth";
+        }
+
+        return columnName
+            .replace(/([a-z0-9])([A-Z])/g, "$1 $2") // Add a space before uppercase letters
+            .replace(/_/g, " ") // Replace underscores with spaces
+            .toLowerCase()
+            .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
+    };
+    
 
     const columnNames = Object.keys(sampleData[0]);
 
@@ -207,7 +220,7 @@ const Modal = ({ isOpen, onClose }) => {
                                 }`}
                                 onClick={() => handleColumnToggle(column)}
                             >
-                                {column}
+                              {formatColumnName(column)}
                             </span>
                         ))}
                     </div>
@@ -230,7 +243,7 @@ const Modal = ({ isOpen, onClose }) => {
                                 <option value="">Select Field</option>
                                 {columnNames.map((column) => (
                                     <option key={column} value={column}>
-                                        {column}
+                                        {formatColumnName(column)}
                                     </option>
                                 ))}
                             </select>
