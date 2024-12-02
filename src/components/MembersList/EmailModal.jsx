@@ -2,45 +2,51 @@
 import { useState } from "react"
 import SendIcon from "../../assets/icons/send-icon.svg"
 
-const SmsModal = ({ isOpen, onClose, member }) => {
+const EmailModal = ({ isOpen, onClose, member }) => {
     const [message, setMessage] = useState("")
-    const [image, setImage] = useState(null) // State for storing the image
+    const [image, setImage] = useState(null)
 
-    const handleSendSMS = async () => {
-        const phoneNumber = member?.phone // Assuming `member` includes `phone`
-        const messageContent = message.trim()
+    // Function to generate birthday greeting
+    const generateBirthdayGreeting = () => {
+        if (member?.birthday) {
+            const birthday = new Date(member?.birthday)
+            const currentDate = new Date()
 
-        if (!phoneNumber || !messageContent) {
-            alert("Phone number or message is missing!")
-            return
+            // Check if today is the recipient's birthday
+            if (birthday.getMonth() === currentDate.getMonth() && birthday.getDate() === currentDate.getDate()) {
+                setMessage(
+                    `Happy Birthday, ${member?.firstName || "there"}! 🎉🎂\n\nWishing you all the best on your special day! Enjoy every moment!`,
+                )
+            } else {
+                setMessage(`Hello, ${member?.firstName || "there"}!\n\nI hope you're doing well!`)
+            }
+        } else {
+            setMessage("Hello! I hope you're doing well!")
         }
+    }
 
+    const handleSendEmail = async () => {
         const formData = new FormData()
-        formData.append("number", phoneNumber)
-        formData.append("message", messageContent)
+        formData.append("message", message)
+        formData.append("recipients", JSON.stringify([member?.guardianEmail])) // Send the recipient email as a list
 
-        // If an image is selected, append it to formData
         if (image) {
             formData.append("image", image)
         }
 
         try {
-            const response = await fetch("http://localhost:5000/sms", {
+            const response = await fetch("http://localhost:5000/events/send-email", {
                 method: "POST",
                 body: formData,
             })
-
-            const result = await response.json()
-
-            if (result.success) {
-                alert("SMS sent successfully!")
-                onClose() // Close modal after sending
+            if (response.ok) {
+                console.log("Email sent successfully!")
+                onClose() // Close the modal after sending the email
             } else {
-                alert(`Failed to send SMS: ${result.error}`)
+                console.error("Failed to send email")
             }
         } catch (error) {
-            alert("An error occurred while sending the SMS.")
-            console.error(error)
+            console.error("Error sending email:", error)
         }
     }
 
@@ -48,11 +54,10 @@ const SmsModal = ({ isOpen, onClose, member }) => {
 
     const isMessageEmpty = !message.trim()
 
-    // Handle image selection
     const handleImageChange = (e) => {
         const file = e.target.files[0]
         if (file && file.type.startsWith("image/")) {
-            setImage(file) // Store the image file in state
+            setImage(file)
         } else {
             alert("Please upload a valid image file.")
         }
@@ -61,21 +66,22 @@ const SmsModal = ({ isOpen, onClose, member }) => {
     return (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white w-[500px] h-[700px] rounded-lg shadow-lg p-6 flex flex-col">
-                <h2 className="text-xl font-semibold mb-4">Compose SMS</h2>
+                <h2 className="text-xl font-semibold mb-4">Compose Email</h2>
                 <div className="mb-4">
                     <label className="block text-gray-700 font-medium mb-2">Recipient Name</label>
                     <input
                         type="text"
-                        value={member?.name || ""}
+                        value={`${member?.firstName || ""} ${member?.middleName || ""} ${member?.lastName || ""}`.trim()}
                         readOnly
                         className="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                 </div>
+
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-medium mb-2">Recipient Phone</label>
+                    <label className="block text-gray-700 font-medium mb-2">Recipient Guardian Email</label>
                     <input
-                        type="text"
-                        value={member?.phone || ""}
+                        type="email"
+                        value={member?.guardianEmail || ""}
                         readOnly
                         className="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
@@ -91,7 +97,16 @@ const SmsModal = ({ isOpen, onClose, member }) => {
                     ></textarea>
                 </div>
 
-                {/* Image upload section */}
+                {/* Add the Generate Greeting button */}
+                <div className="mb-4">
+                    <button
+                        onClick={generateBirthdayGreeting}
+                        className="bg-[#219EBC] text-white px-4 py-2 rounded-lg hover:bg-[#1b87a1] transition duration-200"
+                    >
+                        Generate Greeting
+                    </button>
+                </div>
+
                 <div className="mb-4">
                     <label className="block text-gray-700 font-medium mb-2">Attach Image (Optional)</label>
                     <input
@@ -104,7 +119,13 @@ const SmsModal = ({ isOpen, onClose, member }) => {
 
                 <div className="flex justify-end mt-auto gap-2">
                     <button
-                        onClick={handleSendSMS}
+                        onClick={onClose}
+                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-200"
+                    >
+                        Cancel
+                    </button>   
+                    <button
+                        onClick={handleSendEmail}
                         disabled={isMessageEmpty}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg transition duration-200 ${
                             isMessageEmpty
@@ -117,13 +138,7 @@ const SmsModal = ({ isOpen, onClose, member }) => {
                             alt="Send Icon"
                             className={`h-4 w-4 ${isMessageEmpty ? "text-white" : ""}`}
                         />
-                        <span className={`${isMessageEmpty ? "text-white" : ""}`}>Send SMS</span>
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-200"
-                    >
-                        Cancel
+                        <span className={`${isMessageEmpty ? "text-white" : ""}`}>Send Email</span>
                     </button>
                 </div>
             </div>
@@ -131,4 +146,4 @@ const SmsModal = ({ isOpen, onClose, member }) => {
     )
 }
 
-export default SmsModal
+export default EmailModal

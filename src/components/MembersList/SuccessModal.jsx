@@ -1,14 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom" // Import useNavigate
 
-const SuccessModal = ({
-    isOpen,
-    onClose,
-    title,
-    message,
-    onGoToArchives,
-    isArchiving,
-}) => {
+const SuccessModal = ({ isOpen, onClose, title, message, onGoToArchives, isArchiving }) => {
     const navigate = useNavigate() // Initialize useNavigate hook
 
     if (!isOpen) return null
