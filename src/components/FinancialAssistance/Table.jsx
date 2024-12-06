@@ -5,7 +5,6 @@ import SocialPensionTable from "./SocialPensionTable"
 import ViewModal from "./ViewModal" // Import your ViewModal component
 
 const Tables = ({ membersData, onEdit }) => {
-    const [selectedTable, setSelectedTable] = useState("Social Pension") // Default table
     const [selectedMember, setSelectedMember] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedQuarter, setSelectedQuarter] = useState("") // Initially empty
@@ -19,18 +18,11 @@ const Tables = ({ membersData, onEdit }) => {
         return "Q4" // for months 10-12
     }
 
-    // Set the default quarter on component mount
     useEffect(() => {
-        setSelectedQuarter(getCurrentQuarter()) // Set the quarter based on current date
-    }, []) // Empty dependency array to run only on initial mount
+        setSelectedQuarter(getCurrentQuarter())
+    }, [])
 
-    // Separate members based on the selected quarter
     const socialPensionMembers = membersData.filter((member) => member.quarter === selectedQuarter)
-
-    // Function to handle table change
-    const handleTableChange = (tableType) => {
-        setSelectedTable(tableType)
-    }
 
     // Function to handle viewing a member's details
     const handleViewClick = (member) => {
@@ -45,13 +37,6 @@ const Tables = ({ membersData, onEdit }) => {
 
     return (
         <div>
-            {/* Table Selection Buttons */}
-            <div>
-                <button onClick={() => handleTableChange("Social Pension")}>Social Pension</button>
-                <button onClick={() => handleTableChange("Financial Assistance")}>Financial Assistance</button>
-            </div>
-
-            {/* Dropdown for selecting Quarter */}
             <div className="mb-4">
                 <label htmlFor="quarter-select" className="mr-2 text-[#219EBC]">
                     Select Quarter:
@@ -69,14 +54,11 @@ const Tables = ({ membersData, onEdit }) => {
                 </select>
             </div>
 
-            {/* Render the selected table */}
-            {selectedTable === "Social Pension" && (
-                <SocialPensionTable
-                    socialPensionMembers={socialPensionMembers}
-                    onEdit={onEdit}
-                    handleViewClick={handleViewClick} // Pass handleViewClick here
-                />
-            )}
+            <SocialPensionTable
+                socialPensionMembers={socialPensionMembers}
+                onEdit={onEdit}
+                handleViewClick={handleViewClick} // Pass handleViewClick here\
+            />
 
             {/* ViewModal to display member details */}
             {isModalOpen && selectedMember && (

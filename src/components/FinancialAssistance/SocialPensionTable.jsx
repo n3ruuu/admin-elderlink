@@ -6,8 +6,6 @@ import ViewIcon from "../../assets/icons/eye.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 
 const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) => {
-  
-
     return (
         <div>
             <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
@@ -15,9 +13,6 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
                     <tr>
                         <th className="pl-8 py-4 text-left font-medium whitespace-nowrap w-[10%]">Control No.</th>
                         <th className="text-left font-medium whitespace-nowrap">Full Name</th>
-                        <th className="text-left font-medium whitespace-nowrap">Quarter</th>
-                        <th className="text-left font-medium whitespace-nowrap">Year</th>
-                        <th className="text-left font-medium whitespace-nowrap">Amount</th>
                         <th className="text-left font-medium whitespace-nowrap">Disbursement Date</th>
                         <th className="text-left font-medium whitespace-nowrap">Status</th>
                         <th className="text-left font-medium whitespace-nowrap">Claimer</th>
@@ -30,11 +25,8 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
                         <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
                             <td className="px-8 py-4 text-left">{member.control_no}</td>
                             <td className="text-left whitespace-nowrap">{member.full_name}</td>
-                            <td className="whitespace-nowrap">{member.quarter}</td>
-                            <td className="whitespace-nowrap">{member.year || "N/A"}</td>
-                            <td className="whitespace-nowrap">{member.amount || "N/A"}</td>
                             <td className="whitespace-nowrap">
-                                {moment(member.disbursementDate).format("MMMM D, YYYY")}
+                                {moment(member.disbursement_date).format("MMMM D, YYYY")}
                             </td>
                             <td
                                 className={`whitespace-nowrap ${member.status === "Unclaimed" ? "text-red-500 font-semibold" : member.status === "Claimed" ? "text-green-500 font-semibold" : ""}`}

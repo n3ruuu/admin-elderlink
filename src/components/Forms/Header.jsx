@@ -8,6 +8,7 @@ const Header = ({
     onFileUpload,
     searchQuery,
     onSearchChange,
+    onAddFormClick, // New prop for opening the add form modal
 }) => {
     return (
         <section className="w-full font-inter bg-[#F5F5FA] overflow-hidden">
@@ -35,27 +36,37 @@ const Header = ({
                             className="absolute left-5 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none"
                         />
                     </div>
-                    {selectedCategory && (
-                        <button
-                            className="bg-[#219EBC] text-white text-xl py-2.5 px-10 rounded-lg flex items-center gap-2"
-                            onClick={() =>
-                                document.getElementById("fileInput").click()
-                            }
-                        >
-                            <img
-                                src={ImportIcon}
-                                alt="Import Icon"
-                                className="w-5 h-5"
-                            />
-                            <span>Import File</span>
-                        </button>
-                    )}
+
+              
+
+                    {selectedCategory ? (
+    <button
+        className="bg-[#219EBC] text-white text-xl py-2.5 px-10 rounded-lg flex items-center gap-2"
+        onClick={() => document.getElementById("fileInput").click()}
+    >
+        <img
+            src={ImportIcon}
+            alt="Import Icon"
+            className="w-5 h-5"
+        />
+        <span>Import File</span>
+    </button>
+) : (
+    <button
+        className="text-[#F5F5FA] bg-[#219EBC] px-8 text-[24px] py-2 rounded-lg hover:bg-[#1A7F8C]"
+        onClick={onAddFormClick} // Open the modal
+    >
+        &#43; Add Forms
+    </button>
+)}
+
                 </div>
             </div>
             <input
                 type="file"
                 id="fileInput"
-                style={{ display: "none" }}
+                accept=".pdf"
+                className="hidden"
                 onChange={onFileUpload}
             />
         </section>

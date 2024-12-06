@@ -98,8 +98,7 @@ const FinancialAssistance = () => {
                         monthlyTotalPayouts={monthlyTotalPayouts}
                         upcomingPayouts={upcomingPayouts}
                     />
-                    fetchMembersData()
-                    <Table membersData={membersData} onEdit={handleOpenModal} fetchMembersData={fetchMembersData} />
+                    <Table membersData={membersData} onEdit={handleOpenModal} />
                 </div>
             </div>
 
@@ -118,6 +117,7 @@ const FinancialAssistance = () => {
                     onClose={handleCloseModal}
                     member={currentMember}
                     onSave={handleSave} // Pass the handleSave function to the modal
+                    membersData={membersData}
                 />
             )}
         </section>

@@ -1,11 +1,27 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import moment from "moment"
 import axios from "axios" // Assuming you're using axios for API requests
 
-const ViewModal = ({ member, membersData, onClose }) => {
+const ViewModal = ({ member, onClose }) => {
+    const [membersData, setMembersData] = useState([]) // Fetch members data
     const [fileUpload, setFileUpload] = useState({}) // Store files for each row
     const memberRecords = membersData.filter((data) => data.member_id === member.member_id)
+
+    useEffect(() => {
+        fetchMembersData()
+    }, [])
+
+    const fetchMembersData = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/financial-assistance")
+            if (!response.ok) throw new Error("Network response was not ok")
+            const data = await response.json()
+            setMembersData(data)
+        } catch (error) {
+            console.error("Error fetching members data:", error)
+        }
+    }
 
     // Handle file input change for each row
     const handleFileChange = async (e, recordIndex) => {
@@ -44,6 +60,7 @@ const ViewModal = ({ member, membersData, onClose }) => {
 
             if (response.data.success) {
                 alert("Proof uploaded successfully.")
+                fetchMembersData() // Reload the data to reflect the changes
             } else {
                 alert("Failed to upload proof.")
             }
@@ -53,12 +70,31 @@ const ViewModal = ({ member, membersData, onClose }) => {
         }
     }
 
-    // Function to remove the uploaded file
-    const handleRemoveFile = (recordIndex) => {
-        setFileUpload((prevState) => ({
-            ...prevState,
-            [recordIndex]: null,
-        }))
+    // Function to remove the uploaded proof
+    const handleRemoveFile = async (recordIndex) => {
+        const record = memberRecords[recordIndex]
+        const filePath = record.proof
+
+        try {
+            const response = await axios.post(
+                "http://localhost:5000/financial-assistance/social-pension/remove-proof",
+                {
+                    member_id: member.member_id,
+                    record_id: record.id,
+                    file_path: filePath,
+                },
+            )
+
+            if (response.data.success) {
+                alert("Proof removed successfully.")
+                fetchMembersData() // Reload the data to reflect the changes
+            } else {
+                alert("Failed to remove proof.")
+            }
+        } catch (error) {
+            console.error("Error removing proof:", error)
+            alert("An error occurred during the removal.")
+        }
     }
 
     return (
@@ -70,12 +106,11 @@ const ViewModal = ({ member, membersData, onClose }) => {
                         <tr className="bg-gray-100">
                             <th className="px-4 py-2 text-left">Quarter</th>
                             <th className="px-4 py-2 text-left">Year</th>
-                            <th className="px-4 py-2 text-left">Amount</th>
                             <th className="px-4 py-2 text-left whitespace-nowrap">Disbursement Date</th>
                             <th className="px-4 py-2 text-left">Claimer</th>
                             <th className="px-4 py-2 text-left">Relationship</th>
                             <th className="px-4 py-2 text-left">Status</th>
-                            <th className="px-4 py-2 text-left w-[200px]">Proof</th> {/* Added Proof column */}
+                            <th className="px-4 py-2 text-left w-[200px]">Proof</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -83,8 +118,7 @@ const ViewModal = ({ member, membersData, onClose }) => {
                             <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                                 <td className="px-4 py-2">{record.quarter}</td>
                                 <td className="px-4 py-2">{record.year}</td>
-                                <td className="px-4 py-2">{record.amount}</td>
-                                <td className="px-4 py-2">{moment(record.disbursement_date).format("MMMM D, YYYY")}</td>
+                                <td className="px-4 py-2">{moment(record.disbursement_date).format("MMMM D")}</td>
                                 <td className="px-4 py-2 whitespace-nowrap">{record.claimer}</td>
                                 <td className="px-4 py-2">{record.relationship}</td>
                                 <td
@@ -156,7 +190,10 @@ const ViewModal = ({ member, membersData, onClose }) => {
                         ))}
                     </tbody>
                 </table>
-                <button onClick={onClose} className="mt-4 px-4 py-2 bg-gray-300 text-black rounded-md">
+                <button
+                    onClick={onClose}
+                    className="mt-4 border w-[100px] h-[45px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300 mx-auto block"
+                >
                     Close
                 </button>
             </div>

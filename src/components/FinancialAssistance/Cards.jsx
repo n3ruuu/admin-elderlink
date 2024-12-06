@@ -3,11 +3,7 @@ import BeneficiariesIcon from "../../assets/icons/beneficiaries.svg"
 import DisburseIcon from "../../assets/icons/disburse.svg"
 import PayoutIcon from "../../assets/icons/payout.svg"
 
-const Cards = ({
-    totalBeneficiaries,
-    monthlyTotalPayouts,
-    upcomingPayouts,
-}) => (
+const Cards = ({ totalBeneficiaries, monthlyTotalPayouts, upcomingPayouts }) => (
     <div className="flex gap-5 mb-5">
         <div className="bg-white w-1/3 h-[200px] rounded-[12px] p-8 flex gap-4 items-center">
             <div className="bg-[#EDFFEE] w-[70px] h-[70px] p-4 rounded-[20px] flex items-center justify-center">

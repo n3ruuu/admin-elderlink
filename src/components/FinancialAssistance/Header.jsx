@@ -5,7 +5,7 @@ const Header = ({ onOpenModal }) => {
     return (
         <div className="p-16 w-full pb-8 flex justify-between">
             <div className="w-1/2">
-                <h1 className="text-6xl font-bold">Financial Assistance</h1>
+                <h1 className="text-6xl font-bold">Financial Records</h1>
                 <p className="text-[#767171CC] mt-3">Manage finances and benefits</p>
             </div>
             <div className="flex justify-end gap-5 w-1/2 items-start text-[#333333]">

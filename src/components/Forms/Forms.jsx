@@ -5,6 +5,7 @@ import FormsContainer from "./FormsContainer"
 import Table from "./Table" // Import Table component
 import SuccessModal from "./SuccessModal"
 import moment from "moment"
+import AddFormModal from "./AddFormModal" // Import the AddFormModal component
 
 const Forms = () => {
     const [formsData, setFormsData] = useState([]) // State to store forms data
@@ -13,6 +14,7 @@ const Forms = () => {
     const [modalTitle, setModalTitle] = useState("") // State for modal title
     const [modalMessage, setModalMessage] = useState("") // State for modal message
     const [searchQuery, setSearchQuery] = useState("") // State for search query
+    const [isAddFormModalOpen, setIsAddFormModalOpen] = useState(false) // State for the Add Form modal visibility
 
     useEffect(() => {
         fetchFormsData()
@@ -125,6 +127,16 @@ const Forms = () => {
         return acc
     }, {})
 
+    // Show Add Form modal
+    const handleAddFormClick = () => {
+        setIsAddFormModalOpen(true)
+    }
+
+    // Close Add Form modal
+    const handleCloseAddFormModal = () => {
+        setIsAddFormModalOpen(false)
+    }
+
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
             <Header
@@ -132,6 +144,7 @@ const Forms = () => {
                 onFileUpload={handleFileUpload}
                 searchQuery={searchQuery}
                 onSearchChange={handleSearchChange} // Pass the search change handler
+                onAddFormClick={handleAddFormClick} // Pass the handler to open the add form modal
             />
 
             {selectedCategory ? (
@@ -181,6 +194,12 @@ const Forms = () => {
                 title={modalTitle}
                 message={modalMessage}
                 isArchiving={false} // Not archiving, so show only "Got it" button
+            />
+
+            {/* Add Form Modal */}
+            <AddFormModal
+                isOpen={isAddFormModalOpen}
+                onClose={handleCloseAddFormModal}
             />
         </section>
     )

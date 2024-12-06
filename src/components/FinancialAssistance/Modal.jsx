@@ -2,76 +2,101 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import Form from "./Form"
+import moment from "moment" // Import Moment.js
 
-const Modal = ({ onClose, member, onSave }) => {
+const Modal = ({ onClose, member, onSave, membersData }) => {
+    const memberRecords = member ? membersData.filter((data) => data.member_id === member.member_id) : []
+
     const [formValues, setFormValues] = useState({
-        quarter: "Q1", // default quarter, adjust if needed
-        year: new Date().getFullYear(), // default to current year
-        amount: "",
-        status: "Unclaimed", // default status
-        disbursement_date: "",
-        claimer: "",
-        relationship: "",
+        Q1: { disbursement_date: "", claimer: "", relationship: "" },
+        Q2: { disbursement_date: "", claimer: "", relationship: "" },
+        Q3: { disbursement_date: "", claimer: "", relationship: "" },
+        Q4: { disbursement_date: "", claimer: "", relationship: "" },
+        benefitType: "Social Pension",
     })
 
     const formatDateToLocal = (dateStr) => {
-        const date = new Date(dateStr)
-        const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000) // Adjust to local time zone
-        return localDate.toISOString().split("T")[0] // Return the date in YYYY-MM-DD format
+        // Use Moment.js to handle date formatting
+        return moment(dateStr).format("YYYY-MM-DD") // Format to "YYYY-MM-DD"
     }
 
     useEffect(() => {
         if (member) {
-            setFormValues({
-                quarter: member.quarter || "Q1",
-                year: member.year || new Date().getFullYear(),
-                amount: member.amount || "",
-                status: member.status || "Unclaimed",
-                disbursement_date: member.disbursement_date ? formatDateToLocal(member.disbursement_date) : "",
-                claimer: member.claimer || "",
-                relationship: member.relationship || "",
+            const updatedFormValues = { ...formValues }
+            memberRecords.forEach((record) => {
+                updatedFormValues[record.quarter] = {
+                    disbursement_date: record.disbursement_date ? formatDateToLocal(record.disbursement_date) : "",
+                    claimer: record.claimer || "",
+                    relationship: record.relationship || "",
+                }
             })
+            updatedFormValues.benefitType = member.benefitType || "Social Pension"
+            setFormValues(updatedFormValues)
         }
     }, [member])
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
-        setFormValues((prev) => ({ ...prev, [name]: value }))
+        const [quarter, field] = name.split("_")
+
+        console.log("Input change detected:", { name, value, quarter, field }) // Debug log
+
+        setFormValues((prev) => ({
+            ...prev,
+            [quarter]: {
+                ...prev[quarter],
+                [field]: value,
+            },
+        }))
+    }
+
+    const handleDateChange = (quarter, date) => {
+        setFormValues((prevValues) => ({
+            ...prevValues,
+            [quarter]: {
+                ...prevValues[quarter],
+                disbursement_date: date,
+            },
+        }))
     }
 
     const handleSubmit = async () => {
-        const { quarter, year, amount, status, disbursement_date, claimer, relationship } = formValues
+        const { benefitType, Q1, Q2, Q3, Q4 } = formValues
+        const allQuarterData = [Q1, Q2, Q3, Q4].map((quarterData, idx) => ({
+            quarter: `Q${idx + 1}`,
+            ...quarterData,
+        }))
 
         try {
             const socialPensionData = {
-                member_id: member?.id || null, // Assuming member id is passed for edit mode
-                quarter,
-                year,
-                amount,
-                status,
-                disbursement_date,
-                claimer,
-                relationship,
+                member_id: member?.member_id || null,
+                benefitType,
+                quarterData: allQuarterData,
             }
+            console.log(socialPensionData)
 
             if (member) {
-                await axios.put(`http://localhost:5000/members/social-pension/${member.id}`, socialPensionData)
+                await axios.put(
+                    `http://localhost:5000/financial-assistance/social-pension/${member.member_id}`,
+                    socialPensionData,
+                )
             } else {
-                await axios.post("http://localhost:5000/members/social-pension", socialPensionData)
+                await axios.post("http://localhost:5000/financial-assistance/social-pension", socialPensionData)
             }
+
             onSave() // Notify parent to refresh data
+            onClose() // Close the modal after saving the data
         } catch (error) {
             console.error("Error saving data", error)
         }
     }
 
     const isFormValid = () => {
+        // Ensure all required fields are filled out
         return (
-            formValues.amount &&
-            formValues.status &&
-            formValues.disbursement_date &&
-            formValues.claimer &&
-            formValues.relationship
+            Object.values(formValues).every(
+                (quarter) => quarter.disbursement_date && quarter.claimer && quarter.relationship,
+            ) && formValues.benefitType !== ""
         )
     }
 
@@ -85,6 +110,7 @@ const Modal = ({ onClose, member, onSave }) => {
                     isFormValid={isFormValid}
                     isEditMode={!!member}
                     handleSubmit={handleSubmit}
+                    handleDateChange={handleDateChange}
                 />
             </div>
         </div>

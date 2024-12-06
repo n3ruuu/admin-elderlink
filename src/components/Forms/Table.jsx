@@ -1,10 +1,7 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react"
+import { useState, useEffect} from "react"
 import axios from "axios" // Import axios for API requests
-import OscaIcon from "../../assets/osca.png"
-import BarangayIcon from "../../assets/barangay.png"
-import ProvincialIcon from "../../assets/provincial.png"
-import CityIcon from "../../assets/city.png"
+
 import ArchiveIcon from "../../assets/icons/archive2.svg" // Import Archive Icon
 import ArchiveModal from "./ArchiveModal" // Import your ArchiveModal
 import SuccessModal from "../common/SuccessModal" // Import your SuccessModal
@@ -20,21 +17,27 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
 
     const navigate = useNavigate() // Initialize useNavigate hook
 
-    // Helper function to get the appropriate icon based on category
-    const getCategoryIcon = (category) => {
-        switch (category) {
-            case "Provincial Initiatives":
-                return ProvincialIcon
-            case "OSCA Initiatives":
-                return OscaIcon
-            case "Barangay Initiatives":
-                return BarangayIcon
-            case "City Initiatives":
-                return CityIcon
-            default:
-                return null
-        }
-    }
+    const [categories, setCategories] = useState([]); // To store categories and icon paths
+
+    useEffect(() => {
+        // Fetch categories with icon paths from the backend
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/forms/initiatives");
+                setCategories(response.data); // Set categories to state
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+
+        fetchCategories(); // Call function to fetch categories
+    }, []); // Empty dependency array ensures it runs only once on mount
+
+    // Find category icon path by category name
+    const getCategoryIcon = (categoryName) => {
+        const category = categories.find(c => c.category_name === categoryName);
+        return category ? `http://localhost:5000${category.icon_path}` : "/path/to/default-icon.svg"; // Fallback to default icon if not found
+    };
 
     // Open the modal and set the selected form
     const handleArchiveClick = (form) => {
