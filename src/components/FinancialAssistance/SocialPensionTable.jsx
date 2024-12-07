@@ -21,42 +21,60 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
                     </tr>
                 </thead>
                 <tbody>
-                    {socialPensionMembers.map((member, index) => (
-                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
-                            <td className="px-8 py-4 text-left">{member.control_no}</td>
-                            <td className="text-left whitespace-nowrap">{member.full_name}</td>
-                            <td className="whitespace-nowrap">
-                                {moment(member.disbursement_date).format("MMMM D, YYYY")}
-                            </td>
-                            <td
-                                className={`whitespace-nowrap ${member.status === "Unclaimed" ? "text-red-500 font-semibold" : member.status === "Claimed" ? "text-green-500 font-semibold" : ""}`}
+                    {socialPensionMembers.map((member, index) => {
+                        const isNullData =
+                            !member.disbursement_date && !member.claimer && !member.relationship;
+
+                        const getStatusText = () => {
+                            if (isNullData) return "N/A";
+                            return member.status || "Unclaimed";
+                        };
+
+                        const getStatusColor = () => {
+                            if (isNullData) return ""; // No color for N/A
+                            if (member.status === "Claimed") return "text-green-500 font-semibold";
+                            if (member.status === "Unclaimed") return "text-red-500 font-semibold";
+                            return ""; // Default case
+                        };
+
+                        return (
+                            <tr
+                                key={member.id}
+                                className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                             >
-                                {member.status || "N/A"}
-                            </td>
-
-                            <td className="whitespace-nowrap">{member.claimer || "N/A"}</td>
-                            <td className="whitespace-nowrap">{member.relationship || "N/A"}</td>
-                            <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">
-                                <button aria-label="Edit" onClick={() => onEdit(member)}>
-                                    <img src={EditIcon} alt="Edit" />
-                                </button>
-                                <button
-                                    aria-label="View"
-                                    onClick={() => handleViewClick(member)} // Adding the onClick event here
-                                >
-                                    <img src={ViewIcon} alt="View" />
-                                </button>
-
-                                <button aria-label="Archive">
-                                    <img src={ArchiveIcon} alt="Archive" />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                                <td className="px-8 py-4 text-left">{member.control_no}</td>
+                                <td className="text-left whitespace-nowrap">{member.full_name}</td>
+                                <td className="whitespace-nowrap">
+                                    {member.disbursement_date
+                                        ? moment(member.disbursement_date).format("MMMM D, YYYY")
+                                        : "N/A"}
+                                </td>
+                                <td className={`whitespace-nowrap ${getStatusColor()}`}>
+                                    {getStatusText()}
+                                </td>
+                                <td className="whitespace-nowrap">{member.claimer || "N/A"}</td>
+                                <td className="whitespace-nowrap">{member.relationship || "N/A"}</td>
+                                <td className="px-8 py-4 whitespace-nowrap flex gap-3 items-center">
+                                    <button aria-label="Edit" onClick={() => onEdit(member)}>
+                                        <img src={EditIcon} alt="Edit" />
+                                    </button>
+                                    <button
+                                        aria-label="View"
+                                        onClick={() => handleViewClick(member)}
+                                    >
+                                        <img src={ViewIcon} alt="View" />
+                                    </button>
+                                    <button aria-label="Archive">
+                                        <img src={ArchiveIcon} alt="Archive" />
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         </div>
-    )
-}
+    );
+};
 
-export default SocialPensionTable
+export default SocialPensionTable;

@@ -1,104 +1,103 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from "react"
-import axios from "axios"
-import Form from "./Form"
-import moment from "moment" // Import Moment.js
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Form from "./Form";
+import moment from "moment"; // Import Moment.js
 
 const Modal = ({ onClose, member, onSave, membersData }) => {
-    const memberRecords = member ? membersData.filter((data) => data.member_id === member.member_id) : []
+    const memberRecords = member
+        ? membersData.filter((data) => data.member_id === member.member_id)
+        : [];
 
     const [formValues, setFormValues] = useState({
-        Q1: { disbursement_date: "", claimer: "", relationship: "" },
-        Q2: { disbursement_date: "", claimer: "", relationship: "" },
-        Q3: { disbursement_date: "", claimer: "", relationship: "" },
-        Q4: { disbursement_date: "", claimer: "", relationship: "" },
+        Q1: { disbursement_date: null, claimer: null, relationship: null },
+        Q2: { disbursement_date: null, claimer: null, relationship: null },
+        Q3: { disbursement_date: null, claimer: null, relationship: null },
+        Q4: { disbursement_date: null, claimer: null, relationship: null },
         benefitType: "Social Pension",
-    })
+    });
 
     const formatDateToLocal = (dateStr) => {
-        // Use Moment.js to handle date formatting
-        return moment(dateStr).format("YYYY-MM-DD") // Format to "YYYY-MM-DD"
-    }
+        return dateStr ? moment(dateStr).format("YYYY-MM-DD") : null;
+    };
 
     useEffect(() => {
         if (member) {
-            const updatedFormValues = { ...formValues }
+            const updatedFormValues = { ...formValues };
             memberRecords.forEach((record) => {
                 updatedFormValues[record.quarter] = {
-                    disbursement_date: record.disbursement_date ? formatDateToLocal(record.disbursement_date) : "",
-                    claimer: record.claimer || "",
-                    relationship: record.relationship || "",
-                }
-            })
-            updatedFormValues.benefitType = member.benefitType || "Social Pension"
-            setFormValues(updatedFormValues)
+                    disbursement_date: record.disbursement_date
+                        ? formatDateToLocal(record.disbursement_date)
+                        : null,
+                    claimer: record.claimer || null,
+                    relationship: record.relationship || null,
+                };
+            });
+            updatedFormValues.benefitType = member.benefitType || "Social Pension";
+            setFormValues(updatedFormValues);
         }
-    }, [member])
+    }, [member]);
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target
-        const [quarter, field] = name.split("_")
-
-        console.log("Input change detected:", { name, value, quarter, field }) // Debug log
+        const { name, value } = e.target;
+        const [quarter, field] = name.split("_");
 
         setFormValues((prev) => ({
             ...prev,
             [quarter]: {
                 ...prev[quarter],
-                [field]: value,
+                [field]: value || null,
             },
-        }))
-    }
+        }));
+    };
 
     const handleDateChange = (quarter, date) => {
         setFormValues((prevValues) => ({
             ...prevValues,
             [quarter]: {
                 ...prevValues[quarter],
-                disbursement_date: date,
+                disbursement_date: date || null,
             },
-        }))
-    }
+        }));
+    };
 
     const handleSubmit = async () => {
-        const { benefitType, Q1, Q2, Q3, Q4 } = formValues
+        const { benefitType, Q1, Q2, Q3, Q4 } = formValues;
+
+        // Map quarters and ensure missing values are null
         const allQuarterData = [Q1, Q2, Q3, Q4].map((quarterData, idx) => ({
             quarter: `Q${idx + 1}`,
-            ...quarterData,
-        }))
+            disbursement_date: quarterData.disbursement_date || null,
+            claimer: quarterData.claimer || null,
+            relationship: quarterData.relationship || null,
+            proof: null, // Add default proof as null
+        }));
 
         try {
             const socialPensionData = {
                 member_id: member?.member_id || null,
                 benefitType,
                 quarterData: allQuarterData,
-            }
-            console.log(socialPensionData)
+            };
 
             if (member) {
                 await axios.put(
                     `http://localhost:5000/financial-assistance/social-pension/${member.member_id}`,
-                    socialPensionData,
-                )
+                    socialPensionData
+                );
             } else {
-                await axios.post("http://localhost:5000/financial-assistance/social-pension", socialPensionData)
+                await axios.post(
+                    "http://localhost:5000/financial-assistance/social-pension",
+                    socialPensionData
+                );
             }
 
-            onSave() // Notify parent to refresh data
-            onClose() // Close the modal after saving the data
+            onSave(); // Notify parent to refresh data
+            onClose(); // Close the modal after saving
         } catch (error) {
-            console.error("Error saving data", error)
+            console.error("Error saving data", error);
         }
-    }
-
-    const isFormValid = () => {
-        // Ensure all required fields are filled out
-        return (
-            Object.values(formValues).every(
-                (quarter) => quarter.disbursement_date && quarter.claimer && quarter.relationship,
-            ) && formValues.benefitType !== ""
-        )
-    }
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -107,14 +106,14 @@ const Modal = ({ onClose, member, onSave, membersData }) => {
                     formValues={formValues}
                     onChange={handleInputChange}
                     onClose={onClose}
-                    isFormValid={isFormValid}
+                    isFormValid={() => true} // Allow submission without validation
                     isEditMode={!!member}
                     handleSubmit={handleSubmit}
                     handleDateChange={handleDateChange}
                 />
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Modal
+export default Modal;
