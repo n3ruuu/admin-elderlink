@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import ErrorModal from "./ErrorModal"
 import Form from "./Form"
 import axios from "axios"
+import HealthRecordsModal from '../HealthRecords/Modal'
 
 const Modal = ({ onClose, member, onSave }) => {
     const [formValues, setFormValues] = useState({
@@ -22,6 +23,8 @@ const Modal = ({ onClose, member, onSave }) => {
     })
     const [errors, setErrors] = useState([])
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
+    const [isHealthRecordsModalOpen, setIsHealthRecordsModalOpen] = useState(false);
+    const [healthRecordsFormValues, setHealthRecordsFormValues] = useState(null);
 
     const optionalFields = ["middleName", "extension", "purchaseBookletNo", "medicineBookletNo", "dateIssued"]
 
@@ -50,6 +53,16 @@ const Modal = ({ onClose, member, onSave }) => {
         const { name, value } = e.target
         setFormValues({ ...formValues, [name]: value })
     }
+
+    const onOpenHealthRecordsModal = (formValues) => {
+        setHealthRecordsFormValues(formValues);  // Set the formValues for Health Records
+        setIsHealthRecordsModalOpen(true);  // Open the Health Records Modal
+    };
+    
+    const onCloseHealthRecordsModal = () => {
+        setIsHealthRecordsModalOpen(false);
+        setHealthRecordsFormValues(null);
+    };
 
     const validateForm = () => {
         const errorMessages = []
@@ -80,26 +93,25 @@ const Modal = ({ onClose, member, onSave }) => {
         optionalFields.includes(key) ? true : value.trim() !== "",
     )
 
-    const handleSubmit = async () => {
-        const validationErrors = validateForm()
-        if (validationErrors.length > 0) {
-            setErrors(validationErrors)
-            setIsErrorModalOpen(true)
-        } else {
-            try {
-                if (member) {
-                    // Edit existing member in the database
-                    await axios.put(`http://localhost:5000/members/members-list/${member.id}`, formValues)
-                } else {
-                    // Add new member to the database
-                    await axios.post("http://localhost:5000/members/members-list", formValues)
+        const handleSubmit = async () => {
+            const validationErrors = validateForm()
+            if (validationErrors.length > 0) {
+                setErrors(validationErrors)
+                setIsErrorModalOpen(true)
+            } else {
+                try {
+                    if (member) {
+                        // Edit existing member in the database
+                        await axios.put(`http://localhost:5000/members/members-list/${member.id}`, formValues)
+                    } else {
+                        onOpenHealthRecordsModal(formValues)
+                    }
+                    onSave() // Notify parent to refresh data
+                } catch (error) {
+                    console.error("Error saving data", error)
                 }
-                onSave() // Notify parent to refresh data
-            } catch (error) {
-                console.error("Error saving data", error)
             }
         }
-    }
 
     const handleCloseErrorModal = () => setIsErrorModalOpen(false)
 
@@ -132,6 +144,16 @@ const Modal = ({ onClose, member, onSave }) => {
                     />
                 </form>
             </div>
+            {isHealthRecordsModalOpen && (
+    <HealthRecordsModal 
+    onClose={onCloseHealthRecordsModal} 
+    member={null} 
+    onSave={onSave}  
+    memberInfo={healthRecordsFormValues}
+      
+    />
+)}
+
         </div>
     )
 }

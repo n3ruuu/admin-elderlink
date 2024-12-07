@@ -37,6 +37,9 @@ const MembersList = () => {
             // If we're editing an existing member
             setSuccessModalTitle("Update Completed!")
             setSuccessModalMessage("Member information has been successfully updated.")
+        } else {
+            setSuccessModalTitle("Member Added!")
+            setSuccessModalMessage("New member has been successfully added.")
         }
 
         setIsSuccessModalOpen(true) // Open the success modal
