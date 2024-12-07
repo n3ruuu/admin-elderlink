@@ -155,7 +155,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                         value={formValues.contactNumber}
                         onChange={onChange}
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="+63 912 345 6789"
+                        placeholder="09123456789"
                         required
                     />
                 </div>

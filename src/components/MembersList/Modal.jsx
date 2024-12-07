@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import ErrorModal from "./ErrorModal"
 import Form from "./Form"
 import axios from "axios"
-import HealthRecordsModal from '../HealthRecords/Modal'
+import HealthRecordsModal from "../HealthRecords/Modal"
 
 const Modal = ({ onClose, member, onSave }) => {
     const [formValues, setFormValues] = useState({
@@ -23,8 +23,8 @@ const Modal = ({ onClose, member, onSave }) => {
     })
     const [errors, setErrors] = useState([])
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
-    const [isHealthRecordsModalOpen, setIsHealthRecordsModalOpen] = useState(false);
-    const [healthRecordsFormValues, setHealthRecordsFormValues] = useState(null);
+    const [isHealthRecordsModalOpen, setIsHealthRecordsModalOpen] = useState(false)
+    const [healthRecordsFormValues, setHealthRecordsFormValues] = useState(null)
 
     const optionalFields = ["middleName", "extension", "purchaseBookletNo", "medicineBookletNo", "dateIssued"]
 
@@ -55,14 +55,14 @@ const Modal = ({ onClose, member, onSave }) => {
     }
 
     const onOpenHealthRecordsModal = (formValues) => {
-        setHealthRecordsFormValues(formValues);  // Set the formValues for Health Records
-        setIsHealthRecordsModalOpen(true);  // Open the Health Records Modal
-    };
-    
+        setHealthRecordsFormValues(formValues) // Set the formValues for Health Records
+        setIsHealthRecordsModalOpen(true) // Open the Health Records Modal
+    }
+
     const onCloseHealthRecordsModal = () => {
-        setIsHealthRecordsModalOpen(false);
-        setHealthRecordsFormValues(null);
-    };
+        setIsHealthRecordsModalOpen(false)
+        setHealthRecordsFormValues(null)
+    }
 
     const validateForm = () => {
         const errorMessages = []
@@ -76,9 +76,9 @@ const Modal = ({ onClose, member, onSave }) => {
         if (!namePattern.test(formValues.firstName)) errorMessages.push("First Name must only contain letters.")
         if (!namePattern.test(formValues.lastName)) errorMessages.push("Last Name must only contain letters.")
 
-        const contactPattern = /^\+63\d{3}\d{3}\d{4}$/
+        const contactPattern = /^09\d{9}$/ // Matches 09123456789
         if (!contactPattern.test(formValues.contactNumber)) {
-            errorMessages.push("Contact Number must follow the format: +639123456789.")
+            errorMessages.push("Contact Number must follow the format: 09123456789.")
         }
 
         const controlNoPattern = /^MOJ\d{4}$/
@@ -93,25 +93,25 @@ const Modal = ({ onClose, member, onSave }) => {
         optionalFields.includes(key) ? true : value.trim() !== "",
     )
 
-        const handleSubmit = async () => {
-            const validationErrors = validateForm()
-            if (validationErrors.length > 0) {
-                setErrors(validationErrors)
-                setIsErrorModalOpen(true)
-            } else {
-                try {
-                    if (member) {
-                        // Edit existing member in the database
-                        await axios.put(`http://localhost:5000/members/members-list/${member.id}`, formValues)
-                    } else {
-                        onOpenHealthRecordsModal(formValues)
-                    }
-                    onSave() // Notify parent to refresh data
-                } catch (error) {
-                    console.error("Error saving data", error)
+    const handleSubmit = async () => {
+        const validationErrors = validateForm()
+        if (validationErrors.length > 0) {
+            setErrors(validationErrors)
+            setIsErrorModalOpen(true)
+        } else {
+            try {
+                if (member) {
+                    // Edit existing member in the database
+                    await axios.put(`http://localhost:5000/members/members-list/${member.id}`, formValues)
+                } else {
+                    onOpenHealthRecordsModal(formValues)
                 }
+                onSave() // Notify parent to refresh data
+            } catch (error) {
+                console.error("Error saving data", error)
             }
         }
+    }
 
     const handleCloseErrorModal = () => setIsErrorModalOpen(false)
 
@@ -145,15 +145,13 @@ const Modal = ({ onClose, member, onSave }) => {
                 </form>
             </div>
             {isHealthRecordsModalOpen && (
-    <HealthRecordsModal 
-    onClose={onCloseHealthRecordsModal} 
-    member={null} 
-    onSave={onSave}  
-    memberInfo={healthRecordsFormValues}
-      
-    />
-)}
-
+                <HealthRecordsModal
+                    onClose={onCloseHealthRecordsModal}
+                    member={null}
+                    onSave={onSave}
+                    memberInfo={healthRecordsFormValues}
+                />
+            )}
         </div>
     )
 }

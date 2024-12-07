@@ -156,7 +156,7 @@ const Form = ({
                         value={formValues.guardianContact || ""}
                         onChange={onChange}
                         className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Enter contact number"
+                        placeholder="09123456789"
                         required
                     />
                 </div>

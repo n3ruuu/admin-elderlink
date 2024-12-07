@@ -1,10 +1,11 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react"
 import SearchIcon from "../../assets/icons/search.svg"
 import Modal from "./Modal"
 import HealthRecordsModal from "../HealthRecords/Modal"
 import FinancialRecordsModal from "../FinancialAssistance/Modal"
 
-const Header = () => {
+const Header = ({ searchQuery, onSearchChange }) => {
     const [currentStep, setCurrentStep] = useState(0) // Track modal steps
 
     const openNextModal = () => {
@@ -40,6 +41,8 @@ const Header = () => {
                                 id="search"
                                 className="p-3 pl-12 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full"
                                 placeholder="Search..."
+                                value={searchQuery} // Bind value to searchQuery
+                                onChange={onSearchChange} // Handle search input change
                             />
                             <img
                                 src={SearchIcon}

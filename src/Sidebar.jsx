@@ -297,7 +297,7 @@ const Sidebar = () => {
                         <Link
                             to="/admin-elderlink/"
                             onClick={handleLogout}
-                            className={`group absolute bottom-5 w-[86%] flex justify-start space-x-8 text-[20px] px-6 py-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                            className={`group absolute bottom-0 w-[86%] flex justify-start space-x-8 text-[20px] px-6 py-4 rounded-xl cursor-pointer transition-all duration-300 ${
                                 isActive(null)
                                     ? "bg-[#219EBC] text-[#F5F5FA]"
                                     : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"

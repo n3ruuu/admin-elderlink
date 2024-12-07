@@ -16,21 +16,41 @@ const HealthRecords = () => {
     const [successModalTitle, setSuccessModalTitle] = useState("")
     const [isPriorityCareModalOpen, setIsPriorityCareModalOpen] = useState(false) // State for Priority Care Modal
     const [priorityCareMembers, setPriorityCareMembers] = useState([]) // State to store all priority care members
+    const [searchQuery, setSearchQuery] = useState("")
 
     const chronicConditions = [
-        "Cancer", "Heart Disease", "Stroke", "Chronic Respiratory Diseases", "Kidney Failure",
-        "Severe Infections", "HIV/AIDS", "Diabetes", "Liver Cirrhosis", "Tuberculosis", "Hepatitis",
-        "Severe Trauma", "Severe Asthma", "Parkinson's Disease", "Alzheimer's Disease", "Hypertension",
-        "Multiple Organ Failure", "Severe Malaria", "Meningitis", "COPD", "Blood Disorders", "Heart Attack",
-        "Organ Rejection", "Autoimmune Disorders", "Diabetes Complications", "Severe Mental Health Disorders"
+        "Cancer",
+        "Heart Disease",
+        "Stroke",
+        "Chronic Respiratory Diseases",
+        "Kidney Failure",
+        "Severe Infections",
+        "HIV/AIDS",
+        "Diabetes",
+        "Liver Cirrhosis",
+        "Tuberculosis",
+        "Hepatitis",
+        "Severe Trauma",
+        "Severe Asthma",
+        "Parkinson's Disease",
+        "Alzheimer's Disease",
+        "Hypertension",
+        "Multiple Organ Failure",
+        "Severe Malaria",
+        "Meningitis",
+        "COPD",
+        "Blood Disorders",
+        "Heart Attack",
+        "Organ Rejection",
+        "Autoimmune Disorders",
+        "Diabetes Complications",
+        "Severe Mental Health Disorders",
     ]
 
     // Filter members who meet the chronic condition criteria
     const getPriorityCareMembers = (members) => {
         return members.filter((member) =>
-            member.medicalConditions
-                ?.split(",")
-                .some((condition) => chronicConditions.includes(condition.trim()))
+            member.medicalConditions?.split(",").some((condition) => chronicConditions.includes(condition.trim())),
         )
     }
 
@@ -99,18 +119,44 @@ const HealthRecords = () => {
         setIsPriorityCareModalOpen(true)
     }
 
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value)
+    }
+
+    // Filter members based on the search query
+    const filteredMembers = membersData.filter((member) => {
+        const lowercasedQuery = searchQuery.toLowerCase()
+        return (
+            member.firstName.toLowerCase().includes(lowercasedQuery) ||
+            member.lastName.toLowerCase().includes(lowercasedQuery) ||
+            member.controlNo.toLowerCase().includes(lowercasedQuery) ||
+            (member.medicalConditions && member.medicalConditions.toLowerCase().includes(lowercasedQuery)) ||
+            (member.medications && member.medications.toLowerCase().includes(lowercasedQuery)) ||
+            (member.guardianEmail && member.guardianEmail.toLowerCase().includes(lowercasedQuery)) ||
+            (member.guardianContact && member.guardianContact.toLowerCase().includes(lowercasedQuery)) ||
+            (member.guardianRelationship && member.guardianRelationship.toLowerCase().includes(lowercasedQuery)) ||
+            (member.guardianFirstName && member.guardianFirstName.toLowerCase().includes(lowercasedQuery)) ||
+            (member.guardianLastName && member.guardianLastName.toLowerCase().includes(lowercasedQuery))
+        )
+    })
+
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header />
+            <Header searchQuery={searchQuery} onSearchChange={handleSearchChange} />
+
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards
-                        totalRecords={membersData.length}
+                        totalRecords={filteredMembers.length}
                         recentUpdatesCount={recentUpdates.length}
                         priorityCareCount={priorityCareMembers.length} // Display count of priority care members
                         onPriorityCareClick={handlePriorityCareClick} // Show all priority care members
                     />
-                    <Table membersData={membersData} onEdit={handleOpenModal} chronicConditions={chronicConditions} />
+                    <Table
+                        membersData={filteredMembers}
+                        onEdit={handleOpenModal}
+                        chronicConditions={chronicConditions}
+                    />
                 </div>
             </div>
 
@@ -125,12 +171,7 @@ const HealthRecords = () => {
             />
 
             {isModalOpen && (
-                <Modal
-                    onClose={handleCloseModal}
-                    member={currentRecord}
-                    onSave={handleSave}
-                    memberInfo={{}}
-                />
+                <Modal onClose={handleCloseModal} member={currentRecord} onSave={handleSave} memberInfo={{}} />
             )}
 
             {/* Priority Care Modal */}

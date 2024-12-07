@@ -1,13 +1,11 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from "react";
-import axios from "axios";
-import Form from "./Form";
-import moment from "moment"; // Import Moment.js
+import { useState, useEffect } from "react"
+import axios from "axios"
+import Form from "./Form"
+import moment from "moment" // Import Moment.js
 
 const Modal = ({ onClose, member, onSave, membersData, memberInfo }) => {
-    const memberRecords = member
-        ? membersData.filter((data) => data.member_id === member.member_id)
-        : [];
+    const memberRecords = member ? membersData.filter((data) => data.member_id === member.member_id) : []
 
     const [formValues, setFormValues] = useState({
         Q1: { disbursement_date: null, claimer: null, relationship: null },
@@ -15,32 +13,30 @@ const Modal = ({ onClose, member, onSave, membersData, memberInfo }) => {
         Q3: { disbursement_date: null, claimer: null, relationship: null },
         Q4: { disbursement_date: null, claimer: null, relationship: null },
         benefitType: "Social Pension",
-    });
+    })
 
     const formatDateToLocal = (dateStr) => {
-        return dateStr ? moment(dateStr).format("YYYY-MM-DD") : null;
-    };
+        return dateStr ? moment(dateStr).format("YYYY-MM-DD") : null
+    }
 
     useEffect(() => {
         if (member) {
-            const updatedFormValues = { ...formValues };
+            const updatedFormValues = { ...formValues }
             memberRecords.forEach((record) => {
                 updatedFormValues[record.quarter] = {
-                    disbursement_date: record.disbursement_date
-                        ? formatDateToLocal(record.disbursement_date)
-                        : null,
+                    disbursement_date: record.disbursement_date ? formatDateToLocal(record.disbursement_date) : null,
                     claimer: record.claimer || null,
                     relationship: record.relationship || null,
-                };
-            });
-            updatedFormValues.benefitType = member.benefitType || "Social Pension";
-            setFormValues(updatedFormValues);
+                }
+            })
+            updatedFormValues.benefitType = member.benefitType || "Social Pension"
+            setFormValues(updatedFormValues)
         }
-    }, [member]);
+    }, [member])
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        const [quarter, field] = name.split("_");
+        const { name, value } = e.target
+        const [quarter, field] = name.split("_")
 
         setFormValues((prev) => ({
             ...prev,
@@ -48,8 +44,8 @@ const Modal = ({ onClose, member, onSave, membersData, memberInfo }) => {
                 ...prev[quarter],
                 [field]: value || null,
             },
-        }));
-    };
+        }))
+    }
 
     const handleDateChange = (quarter, date) => {
         setFormValues((prevValues) => ({
@@ -58,12 +54,12 @@ const Modal = ({ onClose, member, onSave, membersData, memberInfo }) => {
                 ...prevValues[quarter],
                 disbursement_date: date || null,
             },
-        }));
-    };
+        }))
+    }
 
     const handleSubmit = async () => {
-        const { benefitType, Q1, Q2, Q3, Q4 } = formValues;
-    
+        const { benefitType, Q1, Q2, Q3, Q4 } = formValues
+
         // Map quarters and ensure missing values are null
         const allQuarterData = [Q1, Q2, Q3, Q4].map((quarterData, idx) => ({
             quarter: `Q${idx + 1}`,
@@ -71,35 +67,33 @@ const Modal = ({ onClose, member, onSave, membersData, memberInfo }) => {
             claimer: quarterData.claimer || null,
             relationship: quarterData.relationship || null,
             proof: null, // Default proof as null
-        }));
-    
+        }))
+
         try {
+            let memberId = member?.member_id || null
+
+            // If adding a new member
+            if (!member) {
+                const memberResponse = await axios.post("http://localhost:5000/members", memberInfo)
+                memberId = memberResponse.data.memberId // Get the new member ID from the response
+            }
+
+            // Prepare data for social pension
             const socialPensionData = {
-                controlNo: memberInfo.controlNo, // Include controlNo
-                member_id: member?.member_id || null,
+                member_id: memberId,
                 benefitType,
                 quarterData: allQuarterData,
-            };
-    
-            if (member) {
-                await axios.put(
-                    `http://localhost:5000/financial-assistance/social-pension/${member.member_id}`,
-                    socialPensionData
-                );
-            } else {
-                await axios.post(
-                    "http://localhost:5000/financial-assistance/social-pension",
-                    socialPensionData
-                );
             }
-    
-            onSave(); // Notify parent to refresh data
-            onClose(); // Close the modal after saving
+
+            // Save social pension data
+            await axios.post("http://localhost:5000/financial-assistance/social-pension", socialPensionData)
+
+            onSave() // Notify parent to refresh data
+            onClose() // Close the modal after saving
         } catch (error) {
-            console.error("Error saving data", error);
+            console.error("Error saving data", error)
         }
-    };
-    
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -115,7 +109,7 @@ const Modal = ({ onClose, member, onSave, membersData, memberInfo }) => {
                 />
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default Modal;
+export default Modal

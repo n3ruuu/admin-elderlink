@@ -65,17 +65,11 @@ const Table = ({ membersData, onEdit, chronicConditions }) => {
                             </td>
 
                             <td className="whitespace-nowrap align-baseline">
-                                {member.guardianFirstName}{" "}
-                                {member.guardianMiddleName && `${member.guardianMiddleName} `}
-                                {member.guardianLastName}
+                                {member.guardianFirstName} {member.guardianLastName}
                             </td>
 
                             <td className="whitespace-nowrap align-baseline">{member.guardianEmail}</td>
-                            <td className="text-left  align-baseline">
-                                {member.guardianContact && member.guardianContact.startsWith("+639")
-                                    ? `0${member.guardianContact.slice(3)}`
-                                    : member.guardianContact}
-                            </td>
+                            <td className="text-left  align-baseline">{member.guardianContact}</td>
                             <td className="whitespace-nowrap align-baseline">{member.guardianRelationship}</td>
 
                             <td className="flex gap-3 items-center py-4">

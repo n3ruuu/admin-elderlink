@@ -6,7 +6,7 @@ const EmailModal = ({ isOpen, onClose, member }) => {
     const [message, setMessage] = useState("")
     const [image, setImage] = useState(null)
 
-    // Function to generate birthday greeting
+    // Function to generate a personalized greeting
     const generateBirthdayGreeting = () => {
         if (member?.birthday) {
             const birthday = new Date(member?.birthday)
@@ -15,13 +15,26 @@ const EmailModal = ({ isOpen, onClose, member }) => {
             // Check if today is the recipient's birthday
             if (birthday.getMonth() === currentDate.getMonth() && birthday.getDate() === currentDate.getDate()) {
                 setMessage(
-                    `Happy Birthday, ${member?.firstName || "there"}! 🎉🎂\n\nWishing you all the best on your special day! Enjoy every moment!`,
+                    `🎉 Happy Birthday, ${member?.firstName || "there"}! 🎂\n\n` +
+                        `Wishing you an incredible day filled with love, laughter, and all your favorite things! May this year bring you happiness, success, and endless blessings! Enjoy your special day! 🥳`,
+                )
+            } else if (birthday > currentDate) {
+                const daysLeft = Math.ceil((birthday - currentDate) / (1000 * 60 * 60 * 24))
+                setMessage(
+                    `Hello ${member?.firstName || "there"}! 😊\n\n` +
+                        `Just ${daysLeft} more days until your special day! We hope your upcoming birthday is as amazing as you are. Here's to a celebration full of joy and memorable moments! 🎈`,
                 )
             } else {
-                setMessage(`Hello, ${member?.firstName || "there"}!\n\nI hope you're doing well!`)
+                setMessage(
+                    `Hello ${member?.firstName || "there"}! 🌟\n\n` +
+                        `We hope you're doing great! Remember to cherish the small joys and celebrate each day. Let us know if there's anything we can do for you. Take care!`,
+                )
             }
         } else {
-            setMessage("Hello! I hope you're doing well!")
+            setMessage(
+                `Hi there! 😊\n\n` +
+                    `Just a quick note to let you know that we're thinking about you! Wishing you a wonderful day filled with positivity and good vibes. Stay awesome!`,
+            )
         }
     }
 
@@ -123,7 +136,7 @@ const EmailModal = ({ isOpen, onClose, member }) => {
                         className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-200"
                     >
                         Cancel
-                    </button>   
+                    </button>
                     <button
                         onClick={handleSendEmail}
                         disabled={isMessageEmpty}

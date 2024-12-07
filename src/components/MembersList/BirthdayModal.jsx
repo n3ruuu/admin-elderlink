@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react"
 import moment from "moment"
-import { AiOutlineMessage } from "react-icons/ai" // Importing SMS icon from React Icons
+import SendIcon from "../../assets/icons/send-icon.svg"
 import EmailModal from "./EmailModal" // Import the EmailModal component
 
 const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
@@ -37,11 +37,7 @@ const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
 
                         return (
                             <li key={member.id} className="flex items-center justify-between mb-2">
-                                <div className="flex items-center">
-                                    <AiOutlineMessage
-                                        className="mr-2 text-blue-500 cursor-pointer"
-                                        onClick={() => openSMSModal(member)} // Open SMS modal on icon click
-                                    />
+                                <div>
                                     <span
                                         className={
                                             memberBirthday === today
@@ -52,15 +48,23 @@ const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
                                         {memberFullName}
                                     </span>
                                 </div>
-                                <span
-                                    className={
-                                        memberBirthday === today
-                                            ? "text-red-500 font-bold" // Apply red color if it's the member's birthday
-                                            : ""
-                                    }
-                                >
-                                    {moment(member.dob).format("MMMM D")}
-                                </span>
+                                <div className="flex items-center space-x-2">
+                                    <span
+                                        className={
+                                            memberBirthday === today
+                                                ? "text-red-500 font-bold" // Apply red color if it's the member's birthday
+                                                : ""
+                                        }
+                                    >
+                                        {moment(member.dob).format("MMMM D")}
+                                    </span>
+                                    <img
+                                        src={SendIcon}
+                                        alt="Send Icon"
+                                        className="w-5 h-5 cursor-pointer"
+                                        onClick={() => openSMSModal(member)} // Open SMS modal on icon click
+                                    />
+                                </div>
                             </li>
                         )
                     })}

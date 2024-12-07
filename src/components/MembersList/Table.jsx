@@ -46,19 +46,15 @@ const Table = ({ membersData, onEdit }) => {
                                 {member.firstName} {member.middleName && `${member.middleName} `} {member.lastName}{" "}
                                 {member.extension}
                             </td>
-                            <td className="text-left whitespace-nowrap">{moment(member.dob).format("MMMM D, YYYY")}</td>
+                            <td className="text-left whitespace-nowrap">{moment(member.dob).format("MM-DD-YYYY")}</td>
                             <td className="text-left">{member.sex}</td>
                             <td className="text-left">{member.civilStatus}</td>
                             <td className="text-left whitespace-nowrap">{member.address}</td>
-                            <td className="text-left">
-                                {member.contactNumber && member.contactNumber.startsWith("+639")
-                                    ? `0${member.contactNumber.slice(3)}`
-                                    : member.contactNumber}
-                            </td>
+                            <td className="text-left">{member.contactNumber}</td>
                             <td className="text-left">{member.purchaseBookletNo || "N/A"}</td>
                             <td className="text-left">{member.medicineBookletNo || "N/A"}</td>
                             <td className="text-left whitespace-nowrap">
-                                {member.dateIssued ? moment(member.dateIssued).format("MMMM D, YYYY") : "N/A"}
+                                {member.dateIssued ? moment(member.dateIssued).format("MM-DD-YYYY") : "N/A"}
                             </td>
                             <td className="px-4 py-4 flex gap-2">
                                 <button
