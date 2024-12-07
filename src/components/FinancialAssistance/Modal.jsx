@@ -4,7 +4,7 @@ import axios from "axios";
 import Form from "./Form";
 import moment from "moment"; // Import Moment.js
 
-const Modal = ({ onClose, member, onSave, membersData }) => {
+const Modal = ({ onClose, member, onSave, membersData, memberInfo }) => {
     const memberRecords = member
         ? membersData.filter((data) => data.member_id === member.member_id)
         : [];
@@ -63,23 +63,24 @@ const Modal = ({ onClose, member, onSave, membersData }) => {
 
     const handleSubmit = async () => {
         const { benefitType, Q1, Q2, Q3, Q4 } = formValues;
-
+    
         // Map quarters and ensure missing values are null
         const allQuarterData = [Q1, Q2, Q3, Q4].map((quarterData, idx) => ({
             quarter: `Q${idx + 1}`,
             disbursement_date: quarterData.disbursement_date || null,
             claimer: quarterData.claimer || null,
             relationship: quarterData.relationship || null,
-            proof: null, // Add default proof as null
+            proof: null, // Default proof as null
         }));
-
+    
         try {
             const socialPensionData = {
+                controlNo: memberInfo.controlNo, // Include controlNo
                 member_id: member?.member_id || null,
                 benefitType,
                 quarterData: allQuarterData,
             };
-
+    
             if (member) {
                 await axios.put(
                     `http://localhost:5000/financial-assistance/social-pension/${member.member_id}`,
@@ -91,13 +92,14 @@ const Modal = ({ onClose, member, onSave, membersData }) => {
                     socialPensionData
                 );
             }
-
+    
             onSave(); // Notify parent to refresh data
             onClose(); // Close the modal after saving
         } catch (error) {
             console.error("Error saving data", error);
         }
     };
+    
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
