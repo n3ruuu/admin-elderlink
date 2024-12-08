@@ -13,6 +13,7 @@ const FinancialAssistance = () => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // State for SuccessModal
     const [successModalMessage, setSuccessModalMessage] = useState("") // Success message state
     const [successModalTitle, setSuccessModalTitle] = useState("") // Success title state
+    const [searchQuery, setSearchQuery] = useState("")
 
     useEffect(() => {
         fetchMembersData()
@@ -20,7 +21,7 @@ const FinancialAssistance = () => {
 
     const fetchMembersData = async () => {
         try {
-            const response = await fetch("http://localhost:5000/financial-assistance")
+            const response = await fetch("http://localhost:5000/financial-assistance/social-pension") // Assuming endpoint is for social_pension table
             if (!response.ok) throw new Error("Network response was not ok")
             const data = await response.json()
             setMembersData(data)
@@ -37,6 +38,7 @@ const FinancialAssistance = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setCurrentMember(null)
+        console.log("CLOSING")
     }
 
     const getMonthlyTotalPayouts = () => {
@@ -44,9 +46,9 @@ const FinancialAssistance = () => {
         const endOfMonth = moment().endOf("month")
 
         return membersData.filter((member) => {
-            const claimDate = moment(member.date_of_claim)
+            const claimDate = moment(member.disbursement_date) // Assuming 'disbursement_date' is used to filter
             return (
-                member.status === "Active" && // Check if the status is "Active"
+                member.status === "Unclaimed" && // Adjust status to 'Claimed' (or 'Unclaimed' if you prefer)
                 claimDate.isBetween(startOfMonth, endOfMonth, null, "[]")
             )
         }).length // Return the number of active payouts in this month
@@ -58,9 +60,9 @@ const FinancialAssistance = () => {
         const endOfWeek = moment().endOf("week")
 
         return membersData.filter((member) => {
-            const claimDate = moment(member.date_of_claim)
+            const claimDate = moment(member.disbursement_date) // Assuming 'disbursement_date' is used to filter
             return (
-                member.status === "Active" && // Check if the status is "Active"
+                member.status === "Unclaimed" && // Adjust status to 'Claimed' (or 'Unclaimed' if you prefer)
                 claimDate.isBetween(startOfWeek, endOfWeek, null, "[]")
             )
         }).length // Return the number of active payouts in this week
@@ -80,17 +82,32 @@ const FinancialAssistance = () => {
         setIsSuccessModalOpen(true) // Open the success modal
     }
 
-    const totalBeneficiaries = membersData.length
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value)
+    }
+
+    // Filter members based on the search query
+    const filteredMembers = membersData.filter((member) => {
+        const lowercasedQuery = searchQuery.toLowerCase()
+        return (
+            (member.full_name && member.full_name.toLowerCase().includes(lowercasedQuery)) ||
+            (member.disbursement_date &&
+                moment(member.disbursement_date).format("MMMM D, YYYY").toLowerCase().includes(lowercasedQuery)) ||
+            (member.control_no && member.control_no.toLowerCase().includes(lowercasedQuery)) ||
+            (member.status && member.status.toLowerCase().includes(lowercasedQuery)) ||
+            (member.claimer && member.claimer.toLowerCase().includes(lowercasedQuery))
+        )
+    })
+
+    // Calculate the total active beneficiaries by filtering out only unique 'member_id' values
+    const totalBeneficiaries = new Set(filteredMembers.map((member) => member.member_id)).size
     const upcomingPayouts = getUpcomingPayoutsThisWeek() // Payouts within this week
     const monthlyTotalPayouts = getMonthlyTotalPayouts() // Get the total for the current month
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header
-                title="Financial Assistance"
-                subtitle="Manage finances and benefits"
-                onOpenModal={() => handleOpenModal(null)}
-            />
+            <Header searchQuery={searchQuery} onSearchChange={handleSearchChange} />
+
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards
@@ -98,7 +115,7 @@ const FinancialAssistance = () => {
                         monthlyTotalPayouts={monthlyTotalPayouts}
                         upcomingPayouts={upcomingPayouts}
                     />
-                    <Table membersData={membersData} onEdit={handleOpenModal} />
+                    <Table membersData={filteredMembers} onEdit={handleOpenModal} />
                 </div>
             </div>
 

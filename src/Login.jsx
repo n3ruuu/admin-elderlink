@@ -15,26 +15,30 @@ const Login = ({ onLogin }) => {
     const navigate = useNavigate()
 
     const handleLogin = async (e) => {
-        // e.preventDefault()
+        e.preventDefault()
 
-        // try {
-        //     const response = await axios.post("http://localhost:5000/login", {
-        //         username,
-        //         password,
-        //     })
+        // Client-side validation for empty fields
+        if (!username || !password) {
+            setErrorMessage("Username and password are required.")
+            return
+        }
 
-        //     if (response.status === 200) {
-        //         const { token, username } = response.data // Expect username in the response
-        //         localStorage.setItem("authToken", token)
-        //         localStorage.setItem("username", username) // Save the username in localStorage
-        //         onLogin()
-        //         navigate("/admin-elderlink/dashboard")
-        //     }
-        // } catch (error) {
-        //     setErrorMessage(error.response?.data?.message || "An error occurred. Please try again.")
-        // }
-        onLogin()
-        navigate("/admin-elderlink/dashboard")
+        try {
+            const response = await axios.post("http://localhost:5000/login", {
+                identifier: username, // Send 'identifier' (username or email)
+                password,
+            })
+
+            if (response.status === 200) {
+                const { token, username } = response.data
+                localStorage.setItem("authToken", token)
+                localStorage.setItem("username", username)
+                onLogin()
+                navigate("/admin-elderlink/dashboard")
+            }
+        } catch (error) {
+            setErrorMessage(error.response?.data?.message || "An error occurred. Please try again.")
+        }
     }
 
     return (

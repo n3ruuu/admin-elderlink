@@ -13,6 +13,7 @@ const Header = ({ searchQuery, onSearchChange }) => {
     }
 
     const closeAllModals = () => {
+        console.log("CLOSING ALL MODALS")
         setCurrentStep(0)
     }
 

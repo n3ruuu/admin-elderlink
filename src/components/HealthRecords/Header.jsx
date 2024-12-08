@@ -28,8 +28,8 @@ const Header = ({ searchQuery, onSearchChange }) => {
         <>
             <div className="p-16 w-full pb-8 flex">
                 <div className="w-1/2">
-                    <h1 className="text-6xl font-bold">Members List</h1>
-                    <p className="text-[#767171CC] mt-3">Access and update member profiles</p>
+                    <h1 className="text-6xl font-bold">Health Records</h1>
+                    <p className="text-[#767171CC] mt-3">Maintain comprehensive health records</p>
                 </div>
                 <div className="flex w-1/2 justify-end gap-5 items-start text-[#333333]">
                     {/* Search Bar */}

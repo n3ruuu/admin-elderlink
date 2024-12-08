@@ -5,7 +5,7 @@ import Form from "./Form"
 import axios from "axios"
 import FinancialRecordsModal from "../FinancialAssistance/Modal"
 
-const Modal = ({ onClose, member, onSave, memberInfo }) => {
+const Modal = ({ closeAllModal, onClose, member, onSave, memberInfo }) => {
     const [formValues, setFormValues] = useState({
         medicalConditions: [],
         medications: [],
@@ -84,6 +84,13 @@ const Modal = ({ onClose, member, onSave, memberInfo }) => {
 
     const closeFinancialRecordsModal = () => {
         setIsFinancialRecordsModalOpen(false) // Set the state to close the modal
+        console.log("CLOSING FINANCIAL RECORD MODAL")
+    }
+
+    const closeAllModals = () => {
+        closeAllModal()
+        setIsFinancialRecordsModalOpen(false)
+        console.log("PASSING")
     }
 
     const validateForm = () => {
@@ -198,6 +205,7 @@ const Modal = ({ onClose, member, onSave, memberInfo }) => {
 
                 {isFinancialRecordsModalOpen && (
                     <FinancialRecordsModal
+                        closeAllModal={closeAllModals}
                         onClose={closeFinancialRecordsModal}
                         memberInfo={newMemberData} // Pass the form values or the member info to the modal
                     />

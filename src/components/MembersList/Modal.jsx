@@ -61,7 +61,14 @@ const Modal = ({ onClose, member, onSave }) => {
 
     const onCloseHealthRecordsModal = () => {
         setIsHealthRecordsModalOpen(false)
+        console.log("CLOSING HEALTH RECORD MODAL")
         setHealthRecordsFormValues(null)
+    }
+
+    const closeAllModal = () => {
+        onClose()
+        setIsHealthRecordsModalOpen(false)
+        console.log("PASSING")
     }
 
     const validateForm = () => {
@@ -146,6 +153,7 @@ const Modal = ({ onClose, member, onSave }) => {
             </div>
             {isHealthRecordsModalOpen && (
                 <HealthRecordsModal
+                    closeAllModal={closeAllModal}
                     onClose={onCloseHealthRecordsModal}
                     member={null}
                     onSave={onSave}

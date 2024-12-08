@@ -10,12 +10,7 @@ const Form = ({ formValues, onChange, onClose, isFormValid, isEditMode, handleSu
 
     return (
         <div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-                {isEditMode ? "Edit Financial Record" : "Add Financial Record"}
-            </h2>
-
-            {/* Benefit Type and Date Fields */}
-            <div className="grid grid-cols-1 gap-4 mb-6">
+            <div className="grid grid-cols-1 h-[560px] gap-4 mb-6">
                 {formValues.benefitType === "Social Pension" && (
                     <fieldset className="border border-gray-300 p-4 rounded-md ">
                         <legend className="text-lg font-semibold text-gray-700 px-2">Social Pension Details</legend>

@@ -117,8 +117,14 @@ const ViewModal = ({ member, onClose }) => {
                         {memberRecords.map((record, index) => (
                             <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                                 <td className="px-4 py-2">{record.quarter}</td>
-                                <td className="px-4 py-2">{record.year}</td>
-                                <td className="px-4 py-2">{moment(record.disbursement_date).format("MMMM D")}</td>
+                                <td className="px-4 py-2">
+                                    {record.disbursement_date ? moment(record.disbursement_date).format("YYYY") : ""}
+                                </td>
+
+                                <td className="px-4 py-2">
+                                    {record.disbursement_date ? moment(record.disbursement_date).format("MMMM D") : ""}
+                                </td>
+
                                 <td className="px-4 py-2 whitespace-nowrap">{record.claimer}</td>
                                 <td className="px-4 py-2">{record.relationship}</td>
                                 <td
