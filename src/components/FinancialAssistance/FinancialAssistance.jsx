@@ -89,6 +89,9 @@ const FinancialAssistance = () => {
     // Filter members based on the search query
     const filteredMembers = membersData.filter((member) => {
         const lowercasedQuery = searchQuery.toLowerCase()
+        if (member.memberStatus !== "Active") {
+            return false
+        }
         return (
             (member.full_name && member.full_name.toLowerCase().includes(lowercasedQuery)) ||
             (member.disbursement_date &&

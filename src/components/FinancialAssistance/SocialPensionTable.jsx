@@ -1,23 +1,138 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 
 import { useState } from "react"
 import moment from "moment"
 import EditIcon from "../../assets/icons/edit.svg"
 import ViewIcon from "../../assets/icons/eye.svg"
-import ArchiveIcon from "../../assets/icons/archive2.svg"
+import { jsPDF } from "jspdf"
 import ReportIcon from "../../assets/icons/report.svg"
+import ElderlinkLogo from "../../assets/elderlink-logo.png"
 
 const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5 // Number of items to display per page
+    const [showReportOptions, setShowReportOptions] = useState(false)
 
     const totalPages = Math.ceil(socialPensionMembers.length / itemsPerPage) // Calculate total pages
     const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
     const currentMembers = socialPensionMembers.slice(startIndex, startIndex + itemsPerPage) // Get current active members for display
+    const loggedInUsername = localStorage.getItem("username") || ""
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
     }
+
+    const generateCSV = () => {
+        const header = ["Control No.", "Full Name", "Quarter", "Disbursement Date", "Status", "Claimer", "Relationship"]
+
+        // Use all socialPensionMembers instead of just currentMembers for CSV export
+        const csvData = [
+            header,
+            ...socialPensionMembers.map((member) => [
+                member.control_no,
+                member.full_name,
+                member.quarter,
+                member.disbursement_date ? moment(member.disbursement_date).format("MMMM D, YYYY") : "N/A",
+                member.status || "Unclaimed",
+                member.claimer || "N/A",
+                member.relationship || "N/A",
+            ]),
+        ]
+
+        // Convert data to a CSV string
+        const csvContent = csvData.map((row) => row.join(",")).join("\n")
+
+        // Create a Blob and trigger the download
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+        const link = document.createElement("a")
+        link.href = URL.createObjectURL(blob)
+        link.download = "members_report.csv"
+        link.click()
+    }
+
+    // Convert CSV data to a CSV string
+    const generatePDF = () => {
+        // Initialize jsPDF instance with landscape orientation
+        const doc = new jsPDF("l", "mm", "a4") // Landscape orientation
+
+        // Logo - Upper Left (Smaller Size)
+        const logo = new Image()
+        logo.src = ElderlinkLogo // Assuming you have a logo image defined elsewhere
+        doc.addImage(logo, "PNG", 10, 10, 30, 16) // Smaller size for the logo
+
+        // Title - Centered, bold
+        doc.setFontSize(22)
+        doc.setFont("helvetica", "bold")
+        doc.text("Social Pension Report", doc.internal.pageSize.width / 2, 20, { align: "center" })
+
+        // Table Headers and Data
+        const headers = [
+            "Control No.",
+            "Full Name",
+            "Quarter",
+            "Disbursement Date",
+            "Status",
+            "Claimer",
+            "Relationship",
+        ]
+
+        // Data for the table
+        const tableData = socialPensionMembers.map((member) => [
+            member.control_no,
+            member.full_name,
+            member.quarter,
+            member.disbursement_date ? moment(member.disbursement_date).format("MMMM D, YYYY") : "N/A",
+            member.status || "Unclaimed",
+            member.claimer || "N/A",
+            member.relationship || "N/A",
+        ])
+
+        // Create table using autoTable
+        doc.autoTable({
+            head: [headers],
+            body: tableData,
+            startY: 40, // Position the table below the header
+            theme: "grid", // Grid style for table
+            headStyles: {
+                fillColor: [33, 158, 188],
+                textColor: [255, 255, 255],
+                fontSize: 12,
+            }, // Header styling
+            bodyStyles: { fontSize: 10 }, // Body text size
+            columnStyles: {
+                0: { cellWidth: 25 }, // Control No. column width
+                1: { cellWidth: 35 }, // Full Name column width
+                2: { cellWidth: 35 }, // Disbursement Date column width
+                3: { cellWidth: 30 }, // Quarter column width
+                4: { cellWidth: 30 }, // Status column width
+                5: { cellWidth: 30 }, // Claimer column width
+                6: { cellWidth: 30 }, // Relationship column width
+            },
+            margin: { left: 40, right: 10 },
+            didDrawPage: function (data) {
+                // Footer Section - Lower Left with added margin
+                doc.setFontSize(8)
+                doc.text(
+                    `Report Generated On: ${moment().format("MM-DD-YYYY hh:mm A")}`,
+                    10,
+                    doc.internal.pageSize.height - 15,
+                )
+                doc.text("Report Generated By: " + loggedInUsername, 10, doc.internal.pageSize.height - 10)
+
+                // Page Number - Lower Right
+                doc.text(
+                    "Page " + doc.internal.getNumberOfPages(),
+                    doc.internal.pageSize.width - 30,
+                    doc.internal.pageSize.height - 10,
+                )
+            },
+        })
+
+        // Save the PDF
+        doc.save("social_pension_members_report.pdf")
+    }
+
     return (
         <div>
             <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
@@ -67,9 +182,6 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
                                     <button aria-label="View" onClick={() => handleViewClick(member)}>
                                         <img src={ViewIcon} alt="View" />
                                     </button>
-                                    <button aria-label="Archive">
-                                        <img src={ArchiveIcon} alt="Archive" />
-                                    </button>
                                 </td>
                             </tr>
                         )
@@ -118,7 +230,10 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
                 </div>
 
                 {/* Generate Report button at bottom-right */}
-                <button className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group">
+                <button
+                    className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
+                    onClick={() => setShowReportOptions(!showReportOptions)}
+                >
                     <img
                         src={ReportIcon}
                         alt="Report Icon"
@@ -126,6 +241,31 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
                     />
                     <span>Generate Report</span>
                 </button>
+
+                {/* Report Options Modal */}
+                {showReportOptions && (
+                    <div className="fixed bottom-16 right-16 flex flex-col items-center bg-white p-4 rounded-md shadow-lg space-y-2">
+                        <h2 className="text-lg font-semibold text-black mb-4">Select Report Format</h2>
+                        <button
+                            onClick={generateCSV}
+                            className="text-[#219EBC] border border-[#219EBC] px-4 py-2 rounded-md w-full hover:bg-[#219EBC] hover:text-white transition duration-200"
+                        >
+                            Download CSV
+                        </button>
+                        <button
+                            onClick={generatePDF}
+                            className="text-[#219EBC] border border-[#219EBC] px-4 py-2 rounded-md w-full hover:bg-[#219EBC] hover:text-white transition duration-200"
+                        >
+                            Download PDF
+                        </button>
+                        <button
+                            onClick={() => setShowReportOptions(false)}
+                            className="mt-4 text-gray-500 w-full text-center hover:text-[#219EBC] transition duration-200"
+                        >
+                            Close
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     )

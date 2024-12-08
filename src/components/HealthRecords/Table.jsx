@@ -1,19 +1,176 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState } from "react"
 import EditIcon from "../../assets/icons/edit2.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import ReportIcon from "../../assets/icons/report.svg"
+import { jsPDF } from "jspdf"
+import ElderlinkLogo from "../../assets/elderlink-logo.png"
+import moment from "moment"
+import ArchiveModal from "./ArchiveModal" // Import ArchiveModal
+import axios from "axios" // Make sure axios is imported
 
 const Table = ({ membersData, onEdit, chronicConditions }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
+    const [showReportOptions, setShowReportOptions] = useState(false)
 
     const totalPages = Math.ceil(membersData.length / itemsPerPage) // Calculate total pages
     const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
     const currentMembers = membersData.slice(startIndex, startIndex + itemsPerPage) // Get current active members for display
+    const loggedInUsername = localStorage.getItem("username") || ""
+
+    const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false) // State to handle Archive Modal visibility
+    const [selectedMember, setSelectedMember] = useState(null) // Track selected member for archiving
+
+    // Open the archive modal and set the selected member
+    const openArchiveModal = (member) => {
+        setSelectedMember(member)
+        setIsArchiveModalOpen(true)
+    }
+
+    // Handle archiving the member
+    const handleArchiveConfirm = async (reason) => {
+        if (selectedMember) {
+            console.log(`Archiving ${selectedMember.name} for reason: ${reason}`)
+
+            try {
+                // Make a PUT request to update the member status
+                const response = await axios.put(`http://localhost:5000/members/archive/${selectedMember.id}`, {
+                    reason,
+                })
+
+                console.log(response.data.message) // e.g., "Member archived successfully"
+
+                // Close the modal after successful archiving
+                setIsArchiveModalOpen(false) // Close modal locally
+
+                // Optionally refresh the state or show a success message
+                alert("Member archived successfully")
+            } catch (error) {
+                console.error("Error archiving member:", error)
+                alert("There was an error archiving the member. Please try again.")
+            }
+        }
+    }
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
+    }
+
+    // Convert CSV data to a CSV string
+    const generateCSV = () => {
+        const csvData = [
+            [
+                "Control No.",
+                "Full Name",
+                "Medical Conditions",
+                "Medications",
+                "Guardian Name",
+                "Guardian Email",
+                "Guardian Contact",
+                "Guardian Relationship",
+            ],
+            ...membersData.map((member) => [
+                member.controlNo,
+                `${member.firstName} ${member.middleName} ${member.lastName} ${member.extension}`,
+                member.medicalConditions,
+                member.medications,
+                `${member.guardianFirstName} ${member.guardianLastName}`,
+                member.guardianEmail,
+                member.guardianContact,
+                member.guardianRelationship,
+            ]),
+        ]
+        const csvContent = csvData.map((row) => row.join(",")).join("\n")
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+        const link = document.createElement("a")
+        link.href = URL.createObjectURL(blob)
+        link.download = "health_records_report.csv"
+        link.click()
+    }
+
+    const generatePDF = () => {
+        // Initialize jsPDF instance with landscape orientation
+        const doc = new jsPDF("l", "mm", "a4") // Landscape orientation
+
+        // Logo - Upper Left (Smaller Size)
+        const logo = new Image()
+        logo.src = ElderlinkLogo // Assuming you have a logo image defined elsewhere
+        doc.addImage(logo, "PNG", 10, 10, 30, 16) // Smaller size for the logo
+
+        // Title - Centered, bold
+        doc.setFontSize(22)
+        doc.setFont("helvetica", "bold")
+        doc.text("Health Records Report", doc.internal.pageSize.width / 2, 20, { align: "center" })
+
+        // Table Headers and Data
+        const headers = [
+            "Control No.",
+            "Full Name",
+            "Medical Conditions",
+            "Medications",
+            "Guardian Name",
+            "Guardian Email",
+            "Guardian Contact",
+            "Guardian Relationship",
+        ]
+
+        const tableData = currentMembers.map((member) => [
+            member.controlNo,
+            `${member.firstName} ${member.middleName || ""} ${member.lastName} ${member.extension}`,
+            member.medicalConditions,
+            member.medications,
+            `${member.guardianFirstName} ${member.guardianLastName}`,
+            member.guardianEmail,
+            member.guardianContact,
+            member.guardianRelationship,
+        ])
+
+        // Create table using autoTable
+        doc.autoTable({
+            head: [headers],
+            body: tableData,
+            startY: 40, // Position the table below the header
+            theme: "grid", // Grid style for table
+            headStyles: {
+                fillColor: [33, 158, 188],
+                textColor: [255, 255, 255],
+                fontSize: 12,
+            }, // Header styling
+            bodyStyles: { fontSize: 10 }, // Body text size
+            columnStyles: {
+                0: { cellWidth: 25 }, // Control No. column width
+                1: { cellWidth: 35 }, // Full Name column width
+                2: { cellWidth: 35 }, // Medical Conditions column width
+                3: { cellWidth: 35 }, // Medications column width
+                4: { cellWidth: 30 }, // Guardian Name column width
+                5: { cellWidth: 50 }, // Guardian Email column width
+                6: { cellWidth: 30 }, // Guardian Contact column width
+                7: { cellWidth: 30 }, // Guardian Relationship column width
+            },
+            margin: { left: 10, right: 10 },
+            didDrawPage: function (data) {
+                // Footer Section - Lower Left with added margin
+                doc.setFontSize(8)
+                doc.text(
+                    `Report Generated On: ${moment().format("MM-DD-YYYY hh:mm A")}`,
+                    10,
+                    doc.internal.pageSize.height - 15,
+                )
+                doc.text("Report Generated By: " + loggedInUsername, 10, doc.internal.pageSize.height - 10)
+
+                // Page Number - Lower Right
+                doc.text(
+                    "Page " + doc.internal.getNumberOfPages(),
+                    doc.internal.pageSize.width - 30,
+                    doc.internal.pageSize.height - 10,
+                )
+            },
+        })
+
+        // Save the PDF
+        doc.save("health_records_report.pdf")
     }
 
     return (
@@ -76,7 +233,10 @@ const Table = ({ membersData, onEdit, chronicConditions }) => {
                                 <button aria-label="Edit">
                                     <img src={EditIcon} alt="Edit" onClick={() => onEdit(member)} />
                                 </button>
-                                <button aria-label="Archive">
+                                <button
+                                    className="text-red-500 hover:text-red-700"
+                                    onClick={() => openArchiveModal(member)} // Open ArchiveModal when clicked
+                                >
                                     <img src={ArchiveIcon} alt="Archive" />
                                 </button>
                             </td>
@@ -91,11 +251,7 @@ const Table = ({ membersData, onEdit, chronicConditions }) => {
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`px-4 py-2 ${
-                            currentPage === 1
-                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
-                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
-                        } rounded-md`}
+                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
                     >
                         Previous
                     </button>
@@ -103,11 +259,7 @@ const Table = ({ membersData, onEdit, chronicConditions }) => {
                         <button
                             key={index + 1}
                             onClick={() => handlePageChange(index + 1)}
-                            className={`px-4 py-2 ${
-                                currentPage === index + 1
-                                    ? "bg-[#219EBC] text-white"
-                                    : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
-                            } rounded-md mx-1`}
+                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
                         >
                             {index + 1}
                         </button>
@@ -115,18 +267,17 @@ const Table = ({ membersData, onEdit, chronicConditions }) => {
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`px-4 py-2 ${
-                            currentPage === totalPages
-                                ? "bg-gray-300 cursor-not-allowed text-gray-500"
-                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
-                        } rounded-md`}
+                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
                     >
                         Next
                     </button>
                 </div>
 
                 {/* Generate Report button at bottom-right */}
-                <button className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group">
+                <button
+                    className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
+                    onClick={() => setShowReportOptions(!showReportOptions)}
+                >
                     <img
                         src={ReportIcon}
                         alt="Report Icon"
@@ -134,6 +285,39 @@ const Table = ({ membersData, onEdit, chronicConditions }) => {
                     />
                     <span>Generate Report</span>
                 </button>
+
+                {/* Report Options Modal */}
+                {showReportOptions && (
+                    <div className="fixed bottom-16 right-16 flex flex-col items-center bg-white p-4 rounded-md shadow-lg space-y-2">
+                        <h2 className="text-lg font-semibold text-black mb-4">Select Report Format</h2>
+                        <button
+                            onClick={generateCSV}
+                            className="text-[#219EBC] border border-[#219EBC] px-4 py-2 rounded-md w-full hover:bg-[#219EBC] hover:text-white transition duration-200"
+                        >
+                            Download CSV
+                        </button>
+                        <button
+                            onClick={generatePDF}
+                            className="text-[#219EBC] border border-[#219EBC] px-4 py-2 rounded-md w-full hover:bg-[#219EBC] hover:text-white transition duration-200"
+                        >
+                            Download PDF
+                        </button>
+                        <button
+                            onClick={() => setShowReportOptions(false)}
+                            className="mt-4 text-gray-500 w-full text-center hover:text-[#219EBC] transition duration-200"
+                        >
+                            Close
+                        </button>
+                    </div>
+                )}
+
+                {isArchiveModalOpen && (
+                    <ArchiveModal
+                        isOpen={isArchiveModalOpen}
+                        onClose={() => setIsArchiveModalOpen(false)}
+                        onConfirm={handleArchiveConfirm} // Pass the handler to perform archiving
+                    />
+                )}
             </div>
         </div>
     )

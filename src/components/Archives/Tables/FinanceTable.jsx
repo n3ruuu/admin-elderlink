@@ -1,157 +1,149 @@
 import { useState, useEffect } from "react"
-import UndoModal from "../UndoModal" // Import the UndoModal
 import moment from "moment"
 
-const HealthRecordsTable = () => {
+const FinanceTable = () => {
     const [finance, setFinance] = useState([]) // State to hold fetched finance data
-    const [showUndoModal, setShowUndoModal] = useState(false) // State to toggle Undo Modal visibility
-    const [selectedMember, setSelectedMember] = useState(null) // State to track selected member for undo
+    const [selectedQuarter, setSelectedQuarter] = useState("") // Initially empty
+    const [currentPage, setCurrentPage] = useState(1) // Current page state
+
+    const itemsPerPage = 5 // Number of items to display per page
+    const totalPages = Math.ceil(finance.length / itemsPerPage) // Calculate total pages
+    const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
+    const currentMembers = finance.slice(startIndex, startIndex + itemsPerPage) // Get current active members for display
+
+    // Function to determine the current quarter using moment.js
+    const getCurrentQuarter = () => {
+        const currentMonth = moment().month() + 1 // Get the current month (1-12)
+        if (currentMonth >= 1 && currentMonth <= 3) return "Q1"
+        if (currentMonth >= 4 && currentMonth <= 6) return "Q2"
+        if (currentMonth >= 7 && currentMonth <= 9) return "Q3"
+        return "Q4" // for months 10-12
+    }
 
     useEffect(() => {
-        // Fetch data from the API
-        fetchFinance()
+        setSelectedQuarter(getCurrentQuarter())
     }, [])
 
+    useEffect(() => {
+        fetchFinance() // Call fetchFinance whenever selectedQuarter changes
+    }, [selectedQuarter])
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page)
+    }
     const fetchFinance = async () => {
         try {
-            const response = await fetch(
-                "http://localhost:5000/financial-assistance",
-            )
+            const response = await fetch("http://localhost:5000/financial-assistance/social-pension")
             const data = await response.json()
 
             // Filter out archived finance
-            const archivedFinance = data.filter(
-                (member) => member.status !== "Active",
-            )
-            setFinance(archivedFinance)
+            const activeFinance = data.filter((member) => member.memberStatus !== "Active")
+
+            // Filter members based on the selected quarter
+            const socialPensionMembers = activeFinance.filter((member) => member.quarter === selectedQuarter)
+
+            setFinance(socialPensionMembers) // Set the filtered data based on the selected quarter
         } catch (error) {
             console.error("Error fetching finance:", error)
         }
     }
 
-    // Function to get the status color
-    const getStatusColor = (status) => {
-        switch (status) {
-            case "Cancelled":
-                return "text-red-500" // Red for Cancelled
-            case "No Longer Available":
-                return "text-yellow-500" // Yellow for No Longer Available
-            case "Claimed":
-                return "text-green-500" // Green for Claimed
-            default:
-                return "text-gray-500" // Default gray color
-        }
-    }
-
-    // Handle undo action (revert status to 'Active')
-    const handleUndo = async () => {
-        if (selectedMember) {
-            const response = await fetch(
-                `http://localhost:5000/financial-assistance/archive/${selectedMember.financial_assistance_id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ status: "Active" }), // Set the status to 'Active'
-                },
-            )
-
-            if (response.ok) {
-                // Fetch updated data after undo
-                fetchFinance()
-                setShowUndoModal(false) // Close the undo modal
-            } else {
-                console.error("Failed to undo status update")
-            }
-        }
-    }
-
-    // Function to open the Undo Modal and set the selected member
-    const openUndoModal = (member) => {
-        setSelectedMember(member)
-        setShowUndoModal(true)
-    }
-
     return (
-        <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
-            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
-                <thead className="text-[#767171CC]">
-                    <tr>
-                        <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
-                            Name
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Benefit Type
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Latest Date of Claim
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Claimer
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Relationship
-                        </th>
-                        <th className="text-left pl-8 font-medium whitespace-nowrap w-[10%]">
-                            Status
-                        </th>
-                        <th className="px-8 text-left font-medium whitespace-nowrap">
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {finance.map((row, index) => (
-                        <tr
-                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
-                            key={row.financial_assistance_id || `new-${index}`}
-                        >
-                            <td className="px-16 py-4 whitespace-nowrap">
-                                {row.member_name || row.memberName}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {row.benefit_type || row.benefitType}
-                            </td>
-                            <td className="whitespace-nowrap">
-                                {moment(
-                                    row.date_of_claim || row.dateOfClaim,
-                                ).format("MMMM D, YYYY")}
-                            </td>
+        <div>
+            <div className="mb-4">
+                <label htmlFor="quarter-select" className="mr-2 pl-16 text-[#219EBC]">
+                    Select Quarter:
+                </label>
+                <select
+                    id="quarter-select"
+                    value={selectedQuarter}
+                    onChange={(e) => setSelectedQuarter(e.target.value)}
+                    className="px-4 py-2 border rounded-md"
+                >
+                    <option value="Q1">Q1</option>
+                    <option value="Q2">Q2</option>
+                    <option value="Q3">Q3</option>
+                    <option value="Q4">Q4</option>
+                </select>
+            </div>
 
-                            <td className="whitespace-nowrap">{row.claimer}</td>
-                            <td className="whitespace-nowrap">
-                                {row.relationship}
-                            </td>
-                            <td
-                                className={`text-left pl-8 ${getStatusColor(
-                                    row.status,
-                                )}`}
-                            >
-                                {row.status}
-                            </td>
-                            <td
-                                className="px-8 py-4 flex gap-2 text-[#219EBC] font-semibold underline cursor-pointer"
-                                onClick={() => openUndoModal(row)}
-                            >
-                                Undo
-                            </td>
+            <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
+                <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
+                    <thead className="text-[#767171CC]">
+                        <tr>
+                            <th className="px-6 py-4 text-left font-medium whitespace-nowrap w-[10%]">Control No.</th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap">Full Name</th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap">Disbursement Date</th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap">Status</th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap">Claimer</th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap">Relationship</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {currentMembers.map((member, index) => {
+                            const isNullData = !member.disbursement_date && !member.claimer && !member.relationship
 
-            {/* Undo Modal */}
-            {showUndoModal && (
-                <UndoModal
-                    isOpen={showUndoModal}
-                    onClose={() => setShowUndoModal(false)}
-                    onConfirm={handleUndo}
-                    member={selectedMember}
-                />
-            )}
+                            const getStatusText = () => {
+                                if (isNullData) return "N/A"
+                                return member.status || "Unclaimed"
+                            }
+
+                            const getStatusColor = () => {
+                                if (isNullData) return "" // No color for N/A
+                                if (member.status === "Claimed") return "text-green-500 font-semibold"
+                                if (member.status === "Unclaimed") return "text-red-500 font-semibold"
+                                return "" // Default case
+                            }
+
+                            return (
+                                <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
+                                    <td className="px-6 py-4 text-left">{member.control_no}</td>
+                                    <td className="px-6 text-left whitespace-nowrap">{member.full_name}</td>
+                                    <td className="px-6 whitespace-nowrap">
+                                        {member.disbursement_date
+                                            ? moment(member.disbursement_date).format("MMMM D, YYYY")
+                                            : "N/A"}
+                                    </td>
+                                    <td className={`px-6 whitespace-nowrap ${getStatusColor()}`}>{getStatusText()}</td>
+                                    <td className="px-6 whitespace-nowrap">{member.claimer || "N/A"}</td>
+                                    <td className="px-6 whitespace-nowrap">{member.relationship || "N/A"}</td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+
+                <div className="flex fixed bottom-5 mt-4">
+                    {/* Pagination controls */}
+                    <div>
+                        <button
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                        >
+                            Previous
+                        </button>
+                        {Array.from({ length: totalPages }, (_, index) => (
+                            <button
+                                key={index + 1}
+                                onClick={() => handlePageChange(index + 1)}
+                                className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
 
-export default HealthRecordsTable
+export default FinanceTable

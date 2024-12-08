@@ -242,7 +242,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                     </button>
                     <button
                         type="button"
-                        // disabled={!isFormValid}
+                        disabled={!isFormValid}
                         onClick={handleSubmit}
                         className={`w-[100px] h-[45px] font-bold py-2 px-4 rounded transition-colors duration-300 ${
                             isFormValid

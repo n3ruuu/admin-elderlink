@@ -63,6 +63,12 @@ const MembersList = () => {
     // Filter members based on the search query
     const filteredMembers = membersData.filter((member) => {
         const lowercasedQuery = searchQuery.toLowerCase()
+
+        // Only include members with status 'Active'
+        if (member.status !== "Active") {
+            return false
+        }
+
         return (
             member.firstName.toLowerCase().includes(lowercasedQuery) ||
             member.lastName.toLowerCase().includes(lowercasedQuery) ||

@@ -71,7 +71,29 @@ const Modal = ({ onClose, member, onSave }) => {
         console.log("PASSING")
     }
 
-    const validateForm = () => {
+    const checkForDuplicates = async (controlNo, purchaseBookletNo, medicineBookletNo) => {
+        try {
+            const response = await axios.get("http://localhost:5000/members")
+            const members = response.data
+
+            const controlNoExists = members.some((member) => member.controlNo === controlNo)
+            const purchaseBookletNoExists = members.some((member) => member.purchaseBookletNo === purchaseBookletNo)
+            const medicineBookletNoExists = members.some((member) => member.medicineBookletNo === medicineBookletNo)
+
+            console.log(controlNoExists)
+
+            return {
+                controlNo: controlNoExists,
+                purchaseBookletNo: purchaseBookletNoExists,
+                medicineBookletNo: medicineBookletNoExists,
+            }
+        } catch (error) {
+            console.error("Error fetching members for duplicate check:", error)
+            throw new Error("Failed to check for duplicates. Please try again.")
+        }
+    }
+
+    const validateForm = async () => {
         const errorMessages = []
         const dob = new Date(formValues.dob)
         const today = new Date()
@@ -93,15 +115,70 @@ const Modal = ({ onClose, member, onSave }) => {
             errorMessages.push("ID Control must follow the format: MOJ0001.")
         }
 
+        const purchaseBookletNoPattern = /^PB\d{4}$/
+        if (
+            formValues.purchaseBookletNo.trim() !== "" &&
+            !purchaseBookletNoPattern.test(formValues.purchaseBookletNo)
+        ) {
+            errorMessages.push("Purchase Booklet No. must follow the format: PB0001.")
+        }
+
+        const medicineBookletNoPattern = /^MB\d{4}$/
+        if (
+            formValues.medicineBookletNo.trim() !== "" &&
+            !medicineBookletNoPattern.test(formValues.medicineBookletNo)
+        ) {
+            errorMessages.push("Medicine Booklet No. must follow the format: MB0001.")
+        }
+
+        // Check for duplicate Control No., Purchase Booklet No., Medicine Booklet No.
+        try {
+            // Initialize duplicateCheck object to track duplicates
+            const duplicateCheck = {
+                controlNo: await checkForDuplicates(formValues.controlNo, null, null).then((res) => res.controlNo),
+            }
+
+            // Check for duplicates only if `purchaseBookletNo` is not empty
+            if (formValues.purchaseBookletNo.trim() !== "") {
+                duplicateCheck.purchaseBookletNo = await checkForDuplicates(
+                    null,
+                    formValues.purchaseBookletNo,
+                    null,
+                ).then((res) => res.purchaseBookletNo)
+            }
+
+            // Check for duplicates only if `medicineBookletNo` is not empty
+            if (formValues.medicineBookletNo.trim() !== "") {
+                duplicateCheck.medicineBookletNo = await checkForDuplicates(
+                    null,
+                    null,
+                    formValues.medicineBookletNo,
+                ).then((res) => res.medicineBookletNo)
+            }
+
+            // Add error messages based on duplicate checks
+            if (duplicateCheck.controlNo) {
+                errorMessages.push("Control No. is already in use.")
+            }
+            if (duplicateCheck.purchaseBookletNo) {
+                errorMessages.push("Purchase Booklet No. is already in use.")
+            }
+            if (duplicateCheck.medicineBookletNo) {
+                errorMessages.push("Medicine Booklet No. is already in use.")
+            }
+        } catch (error) {
+            console.error("Error checking for duplicates", error)
+            errorMessages.push("Failed to check for duplicates. Please try again.")
+        }
+
         return errorMessages
     }
-
     const isFormValid = Object.entries(formValues).every(([key, value]) =>
         optionalFields.includes(key) ? true : value.trim() !== "",
     )
 
     const handleSubmit = async () => {
-        const validationErrors = validateForm()
+        const validationErrors = await validateForm()
         if (validationErrors.length > 0) {
             setErrors(validationErrors)
             setIsErrorModalOpen(true)

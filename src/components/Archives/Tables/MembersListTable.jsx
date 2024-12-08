@@ -6,21 +6,29 @@ const MembersListTable = () => {
     const [members, setMembers] = useState([]) // State to hold fetched members data
     const [showModal, setShowModal] = useState(false) // State for showing the UndoModal
     const [selectedMember, setSelectedMember] = useState(null) // State to store the member being archived/undo-archived
+    const [currentPage, setCurrentPage] = useState(1) // Current page state
+
+    const itemsPerPage = 6 // Number of items to display per page
+    const totalPages = Math.ceil(members.length / itemsPerPage) // Calculate total pages
+    const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
+    const currentMembers = members.slice(startIndex, startIndex + itemsPerPage) // Get current active members for display
 
     useEffect(() => {
         fetchMembers()
     }, [])
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page)
+    }
 
     const fetchMembers = async () => {
         try {
             const response = await fetch("http://localhost:5000/members")
             const data = await response.json()
 
-            // Filter out archived members (assuming 'status' is not 'Active' for archived members)
-            const activeMembers = data.filter(
-                (member) => member.status !== "Active",
-            )
-            setMembers(activeMembers)
+            // Only show active members (assuming 'status' is 'Active' for active members)
+            const archivedMembers = data.filter((member) => member.status !== "Active")
+            setMembers(archivedMembers)
         } catch (error) {
             console.error("Error fetching members:", error)
         }
@@ -54,104 +62,83 @@ const MembersListTable = () => {
 
     // Function to handle undo archiving or archiving a member
     const handleUndoArchive = async () => {
-        const { id, status } = selectedMember
-        const newStatus = status === "Active" ? "Archived" : "Active" // Toggle between Active and Archived
         try {
-            const response = await fetch(
-                `http://localhost:5000/members/archive/${id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ status: newStatus }),
+            const response = await fetch(`http://localhost:5000/members/undo/${selectedMember.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
                 },
-            )
-            const data = await response.json()
+                body: JSON.stringify({
+                    status: "Active", // Set the status to "Active"
+                }),
+            })
 
             if (response.ok) {
-                // Update the members state after successful update
+                // Update the frontend by setting the member's status to "Active"
                 setMembers((prevMembers) =>
                     prevMembers.map((member) =>
-                        member.id === id
-                            ? { ...member, status: newStatus }
-                            : member,
+                        member.id === selectedMember.id ? { ...member, status: "Active" } : member,
                     ),
                 )
-                closeUndoModal() // Close the modal after successful action
-                fetchMembers()
+
+                // Close the modal after the update
+                closeUndoModal()
             } else {
-                console.error("Error:", data.message)
+                console.error("Failed to undo archive.")
             }
         } catch (error) {
-            console.error("Error updating member status:", error)
+            console.error("Error undoing archive:", error)
         }
     }
-
     return (
         <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
-            {/* Set max height and enable vertical scrolling */}
-            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
-                <thead className="text-[#767171CC] border-b">
+            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
+                <thead className="text-[#767171CC] h-[80px] align-baseline">
                     <tr>
-                        <th className="pl-16 py-4 text-left font-medium whitespace-nowrap w-[10%]">
-                            ID No.
+                        <th className="pl-8 py-4 text-left font-medium whitespace-nowrap w-[10%]">Control No.</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Full Name</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Birthdate</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[5%]">Sex</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[7%]">Civil Status</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[12%]">Address</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Contact Number</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[7%]">
+                            Purchase <br /> Booklet No.
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[20%]">
-                            Name
+                        <th className="text-left font-medium whitespace-nowrap w-[8%]">
+                            Medicine <br /> Booklet No.
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[15%]">
-                            Date of Birth
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
-                            Age
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
-                            Gender
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[20%]">
-                            Address
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">
-                            Phone Number
-                        </th>
-                        <th className="text-left pl-8 font-medium whitespace-nowrap w-[10%]">
-                            Status
-                        </th>
-                        <th className="px-8 text-left font-medium whitespace-nowrap w-[10%]">
-                            Actions
-                        </th>
+                        <th className="text-left font-medium whitespace-nowrap w-[5%]">Date Issued</th>
+                        <th className="text-left pl-8 font-medium whitespace-nowrap w-[5%]">Status</th>
+
+                        <th className="text-left pl-16 font-medium whitespace-nowrap w-[10%]">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {members.map((member, index) => (
-                        <tr
-                            key={member.id}
-                            className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
-                        >
-                            <td className="px-16 py-4 text-left">
-                                {member.idNo}
+                    {currentMembers.map((member, index) => (
+                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
+                            <td className="px-8 py-4 text-left">{member.controlNo}</td>
+                            <td className="text-left whitespace-nowrap">
+                                {member.firstName} {member.lastName}{" "}
                             </td>
-                            <td className="text-left">{member.name}</td>
-                            <td className="text-left">
-                                {moment(member.dob).format("MMMM D, YYYY")}
+                            <td className="text-left whitespace-nowrap">{moment(member.dob).format("MM-DD-YYYY")}</td>
+                            <td className="text-left">{member.sex}</td>
+                            <td className="text-left">{member.civilStatus}</td>
+                            <td className="text-left whitespace-nowrap">{member.address}</td>
+                            <td className="text-left">{member.contactNumber}</td>
+                            <td className="text-left">{member.purchaseBookletNo || "N/A"}</td>
+                            <td className="text-left">{member.medicineBookletNo || "N/A"}</td>
+                            <td className="text-left whitespace-nowrap">
+                                {member.dateIssued ? moment(member.dateIssued).format("MM-DD-YYYY") : "N/A"}
                             </td>
-                            <td className="text-left">{member.age}</td>
-                            <td className="text-left">
-                                {member.gender === "male" ? "Male" : "Female"}
+                            <td className={`text-left pl-8 ${getStatusColor(member.status) || "text-gray-500"}`}>
+                                {member.status || "N/A"}
                             </td>
-                            <td className="text-left">{member.address}</td>
-                            <td className="text-left">{member.phone}</td>
-                            <td
-                                className={`text-left pl-8 ${getStatusColor(member.status)}`}
-                            >
-                                {member.status}
-                            </td>
-                            <td className="px-8 py-4 flex gap-2 text-[#219EBC] font-semibold underline">
+
+                            <td className="pl-16 text-left">
                                 <button
-                                    onClick={() =>
-                                        openUndoModal(member.id, member.status)
-                                    }
+                                    onClick={() => openUndoModal(member.id, member.status)}
+                                    className="cursor-pointer text-[#219EBC] font-semibold underline"
                                 >
                                     Undo
                                 </button>
@@ -161,12 +148,37 @@ const MembersListTable = () => {
                 </tbody>
             </table>
 
+            <div className="flex fixed bottom-5 mt-4">
+                {/* Pagination controls */}
+                <div>
+                    <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    >
+                        Previous
+                    </button>
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                            key={index + 1}
+                            onClick={() => handlePageChange(index + 1)}
+                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                    <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
+
             {/* Undo Modal */}
-            <UndoModal
-                isOpen={showModal}
-                onClose={closeUndoModal}
-                onConfirm={handleUndoArchive}
-            />
+            <UndoModal isOpen={showModal} onClose={closeUndoModal} onConfirm={handleUndoArchive} />
         </div>
     )
 }

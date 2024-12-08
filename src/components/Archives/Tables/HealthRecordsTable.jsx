@@ -3,24 +3,31 @@ import UndoModal from "../UndoModal" // Import the UndoModal
 
 const HealthRecordsTable = () => {
     const [members, setMembers] = useState([]) // State to hold fetched members data
-    const [showUndoModal, setShowUndoModal] = useState(false) // State to toggle Undo Modal visibility
-    const [selectedMember, setSelectedMember] = useState(null) // State to track selected member for undo
+    const [showModal, setShowModal] = useState(false) // State for showing the UndoModal
+    const [selectedMember, setSelectedMember] = useState(null) // State to store the member being archived/undo-archived
+    const [currentPage, setCurrentPage] = useState(1) // Current page state
+
+    const itemsPerPage = 6 // Number of items to display per page
+    const totalPages = Math.ceil(members.length / itemsPerPage) // Calculate total pages
+    const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
+    const currentMembers = members.slice(startIndex, startIndex + itemsPerPage) // Get current active members for display
 
     useEffect(() => {
-        // Fetch data from the API
         fetchMembers()
     }, [])
 
+    const handlePageChange = (page) => {
+        setCurrentPage(page)
+    }
+
     const fetchMembers = async () => {
         try {
-            const response = await fetch("http://localhost:5000/health-records")
+            const response = await fetch("http://localhost:5000/members")
             const data = await response.json()
 
-            // Filter out archived members
-            const activeMembers = data.filter(
-                (member) => member.status !== "Active",
-            )
-            setMembers(activeMembers)
+            // Only show active members (assuming 'status' is 'Active' for active members)
+            const archivedMembers = data.filter((member) => member.status !== "Active")
+            setMembers(archivedMembers)
         } catch (error) {
             console.error("Error fetching members:", error)
         }
@@ -31,144 +38,154 @@ const HealthRecordsTable = () => {
         switch (status) {
             case "Deceased":
                 return "text-red-500" // Red for Deceased
-            case "Cured":
+            case "Relocated":
                 return "text-green-500" // Green for Relocated
-            case "Completed Treatment":
-                return "text-green-500" // Yellow for Inactive
+            case "Inactive":
+                return "text-yellow-500" // Yellow for Inactive
             default:
                 return "text-gray-500" // Default gray color
         }
     }
 
-    const handleUndo = async () => {
-        if (selectedMember) {
-            console.log("Selected Member:", selectedMember) // Check if selectedMember is defined
-            const response = await fetch(
-                `http://localhost:5000/health-records/archive/${selectedMember.health_record_id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ status: "Active" }),
-                },
-            )
-
-            if (response.ok) {
-                fetchMembers()
-                setShowUndoModal(false) // Close the undo modal
-            } else {
-                console.error("Failed to undo status update")
-            }
-        } else {
-            console.error("Selected member is not defined")
-        }
+    // Function to handle opening the modal for undo archiving
+    const openUndoModal = (memberId, currentStatus) => {
+        setSelectedMember({ id: memberId, status: currentStatus })
+        setShowModal(true)
     }
 
-    // Function to open the Undo Modal and set the selected member
-    const openUndoModal = (member) => {
-        setSelectedMember(member)
-        setShowUndoModal(true)
+    // Function to handle closing the UndoModal
+    const closeUndoModal = () => {
+        setShowModal(false)
+        setSelectedMember(null)
+    }
+
+    // Function to handle undo archiving or archiving a member
+    const handleUndoArchive = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/members/undo/${selectedMember.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    status: "Active", // Set the status to "Active"
+                }),
+            })
+
+            if (response.ok) {
+                // Update the frontend by setting the member's status to "Active"
+                setMembers((prevMembers) =>
+                    prevMembers.map((member) =>
+                        member.id === selectedMember.id ? { ...member, status: "Active" } : member,
+                    ),
+                )
+
+                // Close the modal after the update
+                closeUndoModal()
+            } else {
+                console.error("Failed to undo archive.")
+            }
+        } catch (error) {
+            console.error("Error undoing archive:", error)
+        }
     }
 
     return (
         <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
-            {/* Set max height and enable vertical scrolling */}
-            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
-                <thead className="text-[#767171CC] border-b">
+            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
+                <thead className="text-[#767171CC]">
                     <tr>
-                        <th className="text-left font-medium whitespace-nowrap px-16 py-4 w-[20%]">
-                            Name
-                        </th>
-                        <th className="text-left font-medium whitespace-normal">
-                            Medical Conditions
-                        </th>
-                        <th className="text-left font-medium whitespace-normal">
-                            Medications
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Guardian
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Relationship
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Emergency Contact
-                        </th>
-                        <th className="text-left pl-8 font-medium whitespace-nowrap w-[10%]">
-                            Status
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Actions
-                        </th>
+                        <th className="pl-8 py-4 text-left font-medium whitespace-nowrap w-[10%]">Control No.</th>
+                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Full Name</th>
+                        <th className="text-left font-medium whitespace-normal">Medical Conditions</th>
+                        <th className="text-left font-medium whitespace-normal">Medications</th>
+                        <th className="text-left font-medium whitespace-nowrap">Guardian Name</th>
+                        <th className="text-left font-medium whitespace-nowrap">Guardian Email</th>
+                        <th className="text-left font-medium whitespace-nowrap">Guardian Contact</th>
+                        <th className="text-left font-medium whitespace-nowrap">Relationship</th>
+                        <th className="text-left pl-8 font-medium whitespace-nowrap">Status</th>
+                        <th className="text-left pl-8 font-medium whitespace-nowrap">Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {members.map((row, index) => (
-                        <tr
-                            className={`text-[#333333] font-[500] ${
-                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
-                            }`}
-                            key={row.id}
-                        >
-                            <td className="px-16 py-4 whitespace-nowrap">
-                                {row.name}
+                    {currentMembers.map((member, index) => (
+                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
+                            <td className="px-8 py-4 text-left align-baseline">{member.controlNo}</td>
+                            <td className="text-left whitespace-nowrap align-baseline">
+                                {member.firstName} {member.lastName}
                             </td>
-                            <td className="whitespace-normal py-4">
-                                {row.medical_conditions
-                                    ? row.medical_conditions
+
+                            <td className="whitespace-normal py-4 align-baseline">
+                                {member.medicalConditions
+                                    ? member.medicalConditions
                                           .split(",")
-                                          .map((condition, idx) => (
-                                              <div key={idx}>
-                                                  {condition.trim()}
-                                              </div>
-                                          ))
+                                          .map((condition, idx) => <div key={idx}>{condition.trim()}</div>)
                                     : ""}
                             </td>
-                            <td className="whitespace-normal py-4">
-                                {row.medications
-                                    ? row.medications
+                            <td className="whitespace-normal py-4 align-baseline">
+                                {member.medications
+                                    ? member.medications
                                           .split(",")
-                                          .map((medication, idx) => (
-                                              <div key={idx}>
-                                                  {medication.trim()}
-                                              </div>
-                                          ))
+                                          .map((medication, idx) => <div key={idx}>{medication.trim()}</div>)
                                     : ""}
                             </td>
 
-                            <td className="whitespace-nowrap">
-                                {row.guardian_name}
+                            <td className="whitespace-nowrap align-baseline">
+                                {member.guardianFirstName} {member.guardianLastName}
                             </td>
-                            <td className="whitespace-nowrap">
-                                {row.relationship}
+
+                            <td className="whitespace-nowrap align-baseline">{member.guardianEmail}</td>
+                            <td className="text-left align-baseline">{member.guardianContact}</td>
+                            <td className="whitespace-nowrap align-baseline">{member.guardianRelationship}</td>
+                            <td className={`text-left pl-8 ${getStatusColor(member.status) || "text-gray-500"}`}>
+                                {member.status || "N/A"}
                             </td>
-                            <td className="whitespace-nowrap">
-                                {row.emergency_contact}
-                            </td>
-                            <td
-                                className={`text-left pl-8 ${getStatusColor(row.status)}`}
-                            >
-                                {row.status}
-                            </td>
-                            <td
-                                className="px-8 py-4 flex gap-2 text-[#219EBC] font-semibold underline cursor-pointer"
-                                onClick={() => openUndoModal(row)}
-                            >
-                                Undo
+
+                            <td className="pl-8 text-left">
+                                <button
+                                    onClick={() => openUndoModal(member.id, member.status)}
+                                    className="cursor-pointer text-[#219EBC] font-semibold underline"
+                                >
+                                    Undo
+                                </button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
 
+            <div className="flex fixed bottom-5 mt-4">
+                {/* Pagination controls */}
+                <div>
+                    <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    >
+                        Previous
+                    </button>
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                            key={index + 1}
+                            onClick={() => handlePageChange(index + 1)}
+                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                    <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
+
             {/* Undo Modal */}
-            <UndoModal
-                isOpen={showUndoModal}
-                onClose={() => setShowUndoModal(false)}
-                onConfirm={handleUndo}
-            />
+            <UndoModal isOpen={showModal} onClose={closeUndoModal} onConfirm={handleUndoArchive} />
         </div>
     )
 }

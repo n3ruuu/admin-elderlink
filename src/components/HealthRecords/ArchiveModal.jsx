@@ -17,12 +17,9 @@ const ArchiveModal = ({ isOpen, onClose, onConfirm }) => {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-5 rounded shadow-lg w-[500px]">
-                <h2 className="text-2xl font-bold mb-4">
-                    Archive Health Record
-                </h2>
+                <h2 className="text-2xl font-bold mb-4">Archive Member Data</h2>
                 <p className="text-[#767171CC]">
-                    Select a reason to archive this senior citizen's health
-                    records.
+                    Please select a reason for archiving this senior citizen's membership information.
                 </p>
                 <div className="mt-4">
                     <select
@@ -34,10 +31,8 @@ const ArchiveModal = ({ isOpen, onClose, onConfirm }) => {
                             Select a reason
                         </option>
                         <option value="Deceased">Deceased</option>
-                        <option value="Cured">Cured</option>
-                        <option value="Completed Treatment">
-                            Completed Treatment
-                        </option>
+                        <option value="Relocated">Relocated</option>
+                        <option value="Inactive">Inactive</option>
                     </select>
                 </div>
                 <div className="flex justify-end mt-4">
