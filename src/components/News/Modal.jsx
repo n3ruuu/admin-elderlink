@@ -10,7 +10,7 @@ const Modal = ({ onClose, onSubmit, news }) => {
 
     const [headline, setHeadline] = useState(news?.headline || "")
     const [author, setAuthor] = useState(news?.author || loggedInUsername)
-    const [date, setDate] = useState(news?.date ? new Date(news.date).toISOString().split("T")[0] : "")
+    const [date, setDate] = useState(news?.date || "")
     const [body, setBody] = useState(news?.body || "")
     const [images, setImages] = useState(news.images || "")
     const [imagePreviews, setImagePreviews] = useState(
@@ -25,6 +25,13 @@ const Modal = ({ onClose, onSubmit, news }) => {
     const [dateError, setDateError] = useState("") // State for date error
 
     useEffect(() => {
+        if (!news?.id) {
+            setImages([])
+            setImagePreviews([])
+        }
+    }, [news])
+
+    useEffect(() => {
         setHasChanges(
             headline !== news?.headline ||
                 author !== news?.author ||
@@ -37,8 +44,9 @@ const Modal = ({ onClose, onSubmit, news }) => {
     const handleImageChange = (e) => {
         if (e.target.files) {
             const files = Array.from(e.target.files)
-            setImages((prevImages) => [...prevImages, ...files])
-            setImagePreviews((prevPreviews) => [...prevPreviews, ...files.map((file) => URL.createObjectURL(file))])
+            // Clear previous images if new ones are uploaded
+            setImages(files)
+            setImagePreviews(files.map((file) => URL.createObjectURL(file)))
         }
     }
 
