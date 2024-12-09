@@ -53,10 +53,13 @@ const FormFields = ({ formData, onChange }) => {
                         <option value="" disabled>
                             Select Category
                         </option>
+                        <option value="Health & Wellness">Health & Wellness</option>
                         <option value="Social Gathering">Social Gathering</option>
-                        <option value="Workshop">Workshop</option>
-                        <option value="Seminar">Seminar</option>
+                        <option value="Workshops & Classes">Workshops & Classes</option>
                         <option value="Fitness">Fitness</option>
+                        <option value="Nutritional Support">Nutritional Support</option>
+                        <option value="Community Outreach">Community Outreach</option>
+                        <option value="Assistance Programs">Assistance Programs</option>
                     </select>
                 </div>
 

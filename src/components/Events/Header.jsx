@@ -6,11 +6,9 @@ const Header = ({ onOpenModal, searchQuery, onSearchChange }) => {
         <div className="p-16 w-full pb-8 flex ">
             <div className="w-1/2">
                 <h1 className="text-6xl font-bold">Manage Events</h1>
-                <p className="text-[#767171CC] mt-3">
-                    Plan and coordinate events
-                </p>
+                <p className="text-[#767171CC] mt-3">Plan and coordinate events</p>
             </div>
-            <div className="flex items-start gap-5 justify-end w-1/2 text-[#76717180]">
+            <div className="flex items-start gap-5 justify-end w-1/2 text-[#333333]">
                 <div className="w-[60%]">
                     <div className="relative w-full max-w-md">
                         <div className="relative w-full">

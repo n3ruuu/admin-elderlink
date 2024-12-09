@@ -10,7 +10,7 @@ const Modal = ({ onClose, onSubmit, news }) => {
 
     const [headline, setHeadline] = useState(news?.headline || "")
     const [author, setAuthor] = useState(news?.author || loggedInUsername)
-    const [date, setDate] = useState(news?.date || "")
+    const [date, setDate] = useState(news?.date ? new Date(news.date).toISOString().split("T")[0] : "")
     const [body, setBody] = useState(news?.body || "")
     const [images, setImages] = useState(news.images || "")
     const [imagePreviews, setImagePreviews] = useState(

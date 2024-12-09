@@ -1,9 +1,14 @@
 /* eslint-disable react/prop-types */
-import EditIcon from "../../assets/icons/edit.svg"
+import PrintIcon from "../../assets/icons/print.svg"
 import ArchiveIcon from "../../assets/icons/archive2.svg"
 import moment from "moment"
 
-const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
+const Table = ({ reportsData, handleOpenArchiveModal }) => {
+    const handleDownload = (report) => {
+        const fileUrl = `http://localhost:5000/${report.pdf_file_path}`
+        window.open(fileUrl, "_blank")
+    }
+
     return (
         <div className="mt-8">
             {/* Scrollable container with a fixed height */}
@@ -11,56 +16,38 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                 <table className="min-w-full bg-white">
                     <thead className="text-gray-500 border-b">
                         <tr>
-                            <th className="px-16 py-4 text-left font-medium whitespace-nowrap">Report Name</th>
+                            <th className="px-8 py-4 text-left font-medium whitespace-nowrap">Report Name</th>
                             <th className="px-6 py-4 text-left font-medium">Report Type</th>
+                            <th className="px-6 py-4 text-left font-medium">Time Created</th>
                             <th className="px-6 py-4 text-left font-medium">Created by</th>
                             <th className="px-6 py-4 text-left font-medium">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {newsData.map((news, index) => (
+                        {reportsData.map((report, index) => (
                             <tr
-                                className={`text-[#333333] h-[100px] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
-                                key={news.id}
+                                className={`text-[#333333] font-[500] transition-colors hover:bg-[#F1F1F1] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
+                                key={report.id}
                             >
-                                <td className="px-6 py-4 text-left align-top">{news.headline}</td>
-                                <td className="px-6 py-4 text-left align-top">{news.author}</td>
-                                <td className="px-6 py-4 text-left align-top whitespace-nowrap">
-                                    {moment(news.date).format("MMMM D, YYYY")}
-                                </td>
-                                <td className="px-6 py-4 text-left align-top">{news.body}</td>
-                                <td className="px-6 py-4 text-left">
-                                    {news.images ? (
-                                        <div className="flex gap-2 overflow-x-auto">
-                                            {/* Parse the string into an array if necessary */}
-                                            {Array.isArray(JSON.parse(news.images)) ? (
-                                                JSON.parse(news.images).map((image, idx) => (
-                                                    <img
-                                                        key={idx}
-                                                        src={`http://localhost:5000/uploads/${image}`}
-                                                        alt={`News Image ${idx + 1}`}
-                                                        className="w-[100px] h-[60px] object-cover rounded-md"
-                                                    />
-                                                ))
-                                            ) : (
-                                                <img
-                                                    src={`http://localhost:5000/uploads/${news.images}`}
-                                                    alt="News"
-                                                    className="w-[100px] h-[60px] object-cover rounded-md"
-                                                />
-                                            )}
-                                        </div>
-                                    ) : (
-                                        "No Image"
-                                    )}
+                                <td className="px-8 py-4 text-left align-top">{report.report_name}</td>
+                                <td className="px-6 py-4 text-left align-top">{report.report_type}</td>
+                                <td className="px-6 py-4 text-left align-top">
+                                    {moment(report.created_at).format("MM-DD-YYYY, h:mm:ss A")}
                                 </td>
 
-                                <td className="px-6 py-4 text-left flex gap-2">
-                                    <button onClick={() => handleOpenModal(news)}>
-                                        <img src={EditIcon} alt="Edit Icon" className="h-5" />
+                                <td className="px-6 py-4 text-left align-top whitespace-nowrap">{report.created_by}</td>
+                                <td className="px-6 py-4 text-left flex gap-4 items-center">
+                                    <button
+                                        onClick={() => handleDownload(report)} // Handle PDF download
+                                        className="text-[#219EBC] hover:text-[#1A8CB5] transition-colors"
+                                    >
+                                        <img src={PrintIcon} alt="Print Icon" className="h-5" />
                                     </button>
 
-                                    <button onClick={() => handleOpenArchiveModal(news)}>
+                                    <button
+                                        onClick={() => handleOpenArchiveModal(report)}
+                                        className="text-[#FF9800] hover:text-[#F57C00] transition-colors"
+                                    >
                                         <img src={ArchiveIcon} alt="Archive Icon" className="h-5" />
                                     </button>
                                 </td>

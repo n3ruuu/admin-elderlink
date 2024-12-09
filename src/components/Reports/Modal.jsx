@@ -1,66 +1,41 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
 import { FiEdit } from "react-icons/fi"
 import jsPDF from "jspdf"
-import "jspdf-autotable" // Import the jsPDF autotable plugin
+import "jspdf-autotable"
+import moment from "moment"
+import ElderlinkLogo from "../../assets/elderlink-logo.png"
 
 const Modal = ({ isOpen, onClose }) => {
     const [filters, setFilters] = useState([{ field: "", condition: "", value: "" }])
     const [reportName, setReportName] = useState("Report Name")
     const [isEditing, setIsEditing] = useState(false)
     const [selectedReportType, setSelectedReportType] = useState("")
-    const [selectedColumns, setSelectedColumns] = useState([])
+    const [selectedColumns, setSelectedColumns] = useState([]) // State for selected columns
     const loggedInUsername = localStorage.getItem("username") || ""
+    const [membersData, setMembersData] = useState([])
 
-    const sampleData = [
-        {
-            controlNo: "CN12345",
-            firstName: "Juan",
-            middleName: "Dela",
-            lastName: "Cruz",
-            extension: "Jr.",
-            dob: "1945-12-15",
-            sex: "Male",
-            civilStatus: "Single",
-            address: "123 Barangay St, City, Philippines",
-            contactNumber: "09123456789",
-            purchaseBookletNo: "PB1001",
-            medicineBookletNo: "MB1001",
-            dateIssued: "2024-01-01",
-            medicalConditions: "Hypertension, Diabetes",
-            medications: "Amlodipine, Metformin",
-            guardianFirstName: "Maria",
-            guardianMiddleName: "Santos",
-            guardianLastName: "Dela Cruz",
-            guardianEmail: "maria@example.com",
-            guardianContact: "09187654321",
-            guardianRelationship: "Spouse",
-        },
-        {
-            controlNo: "CN12346",
-            firstName: "Josefa",
-            middleName: "Aquino",
-            lastName: "Santos",
-            extension: "N/A",
-            dob: "1950-08-21",
-            sex: "Female",
-            civilStatus: "Widowed",
-            address: "456 Barangay St, City, Philippines",
-            contactNumber: "09876543210",
-            purchaseBookletNo: "PB1002",
-            medicineBookletNo: "MB1002",
-            dateIssued: "2024-02-01",
-            medicalConditions: "Arthritis",
-            medications: "Ibuprofen",
-            guardianFirstName: "Juan",
-            guardianMiddleName: "Aquino",
-            guardianLastName: "Santos",
-            guardianEmail: "juan@example.com",
-            guardianContact: "09123456789",
-            guardianRelationship: "Son",
-        },
-    ]
+    // Fetch members data from backend on component mount
+    const fetchMembersData = async () => {
+        try {
+            const response = await axios.get("http://localhost:5000/members")
+            setMembersData(response.data)
+        } catch (error) {
+            console.error("Error fetching members data:", error)
+        }
+    }
+
+    useEffect(() => {
+        fetchMembersData()
+    }, [])
+
+    useEffect(() => {
+        // Automatically select the columns id, controlNo, firstName, lastName if membersData is available
+        if (membersData.length > 0) {
+            setSelectedColumns(["id", "controlNo", "firstName", "lastName"])
+        }
+    }, [membersData]) // Runs every time membersData changes
 
     const addFilter = () => {
         setFilters([...filters, { field: "", condition: "", value: "" }])
@@ -93,20 +68,18 @@ const Modal = ({ isOpen, onClose }) => {
     }
 
     const applyFilters = () => {
-        return sampleData.filter((item) => {
+        return membersData.filter((item) => {
             return filters.every((filter) => {
-                if (!filter.field || !filter.condition || !filter.value) return true // Skip invalid filters
+                if (!filter.field || !filter.condition || !filter.value) return true
 
                 const fieldValue = item[filter.field]?.toString() || ""
                 const filterValue = filter.value.toLowerCase()
 
                 switch (filter.condition) {
                     case "is equal to":
-                        return fieldValue.toLowerCase() === filterValue // "is equal to" condition
+                        return fieldValue.toLowerCase() === filterValue
                     case "is not equal to":
-                        return fieldValue.toLowerCase() !== filterValue // "is not equal to" condition
-                    case "has any value":
-                        return fieldValue.includes(filterValue) // "has any value" condition
+                        return fieldValue.toLowerCase() !== filterValue
                     default:
                         return true
                 }
@@ -114,30 +87,84 @@ const Modal = ({ isOpen, onClose }) => {
         })
     }
 
-    const generatePDF = () => {
-        const filteredData = filters.length > 0 ? applyFilters() : sampleData // Apply filters if any, else use all data
-        const doc = new jsPDF()
+    const generatePDF = async () => {
+        const filteredData = filters.length > 0 ? applyFilters() : membersData
+        const doc = new jsPDF({ orientation: "landscape" })
 
-        // Title
+        // Logo - Upper Left (Smaller Size)
+        const logo = new Image()
+        logo.src = ElderlinkLogo
+        doc.addImage(logo, "PNG", 10, 10, 30, 16) // Smaller size for the logo
+
+        // Center the Report Name
         doc.setFontSize(18)
-        doc.text(reportName, 20, 20)
+        doc.setFont("helvetica", "bold")
+        doc.setTextColor("#219EBC")
+        const reportNameWidth = doc.getTextWidth(reportName)
+        doc.text(reportName, doc.internal.pageSize.width / 2 - reportNameWidth / 2, 20)
 
-        // Report generated by
-        doc.setFontSize(12)
-        doc.text(`Created By: ${loggedInUsername}`, 20, 30)
-
-        // Add table header for selected columns
         const headers = selectedColumns.map((col) => formatColumnName(col))
         const rows = filteredData.map((item) => selectedColumns.map((column) => item[column]))
 
         doc.autoTable({
-            startY: 40, // Starting point for the table
+            startY: 30,
             head: [headers],
             body: rows,
+            headStyles: {
+                fillColor: "#219EBC",
+                textColor: "#FFFFFF",
+                fontSize: 12,
+                halign: "center",
+            },
+            bodyStyles: {
+                fontSize: 10,
+                halign: "center",
+            },
+            theme: "grid",
+            didDrawPage: function (data) {
+                // Footer Section - Lower Left with added margin
+                doc.setFontSize(8)
+                doc.text(
+                    `Report Generated On: ${moment().format("MM-DD-YYYY hh:mm A")}`,
+                    10,
+                    doc.internal.pageSize.height - 15,
+                )
+                doc.text("Report Generated By: " + loggedInUsername, 10, doc.internal.pageSize.height - 10)
+
+                // Page Number - Lower Right
+                doc.text(
+                    "Page " + doc.internal.getNumberOfPages(),
+                    doc.internal.pageSize.width - 30,
+                    doc.internal.pageSize.height - 10,
+                )
+            },
         })
 
-        // Save the document as a PDF
-        doc.save(`${reportName}.pdf`)
+        const pdfBlob = doc.output("blob")
+
+        // Save the file locally
+        doc.save(`${reportName}.pdf`) // This will trigger the download to your local computer
+
+        // Include the file path (uploads/)
+        const filePath = `uploads/${reportName}.pdf`
+
+        const formData = new FormData()
+        formData.append("reportFile", pdfBlob, `${reportName}.pdf`)
+        formData.append("reportName", reportName)
+        formData.append("reportType", selectedReportType)
+        formData.append("createdBy", loggedInUsername)
+        formData.append("createdAt", moment().format("YYYY-MM-DD HH:mm:ss"))
+        formData.append("pdfFilePath", filePath) // Store only the file path in DB
+
+        try {
+            await axios.post("http://localhost:5000/reports/save-report", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data", // Important for file uploads
+                },
+            })
+        } catch (error) {
+            console.error("Error saving report:", error)
+        }
     }
 
     const formatColumnName = (columnName) => {
@@ -146,13 +173,13 @@ const Modal = ({ isOpen, onClose }) => {
         }
 
         return columnName
-            .replace(/([a-z0-9])([A-Z])/g, "$1 $2") // Add a space before uppercase letters
-            .replace(/_/g, " ") // Replace underscores with spaces
+            .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+            .replace(/_/g, " ")
             .toLowerCase()
-            .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize the first letter of each word
+            .replace(/\b\w/g, (char) => char.toUpperCase())
     }
 
-    const columnNames = Object.keys(sampleData[0])
+    const columnNames = membersData.length ? Object.keys(membersData[0]) : []
 
     if (!isOpen) return null
 
@@ -174,7 +201,7 @@ const Modal = ({ isOpen, onClose }) => {
                                     autoFocus
                                 />
                             ) : (
-                                <h2 className="text-3xl font-bold text-[#333333]">{reportName}</h2>
+                                <h2 className="text-2xl font-bold text-[#333333]">{reportName}</h2>
                             )}
                             <button onClick={handleEditToggle} className="text-[#333333] hover:text-gray-700">
                                 <FiEdit className="w-5 h-5" />
@@ -185,7 +212,7 @@ const Modal = ({ isOpen, onClose }) => {
                         <div>
                             <p className="text-sm text-gray-500">Report Type</p>
                             <select
-                                className="text-3xl font-bold text-[#333333] rounded-lg bg-transparent p-2 pl-0 w-full"
+                                className="text-2xl font-bold text-[#333333] rounded-lg bg-transparent p-2 pl-0 w-full"
                                 value={selectedReportType}
                                 onChange={(e) => setSelectedReportType(e.target.value)}
                             >
@@ -197,7 +224,7 @@ const Modal = ({ isOpen, onClose }) => {
                         </div>
                         <div>
                             <p className="text-sm text-gray-500">Created By</p>
-                            <h2 className="text-3xl font-bold text-[#333333]">{loggedInUsername} </h2>
+                            <h2 className="text-3xl font-bold text-[#333333]">{loggedInUsername}</h2>
                         </div>
                     </div>
                 </div>
@@ -209,8 +236,10 @@ const Modal = ({ isOpen, onClose }) => {
                         {columnNames.map((column) => (
                             <span
                                 key={column}
-                                className={`bg-gray-100 text-gray-800 px-3 py-1 rounded-full cursor-pointer ${
-                                    selectedColumns.includes(column) ? "bg-blue-500 text-white" : ""
+                                className={`px-3 py-1 rounded-full cursor-pointer transition-all ease-in-out duration-300 ${
+                                    selectedColumns.includes(column)
+                                        ? "bg-[#219EBC] text-white border border-[#219EBC]"
+                                        : "bg-transparent text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white"
                                 }`}
                                 onClick={() => handleColumnToggle(column)}
                             >
@@ -250,7 +279,6 @@ const Modal = ({ isOpen, onClose }) => {
                                 <option value="">Condition</option>
                                 <option value="is equal to">is equal to</option>
                                 <option value="is not equal to">is not equal to</option>
-                                <option value="has any value">has any value</option>
                             </select>
 
                             <input
@@ -267,15 +295,26 @@ const Modal = ({ isOpen, onClose }) => {
                         </div>
                     ))}
 
-                    <button className="text-blue-500 mt-4" onClick={addFilter}>
+                    <button className="text-[#219EBC] mt-4" onClick={addFilter}>
                         Add Filter
                     </button>
                 </div>
 
-                {/* Generate PDF Button */}
-                <button onClick={generatePDF} className="mt-4 bg-[#004365] text-white px-6 py-2 rounded-lg">
-                    Generate PDF
-                </button>
+                {/* Generate PDF and Close Buttons */}
+                <div className="absolute bottom-6 right-6 flex gap-2">
+                    <button
+                        onClick={onClose} // Assuming `onClose` is passed as a prop to close the modal
+                        className="border text-[#004365] border-[#004365] rounded-lg p-2 w-[100px] text-center font-bold hover:bg-[#004365] hover:text-white transition-all duration-300"
+                    >
+                        Close
+                    </button>
+                    <button
+                        onClick={generatePDF}
+                        className="bg-[#004365] text-white px-6 py-2 rounded-lg hover:bg-[#00354d] transition-all duration-300"
+                    >
+                        Generate PDF
+                    </button>
+                </div>
             </div>
         </div>
     )

@@ -15,15 +15,11 @@ const ArchiveModal = ({ isOpen, onClose, onConfirm, article }) => {
             aria-modal="true"
         >
             <div className="bg-white p-8 rounded-lg shadow-lg w-[500px]">
-                <h2
-                    id="confirm-archive-title"
-                    className="text-2xl font-bold mb-6"
-                >
+                <h2 id="confirm-archive-title" className="text-2xl font-bold mb-6">
                     Confirm Archive
                 </h2>
                 <p className="text-lg mb-4">
-                    Are you sure you want to archive the form titled{" "}
-                    <span className="font-bold">{article}</span>?
+                    Are you sure you want to archive the news titled <span className="font-bold">{article}</span>?
                 </p>
                 <div className="flex justify-end space-x-1">
                     <button

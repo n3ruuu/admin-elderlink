@@ -6,34 +6,21 @@ import Table from "./Table"
 
 const Reports = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [newsData, setNewsData] = useState([]) // List of news articles
-    const [searchQuery, setSearchQuery] = useState("")
+    const [reportsData, setReportData] = useState([])
 
+    // Fetch data from the backend when the component mounts
     useEffect(() => {
-        fetchNews()
-    }, [])
-
-    const fetchNews = async () => {
-        try {
-            const response = await axios.get("http://localhost:5000/news")
-            setNewsData(response.data)
-        } catch (error) {
-            console.error("Error fetching news:", error)
-            // Optionally, set an error message to show the user
+        const fetchNewsData = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/reports/get-news") // Replace with your API endpoint
+                setReportData(response.data) // Assuming the data is in response.data
+            } catch (error) {
+                console.error("Error fetching news data:", error)
+            }
         }
-    }
 
-    const filteredNews = newsData.filter((news) => {
-        const headline = news?.headline?.toLowerCase() || "" // Ensure it's a string
-        const author = news?.author?.toLowerCase() || "" // Ensure it's a string
-        const body = news?.body?.toLowerCase() || "" // Ensure it's a string
-
-        return (
-            headline.includes(searchQuery.toLowerCase()) ||
-            author.includes(searchQuery.toLowerCase()) ||
-            body.includes(searchQuery.toLowerCase())
-        )
-    })
+        fetchNewsData()
+    }, [])
 
     const handleOpenModal = () => {
         setIsModalOpen(true)
@@ -45,12 +32,12 @@ const Reports = () => {
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header onOpenModal={handleOpenModal} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <Header />
 
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Table
-                        newsData={filteredNews} // Use filtered data
+                        reportsData={reportsData} // Pass filtered news data to Table
                         handleOpenModal={handleOpenModal}
                     />
                 </div>

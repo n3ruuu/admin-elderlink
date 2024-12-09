@@ -28,7 +28,6 @@ const News = () => {
             setNewsData(response.data)
         } catch (error) {
             console.error("Error fetching news:", error)
-            // Optionally, set an error message to show the user
         }
     }
 
