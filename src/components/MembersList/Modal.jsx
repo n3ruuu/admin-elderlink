@@ -28,6 +28,8 @@ const Modal = ({ onClose, member, onSave }) => {
 
     const optionalFields = ["middleName", "extension", "purchaseBookletNo", "medicineBookletNo", "dateIssued"]
 
+    const isEditMode = !!member // Check if the modal is in Edit mode
+
     useEffect(() => {
         console.log("Member prop:", member)
         if (member) {
@@ -131,48 +133,51 @@ const Modal = ({ onClose, member, onSave }) => {
             errorMessages.push("Medicine Booklet No. must follow the format: MB0001.")
         }
 
-        // Check for duplicate Control No., Purchase Booklet No., Medicine Booklet No.
-        try {
-            // Initialize duplicateCheck object to track duplicates
-            const duplicateCheck = {
-                controlNo: await checkForDuplicates(formValues.controlNo, null, null).then((res) => res.controlNo),
-            }
+        // Skip duplicate checks if in edit mode
+        if (!isEditMode) {
+            try {
+                // Initialize duplicateCheck object to track duplicates
+                const duplicateCheck = {
+                    controlNo: await checkForDuplicates(formValues.controlNo, null, null).then((res) => res.controlNo),
+                }
 
-            // Check for duplicates only if `purchaseBookletNo` is not empty
-            if (formValues.purchaseBookletNo.trim() !== "") {
-                duplicateCheck.purchaseBookletNo = await checkForDuplicates(
-                    null,
-                    formValues.purchaseBookletNo,
-                    null,
-                ).then((res) => res.purchaseBookletNo)
-            }
+                // Check for duplicates only if `purchaseBookletNo` is not empty
+                if (formValues.purchaseBookletNo.trim() !== "") {
+                    duplicateCheck.purchaseBookletNo = await checkForDuplicates(
+                        null,
+                        formValues.purchaseBookletNo,
+                        null,
+                    ).then((res) => res.purchaseBookletNo)
+                }
 
-            // Check for duplicates only if `medicineBookletNo` is not empty
-            if (formValues.medicineBookletNo.trim() !== "") {
-                duplicateCheck.medicineBookletNo = await checkForDuplicates(
-                    null,
-                    null,
-                    formValues.medicineBookletNo,
-                ).then((res) => res.medicineBookletNo)
-            }
+                // Check for duplicates only if `medicineBookletNo` is not empty
+                if (formValues.medicineBookletNo.trim() !== "") {
+                    duplicateCheck.medicineBookletNo = await checkForDuplicates(
+                        null,
+                        null,
+                        formValues.medicineBookletNo,
+                    ).then((res) => res.medicineBookletNo)
+                }
 
-            // Add error messages based on duplicate checks
-            if (duplicateCheck.controlNo) {
-                errorMessages.push("Control No. is already in use.")
+                // Add error messages based on duplicate checks
+                if (duplicateCheck.controlNo) {
+                    errorMessages.push("Control No. is already in use.")
+                }
+                if (duplicateCheck.purchaseBookletNo) {
+                    errorMessages.push("Purchase Booklet No. is already in use.")
+                }
+                if (duplicateCheck.medicineBookletNo) {
+                    errorMessages.push("Medicine Booklet No. is already in use.")
+                }
+            } catch (error) {
+                console.error("Error checking for duplicates", error)
+                errorMessages.push("Failed to check for duplicates. Please try again.")
             }
-            if (duplicateCheck.purchaseBookletNo) {
-                errorMessages.push("Purchase Booklet No. is already in use.")
-            }
-            if (duplicateCheck.medicineBookletNo) {
-                errorMessages.push("Medicine Booklet No. is already in use.")
-            }
-        } catch (error) {
-            console.error("Error checking for duplicates", error)
-            errorMessages.push("Failed to check for duplicates. Please try again.")
         }
 
         return errorMessages
     }
+
     const isFormValid = Object.entries(formValues).every(([key, value]) =>
         optionalFields.includes(key) ? true : value.trim() !== "",
     )
@@ -198,8 +203,6 @@ const Modal = ({ onClose, member, onSave }) => {
     }
 
     const handleCloseErrorModal = () => setIsErrorModalOpen(false)
-
-    const isEditMode = !!member // Check if the modal is in Edit mode
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">

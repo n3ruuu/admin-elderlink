@@ -161,6 +161,7 @@ const HealthRecords = () => {
                         membersData={filteredMembers}
                         onEdit={handleOpenModal}
                         chronicConditions={chronicConditions}
+                        fetchMembersData={fetchMembersData}
                     />
                 </div>
             </div>

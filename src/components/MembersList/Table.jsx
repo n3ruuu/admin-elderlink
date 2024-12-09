@@ -8,9 +8,10 @@ import ReportIcon from "../../assets/icons/report.svg"
 import { jsPDF } from "jspdf"
 import ElderlinkLogo from "../../assets/elderlink-logo.png"
 import ArchiveModal from "./ArchiveModal" // Import ArchiveModal
+import SuccessModal from "./SuccessModal"
 import axios from "axios" // Make sure axios is imported
 
-const Table = ({ membersData, onEdit }) => {
+const Table = ({ membersData, onEdit, fetchMembersData }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6
     const [showReportOptions, setShowReportOptions] = useState(false)
@@ -19,6 +20,10 @@ const Table = ({ membersData, onEdit }) => {
     const startIndex = (currentPage - 1) * itemsPerPage
     const currentMembers = membersData.slice(startIndex, startIndex + itemsPerPage)
     const loggedInUsername = localStorage.getItem("username") || ""
+
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+    const [successModalMessage, setSuccessModalMessage] = useState("")
+    const [successModalTitle, setSuccessModalTitle] = useState("")
 
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false) // State to handle Archive Modal visibility
     const [selectedMember, setSelectedMember] = useState(null) // Track selected member for archiving
@@ -49,8 +54,10 @@ const Table = ({ membersData, onEdit }) => {
                 // Close the modal after successful archiving
                 setIsArchiveModalOpen(false) // Close modal locally
 
-                // Optionally refresh the state or show a success message
-                alert("Member archived successfully")
+                setSuccessModalTitle("Archived Member!")
+                setSuccessModalMessage("Member information has been successfully archived.")
+                setIsSuccessModalOpen(true) // Open the success modal
+                fetchMembersData()
             } catch (error) {
                 console.error("Error archiving member:", error)
                 alert("There was an error archiving the member. Please try again.")
@@ -314,6 +321,16 @@ const Table = ({ membersData, onEdit }) => {
                     onConfirm={handleArchiveConfirm} // Pass the handler to perform archiving
                 />
             )}
+
+            {/* Success Modal */}
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                title={successModalTitle}
+                message={successModalMessage}
+                onGoToArchives={() => console.log("Navigating to Archives")}
+                isArchiving={false}
+            />
         </div>
     )
 }

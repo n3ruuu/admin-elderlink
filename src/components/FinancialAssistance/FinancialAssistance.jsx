@@ -76,7 +76,7 @@ const FinancialAssistance = () => {
         if (currentMember) {
             // If we're editing an existing member
             setSuccessModalTitle("Update Completed!")
-            setSuccessModalMessage("Member information has been successfully updated.")
+            setSuccessModalMessage("Member financial record has been successfully updated.")
         }
 
         setIsSuccessModalOpen(true) // Open the success modal

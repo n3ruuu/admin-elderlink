@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import SuccessModal from "./SuccessModal" // Import SuccessModal
 import axios from "axios"
 
-const AddFormModal = ({ isOpen, onClose }) => {
+const AddFormModal = ({ isOpen, onClose, onAddNewInitiative }) => {
     const [categoryName, setCategoryName] = useState("") // Category name state
     const [icon, setIcon] = useState(null) // State to store the selected image
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // State for SuccessModal
@@ -18,7 +18,7 @@ const AddFormModal = ({ isOpen, onClose }) => {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+        e.preventDefault() // Prevent default form submission behavior
         const formData = new FormData()
         formData.append("category_name", categoryName)
         if (icon) {
@@ -33,15 +33,39 @@ const AddFormModal = ({ isOpen, onClose }) => {
                 },
             })
             console.log(response.data)
-            onClose() // Close modal on success
+
+            // Open the success modal with a success message
             setSuccessModalTitle("Initiative Added!")
             setSuccessModalMessage("Initiative has been successfully added.")
             setIsSuccessModalOpen(true) // Open the success modal
-            console.log("Success modal state updated:", isSuccessModalOpen) // Debugging log
+
+            // Add the new initiative to the list of initiatives (update parent component state)
+            if (onAddNewInitiative) {
+                onAddNewInitiative(response.data) // Passing the new initiative data to parent
+            }
+
+            // Do not close the AddFormModal immediately
+            // Wait for the success modal to close before closing the form modal
         } catch (error) {
             console.error("Error saving form:", error)
         }
     }
+
+    // Function to close the success modal and then the form modal
+    const closeSuccessModal = () => {
+        setIsSuccessModalOpen(false) // Close the success modal first
+        onClose() // Now close the AddFormModal after success modal closes
+        window.location.reload() // Reload the page
+    }
+
+    // Reset success modal state when AddFormModal is closed
+    useEffect(() => {
+        if (!isOpen) {
+            setIsSuccessModalOpen(false) // Reset success modal state when AddFormModal is closed
+            setCategoryName("") // Clear the category name
+            setIcon(null) // Clear the selected icon
+        }
+    }, [isOpen])
 
     return (
         isOpen && (
@@ -83,24 +107,29 @@ const AddFormModal = ({ isOpen, onClose }) => {
                                 </div>
                             )}
                         </div>
-                        <div className="flex justify-end gap-4">
-                            <button type="button" className="text-gray-700 hover:text-gray-500" onClick={onClose}>
+                        <div className="flex justify-between gap-4">
+                            <button
+                                type="button"
+                                className="border w-[100px] h-[45px] border-[#219EBC] bg-transparent hover:bg-[#219EBC] hover:text-white text-[#219EBC] font-bold py-2 px-4 rounded transition-colors duration-300"
+                                onClick={onClose}
+                            >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                                className="bg-[#219EBC] text-white w-[100px] h-[45px] font-bold py-2 px-4 rounded transition-colors duration-300 hover:bg-[#1A7F92]"
                                 onClick={handleSubmit}
                             >
-                                Save
+                                Add
                             </button>
                         </div>
                     </form>
                 </div>
+
                 {/* Success Modal moved here */}
                 <SuccessModal
                     isOpen={isSuccessModalOpen}
-                    onClose={() => setIsSuccessModalOpen(false)}
+                    onClose={closeSuccessModal} // Use the closeSuccessModal function to close the success modal
                     title={successModalTitle}
                     message={successModalMessage}
                     onGoToArchives={() => console.log("Navigating to Archives")} // Implement this function if needed

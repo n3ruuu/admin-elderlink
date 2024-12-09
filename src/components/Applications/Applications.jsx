@@ -7,28 +7,20 @@ import Table from "./Table"
 const Applications = () => {
     const [filter, setFilter] = useState("all") // Current filter
     const [applications, setApplications] = useState([]) // Fetched applications
-    const [loading, setLoading] = useState(true) // Loading state
-    const [error, setError] = useState(null) // Error state
     const [searchQuery, setSearchQuery] = useState("") // Search query state
 
     // Fetch applications from the API
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                setLoading(true)
-                const response = await axios.get(
-                    "http://localhost:5000/application",
-                )
+                const response = await axios.get("http://localhost:5000/application")
                 if (response.data?.data) {
                     setApplications(response.data.data) // Set fetched data
                 } else {
                     setApplications([])
                 }
             } catch (err) {
-                setError("Failed to load applications. Please try again later.")
                 console.error("Error fetching applications:", err)
-            } finally {
-                setLoading(false)
             }
         }
 
@@ -44,11 +36,7 @@ const Applications = () => {
             )
             if (response.status === 200) {
                 // Update the status in the local state
-                setApplications((prev) =>
-                    prev.map((app) =>
-                        app.id === id ? { ...app, status: newStatus } : app,
-                    ),
-                )
+                setApplications((prev) => prev.map((app) => (app.id === id ? { ...app, status: newStatus } : app)))
             } else {
                 console.error("Failed to update status:", response.data)
             }
@@ -58,13 +46,9 @@ const Applications = () => {
     }
 
     const filteredData = applications.filter((item) => {
-        const matchesFilter =
-            filter === "all" ||
-            (item.status && item.status.toLowerCase() === filter)
+        const matchesFilter = filter === "all" || (item.status && item.status.toLowerCase() === filter)
         const matchesSearchQuery =
-            item.applicant_name
-                ?.toLowerCase()
-                .includes(searchQuery.toLowerCase()) || // Assuming 'name' is a field
+            item.applicant_name?.toLowerCase().includes(searchQuery.toLowerCase()) || // Assuming 'name' is a field
             item.form_type?.toLowerCase().includes(searchQuery.toLowerCase()) || // Add more fields as needed
             item.status?.toLowerCase().includes(searchQuery.toLowerCase()) // Add more fields as needed
         return matchesFilter && matchesSearchQuery
@@ -77,16 +61,7 @@ const Applications = () => {
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <FilterButtons filter={filter} setFilter={setFilter} />
                     <div className="mt-8">
-                        {loading ? (
-                            <p>Loading applications...</p>
-                        ) : error ? (
-                            <p className="text-red-500">{error}</p>
-                        ) : (
-                            <Table
-                                filteredData={filteredData}
-                                onStatusUpdate={onStatusUpdate}
-                            />
-                        )}
+                        <Table filteredData={filteredData} onStatusUpdate={onStatusUpdate} />
                     </div>
                 </div>
             </div>

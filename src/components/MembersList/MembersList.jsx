@@ -90,7 +90,7 @@ const MembersList = () => {
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards membersData={filteredMembers} />
-                    <Table membersData={filteredMembers} onEdit={handleOpenModal} />
+                    <Table membersData={filteredMembers} onEdit={handleOpenModal} fetchMembersData={fetchMembersData} />
                 </div>
             </div>
 

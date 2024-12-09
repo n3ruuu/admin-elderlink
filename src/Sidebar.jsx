@@ -23,6 +23,7 @@ import Applications from "./components/Applications/Applications"
 import News from "./components/News/News"
 import Archives from "./components/Archives/Archives"
 import Reports from "./components/Reports/Reports"
+import ContentManagement from "./components/ContentManagement/ContentManagement"
 import Login from "./Login"
 
 const Sidebar = () => {
@@ -69,7 +70,7 @@ const Sidebar = () => {
                     {/* Dashboard Link */}
                     <Link
                         to="admin-elderlink/dashboard"
-                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                             isActive("/admin-elderlink/dashboard")
                                 ? "bg-[#219EBC] text-[#F5F5FA]"
                                 : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -84,11 +85,10 @@ const Sidebar = () => {
                         />
                         <p>Admin Dashboard</p>
                     </Link>
-
                     {/* Members Section */}
                     <div>
                         <div
-                            className={`group flex items-center space-x-7 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:text-[#F5F5FA]`}
+                            className={`group flex items-center space-x-7 text-[20px] px-6 py-3 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:text-[#F5F5FA]`}
                             onClick={() => toggleSubSection("members")}
                         >
                             <img
@@ -104,7 +104,7 @@ const Sidebar = () => {
                                 {/* Members List */}
                                 <Link
                                     to="admin-elderlink/members-list"
-                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                                         isActive("/admin-elderlink/members-list")
                                             ? "bg-[#219EBC] text-[#F5F5FA]"
                                             : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -123,7 +123,7 @@ const Sidebar = () => {
                                 {/* Health Records */}
                                 <Link
                                     to="admin-elderlink/health-records"
-                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                                         isActive("/admin-elderlink/health-records")
                                             ? "bg-[#219EBC] text-[#F5F5FA]"
                                             : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -142,7 +142,7 @@ const Sidebar = () => {
                                 {/* Financial Assistance */}
                                 <Link
                                     to="admin-elderlink/financial-assistance"
-                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                                         isActive("/admin-elderlink/financial-assistance")
                                             ? "bg-[#219EBC] text-[#F5F5FA]"
                                             : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -156,16 +156,15 @@ const Sidebar = () => {
                                             "filter brightness-0 invert"
                                         }`}
                                     />
-                                    <p>Financial Assistance</p>
+                                    <p>Financial Records</p>
                                 </Link>
                             </div>
                         )}
                     </div>
-
                     {/* Events */}
                     <Link
                         to="admin-elderlink/events"
-                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                             isActive("/admin-elderlink/events")
                                 ? "bg-[#219EBC] text-[#F5F5FA]"
                                 : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -180,11 +179,10 @@ const Sidebar = () => {
                         />
                         <p>Events</p>
                     </Link>
-
                     {/* News */}
                     <Link
                         to="admin-elderlink/news"
-                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                             isActive("/admin-elderlink/news")
                                 ? "bg-[#219EBC] text-[#F5F5FA]"
                                 : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -199,11 +197,10 @@ const Sidebar = () => {
                         />
                         <p>News</p>
                     </Link>
-
                     {/* Forms & Applications */}
                     <div>
                         <div
-                            className="group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer hover:bg-[#219EBC]  hover:text-[#F5F5FA]"
+                            className="group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer hover:bg-[#219EBC]  hover:text-[#F5F5FA]"
                             onClick={() => toggleSubSection("forms")}
                         >
                             <img
@@ -218,7 +215,7 @@ const Sidebar = () => {
                             <div className="m-4 ml-10 space-y-2">
                                 <Link
                                     to="admin-elderlink/forms"
-                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                                         isActive("/admin-elderlink/forms")
                                             ? "bg-[#219EBC] text-[#F5F5FA]"
                                             : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -236,7 +233,7 @@ const Sidebar = () => {
 
                                 <Link
                                     to="admin-elderlink/applications"
-                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                                    className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                                         isActive("/admin-elderlink/applications")
                                             ? "bg-[#219EBC] text-[#F5F5FA]"
                                             : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -254,11 +251,10 @@ const Sidebar = () => {
                             </div>
                         )}
                     </div>
-
                     {/* Reports */}
                     <Link
                         to="admin-elderlink/reports"
-                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                             isActive("/admin-elderlink/reports")
                                 ? "bg-[#219EBC] text-[#F5F5FA]"
                                 : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -273,11 +269,10 @@ const Sidebar = () => {
                         />
                         <p>Reports</p>
                     </Link>
-
                     {/* Archive */}
                     <Link
                         to="admin-elderlink/archives"
-                        className={`group flex items-center space-x-8 text-[20px] px-6 py-4 rounded-2xl cursor-pointer ${
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
                             isActive("/admin-elderlink/archives")
                                 ? "bg-[#219EBC] text-[#F5F5FA]"
                                 : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -291,13 +286,30 @@ const Sidebar = () => {
                             }`}
                         />
                         <p>Archive</p>
+                    </Link>{" "}
+                    {/* Archive */}
+                    <Link
+                        to="admin-elderlink/content-management"
+                        className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
+                            isActive("/admin-elderlink/content-management")
+                                ? "bg-[#219EBC] text-[#F5F5FA]"
+                                : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
+                        }`}
+                    >
+                        <img
+                            src={ArchiveIcon}
+                            alt="Content Management Icon"
+                            className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
+                                isActive("/admin-elderlink/content-management") && "filter brightness-0 invert"
+                            }`}
+                        />
+                        <p>Content Management</p>
                     </Link>
-
                     <div>
                         <Link
                             to="/admin-elderlink/"
                             onClick={handleLogout}
-                            className={`group absolute bottom-0 w-[86%] flex justify-start space-x-8 text-[20px] px-6 py-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                            className={`group absolute bottom-0 w-[86%] flex justify-start space-x-8 text-[20px] px-6 py-3 rounded-xl cursor-pointer transition-all duration-300 ${
                                 isActive(null)
                                     ? "bg-[#219EBC] text-[#F5F5FA]"
                                     : "hover:bg-[#219EBC] hover:text-[#F5F5FA]"
@@ -327,6 +339,7 @@ const Sidebar = () => {
                     <Route path="admin-elderlink/news" element={<News />} />
                     <Route path="admin-elderlink/archives" element={<Archives />} />
                     <Route path="admin-elderlink/reports" element={<Reports />} />
+                    <Route path="admin-elderlink/content-management" element={<ContentManagement />} />
                 </Routes>
             </div>
         </section>

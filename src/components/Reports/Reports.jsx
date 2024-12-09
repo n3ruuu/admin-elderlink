@@ -6,43 +6,48 @@ import Table from "./Table"
 
 const Reports = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [reportsData, setReportData] = useState([])
+    const [reportsData, setReportsData] = useState([])
 
-    // Fetch data from the backend when the component mounts
-    useEffect(() => {
-        const fetchNewsData = async () => {
-            try {
-                const response = await axios.get("http://localhost:5000/reports/get-news") // Replace with your API endpoint
-                setReportData(response.data) // Assuming the data is in response.data
-            } catch (error) {
-                console.error("Error fetching news data:", error)
-            }
+    // Fetch reports data from the API
+    const fetchReportsData = async () => {
+        try {
+            const response = await axios.get("http://localhost:5000/reports/get-news") // Replace with your API endpoint
+            const activeReports = response.data.filter((report) => report.status === "Active") // Filter active reports
+            setReportsData(activeReports) // Update state with filtered data
+        } catch (error) {
+            console.error("Error fetching reports data:", error)
         }
-
-        fetchNewsData()
-    }, [])
-
-    const handleOpenModal = () => {
-        setIsModalOpen(true)
     }
 
+    // Fetch data on component mount
+    useEffect(() => {
+        fetchReportsData()
+    }, [])
+
+    // Close modal handler
     const handleCloseModal = () => {
         setIsModalOpen(false)
     }
 
+    // Open modal handler
+    const handleOpenModal = () => {
+        setIsModalOpen(true)
+    }
+
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header />
-
+            <Header onOpen={handleOpenModal} /> {/* Pass the function as a prop */}
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Table
-                        reportsData={reportsData} // Pass filtered news data to Table
-                        handleOpenModal={handleOpenModal}
+                        reportsData={reportsData}
+                        fetchReportsData={fetchReportsData} // Allow Table to trigger a data refresh
                     />
                 </div>
             </div>
-            {isModalOpen && <Modal onClose={handleCloseModal} />}
+            {isModalOpen && (
+                <Modal isOpen={isModalOpen} onClose={handleCloseModal} fetchReportsData={fetchReportsData} />
+            )}
         </section>
     )
 }

@@ -8,6 +8,7 @@ import EventsTable from "./Tables/EventsTable"
 import NewsTable from "./Tables/NewsTable"
 import FinanceTable from "./Tables/FinanceTable"
 import FormsTable from "./Tables/FormsTable"
+import ReportsTable from "./Tables/ReportsTable"
 
 const Archives = () => {
     const [filter, setFilter] = useState("members") // Default filter
@@ -38,6 +39,7 @@ const Archives = () => {
                 {filter === "events" && <EventsTable />}
                 {filter === "news" && <NewsTable />}
                 {filter === "forms" && <FormsTable />}
+                {filter === "reports" && <ReportsTable />}
             </div>
         </section>
     )

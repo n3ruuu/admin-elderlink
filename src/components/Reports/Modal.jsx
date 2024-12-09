@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
 import axios from "axios"
@@ -6,8 +7,9 @@ import jsPDF from "jspdf"
 import "jspdf-autotable"
 import moment from "moment"
 import ElderlinkLogo from "../../assets/elderlink-logo.png"
+import SuccessModal from "./SuccessModal" // Import SuccessModal
 
-const Modal = ({ isOpen, onClose }) => {
+const Modal = ({ isOpen, onClose, fetchReportsData }) => {
     const [filters, setFilters] = useState([{ field: "", condition: "", value: "" }])
     const [reportName, setReportName] = useState("Report Name")
     const [isEditing, setIsEditing] = useState(false)
@@ -15,6 +17,9 @@ const Modal = ({ isOpen, onClose }) => {
     const [selectedColumns, setSelectedColumns] = useState([]) // State for selected columns
     const loggedInUsername = localStorage.getItem("username") || ""
     const [membersData, setMembersData] = useState([])
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // State for SuccessModal
+    const [successModalMessage, setSuccessModalMessage] = useState("") // Success message state
+    const [successModalTitle, setSuccessModalTitle] = useState("") // Success title state
 
     // Fetch members data from backend on component mount
     const fetchMembersData = async () => {
@@ -165,6 +170,11 @@ const Modal = ({ isOpen, onClose }) => {
         } catch (error) {
             console.error("Error saving report:", error)
         }
+        // Open the success modal with a success message
+        setSuccessModalTitle("Generated Report!")
+        setSuccessModalMessage("Report has been successfully generated.")
+        setIsSuccessModalOpen(true) // Open the success modal
+        fetchReportsData()
     }
 
     const formatColumnName = (columnName) => {
@@ -316,6 +326,17 @@ const Modal = ({ isOpen, onClose }) => {
                     </button>
                 </div>
             </div>
+            {isSuccessModalOpen && (
+                <SuccessModal
+                    isOpen={isSuccessModalOpen}
+                    onClose={() => {
+                        setIsSuccessModalOpen(false)
+                        onClose()
+                    }}
+                    title={successModalTitle}
+                    message={successModalMessage}
+                />
+            )}
         </div>
     )
 }

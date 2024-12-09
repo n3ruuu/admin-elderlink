@@ -1,17 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-import {
-    PieChart,
-    Pie,
-    Cell,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-} from "recharts"
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
 import moment from "moment"
 
@@ -39,45 +28,47 @@ const Dashboard = () => {
     const [isTotalHovered, setIsTotalHovered] = useState(false)
     const [isEventsHovered, setIsEventsHovered] = useState(false)
     const [isTransactionsHovered, setIsTransactionsHovered] = useState(false)
-    const [pendingApplicationsDetails, setPendingApplicationsDetails] =
-        useState([]) //
+    const [pendingApplicationsDetails, setPendingApplicationsDetails] = useState([]) //
 
     const COLORS = ["#0088FE", "#FFBB28"]
 
     useEffect(() => {
         const fetchTotalSeniorCitizens = async () => {
             try {
-                const response = await axios.get(
-                    "http://localhost:5000/members",
-                )
+                const response = await axios.get("http://localhost:5000/members")
                 setTotalSeniorCitizens(response.data.length)
 
                 // Filter active senior citizens
-                const activeCitizens = response.data.filter(
-                    (member) => member.status === "Active",
-                )
+                const activeCitizens = response.data.filter((member) => member.status === "Active")
                 setActiveSeniorCitizens(activeCitizens.length)
 
-                const males = activeCitizens.filter(
-                    (member) => member.gender === "male",
-                ).length
-                const females = activeCitizens.filter(
-                    (member) => member.gender === "female",
-                ).length
+                const males = activeCitizens.filter((member) => member.sex === "Male").length
+                const females = activeCitizens.filter((member) => member.sex === "Female").length
 
                 const ageGroups = {
-                    "60-65 years": activeCitizens.filter(
-                        (member) => member.age >= 60 && member.age <= 65,
-                    ).length,
-                    "66-75 years": activeCitizens.filter(
-                        (member) => member.age >= 66 && member.age <= 75,
-                    ).length,
-                    "76-85 years": activeCitizens.filter(
-                        (member) => member.age >= 76 && member.age <= 85,
-                    ).length,
-                    "85+ years": activeCitizens.filter(
-                        (member) => member.age > 85,
-                    ).length,
+                    "60-65 years": activeCitizens.filter((member) => {
+                        const age = getAgeFromDOB(member.dob)
+                        return age >= 60 && age <= 65
+                    }).length,
+                    "66-75 years": activeCitizens.filter((member) => {
+                        const age = getAgeFromDOB(member.dob)
+                        return age >= 66 && age <= 75
+                    }).length,
+                    "76-85 years": activeCitizens.filter((member) => {
+                        const age = getAgeFromDOB(member.dob)
+                        return age >= 76 && age <= 85
+                    }).length,
+                    "85+ years": activeCitizens.filter((member) => {
+                        const age = getAgeFromDOB(member.dob)
+                        return age > 85
+                    }).length,
+                }
+
+                // Helper function to calculate age from date of birth (dob) using Moment.js
+                function getAgeFromDOB(dob) {
+                    const birthDate = moment(dob) // Create a Moment object from the dob
+                    const today = moment() // Get the current date as a Moment object
+                    return today.diff(birthDate, "years") // Calculate the difference in years
                 }
 
                 const streets = activeCitizens.reduce((acc, member) => {
@@ -105,9 +96,7 @@ const Dashboard = () => {
                     const eventDate = new Date(event.date)
                     const diffTime = eventDate - currentDate
                     return (
-                        event.status === "Active" &&
-                        diffTime >= 0 &&
-                        diffTime <= 30 * 24 * 60 * 60 * 1000 // within the next month
+                        event.status === "Active" && diffTime >= 0 && diffTime <= 30 * 24 * 60 * 60 * 1000 // within the next month
                     )
                 })
 
@@ -121,12 +110,8 @@ const Dashboard = () => {
         // Fetch pending applications from the backend
         const fetchPendingApplications = async () => {
             try {
-                const response = await axios.get(
-                    "http://localhost:5000/application",
-                )
-                const pendingApps = response.data?.data.filter(
-                    (application) => application.status === "Pending",
-                )
+                const response = await axios.get("http://localhost:5000/application")
+                const pendingApps = response.data?.data.filter((application) => application.status === "Pending")
 
                 setPendingApplications(pendingApps.length)
                 setPendingApplicationsDetails(pendingApps)
@@ -147,20 +132,16 @@ const Dashboard = () => {
     ]
 
     // Prepare data for Age Group Bar Chart
-    const ageData = Object.entries(summaryData.ageGroup).map(
-        ([age, count]) => ({
-            ageGroup: age,
-            Population: count,
-        }),
-    )
+    const ageData = Object.entries(summaryData.ageGroup).map(([age, count]) => ({
+        ageGroup: age,
+        Population: count,
+    }))
 
     // Prepare data for Street Distribution Bar Chart
-    const streetData = Object.entries(summaryData.streetDistribution).map(
-        ([street, count]) => ({
-            street: street,
-            Population: count,
-        }),
-    )
+    const streetData = Object.entries(summaryData.streetDistribution).map(([street, count]) => ({
+        street: street,
+        Population: count,
+    }))
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
@@ -169,8 +150,7 @@ const Dashboard = () => {
                 <div className="flex flex-col pl-16 pr-8">
                     <div className="flex gap-5 mb-5">
                         {/* Total Number of Senior Citizens Card */}
-                        {(isTotalHovered ||
-                            (!isEventsHovered && !isTransactionsHovered)) && (
+                        {(isTotalHovered || (!isEventsHovered && !isTransactionsHovered)) && (
                             <div
                                 className="transition-transform duration-700 ease-in-out transform hover:-translate-y-1 flex-1 relative"
                                 onMouseEnter={() => {
@@ -188,32 +168,17 @@ const Dashboard = () => {
                                 />
                                 {isTotalHovered && (
                                     <div className="absolute top-0 left-0 w-full h-full bg-white p-4 shadow-lg rounded-lg z-10 flex flex-col">
-                                        <h3 className="font-bold text-2xl text-[#333]">
-                                            Summary of Data
-                                        </h3>
+                                        <h3 className="font-bold text-2xl text-[#333]">Summary of Data</h3>
                                         <div className="flex-grow flex justify-around gap-4 text-gray-700 mt-2">
                                             <div>
-                                                <p className="font-semibold">
-                                                    Gender Distribution
-                                                </p>
+                                                <p className="font-semibold">Gender Distribution</p>
                                                 {/* Recharts Pie Chart for Gender Distribution */}
 
-                                                <ResponsiveContainer
-                                                    width={200}
-                                                    height={200}
-                                                >
+                                                <ResponsiveContainer width={200} height={200}>
                                                     <PieChart>
                                                         <Tooltip
-                                                            formatter={(
-                                                                value,
-                                                                name,
-                                                            ) => [
-                                                                `${name}: ${value}`,
-                                                                name,
-                                                            ]}
-                                                            labelFormatter={() =>
-                                                                "Gender Distribution"
-                                                            } // Optional: You can customize the label
+                                                            formatter={(value, name) => [`${name}: ${value}`, name]}
+                                                            labelFormatter={() => "Gender Distribution"} // Optional: You can customize the label
                                                         />
                                                         <Pie
                                                             data={genderData}
@@ -223,78 +188,40 @@ const Dashboard = () => {
                                                             cy="50%"
                                                             outerRadius={60}
                                                         >
-                                                            {genderData.map(
-                                                                (
-                                                                    entry,
-                                                                    index,
-                                                                ) => (
-                                                                    <Cell
-                                                                        key={`cell-${index}`}
-                                                                        fill={
-                                                                            COLORS[
-                                                                                index %
-                                                                                    COLORS.length
-                                                                            ]
-                                                                        }
-                                                                    />
-                                                                ),
-                                                            )}
+                                                            {genderData.map((entry, index) => (
+                                                                <Cell
+                                                                    key={`cell-${index}`}
+                                                                    fill={COLORS[index % COLORS.length]}
+                                                                />
+                                                            ))}
                                                         </Pie>
-                                                        <Legend
-                                                            verticalAlign="bottom"
-                                                            height={36}
-                                                        />
+                                                        <Legend verticalAlign="bottom" height={36} />
                                                     </PieChart>
                                                 </ResponsiveContainer>
                                             </div>
                                             <div>
-                                                <p className="font-semibold">
-                                                    Age Group Distribution
-                                                </p>
+                                                <p className="font-semibold">Age Group Distribution</p>
                                                 {/* Recharts Bar Chart for Age Distribution */}
-                                                <ResponsiveContainer
-                                                    width={300}
-                                                    height={190}
-                                                >
+                                                <ResponsiveContainer width={300} height={190}>
                                                     <BarChart data={ageData}>
-                                                        <XAxis
-                                                            dataKey="ageGroup"
-                                                            hide="true"
-                                                        />
+                                                        <XAxis dataKey="ageGroup" hide="true" />
                                                         <YAxis />
                                                         <Tooltip />
                                                         <Legend />
-                                                        <Bar
-                                                            dataKey="Population"
-                                                            fill="#8884d8"
-                                                        />
+                                                        <Bar dataKey="Population" fill="#8884d8" />
                                                     </BarChart>
                                                 </ResponsiveContainer>
                                             </div>
                                             <div>
-                                                <p className="font-semibold">
-                                                    Street Distribution
-                                                </p>
+                                                <p className="font-semibold">Street Distribution</p>
                                                 {/* Recharts Bar Chart for Street Distribution */}
-                                                <ResponsiveContainer
-                                                    width={300}
-                                                    height={190}
-                                                >
+                                                <ResponsiveContainer width={300} height={190}>
                                                     <BarChart data={streetData}>
-                                                        <XAxis
-                                                            dataKey="street"
-                                                            hide="true"
-                                                        />
-                                                        <YAxis
-                                                            domain={[0, 10]}
-                                                        />{" "}
-                                                        {/* Set range from 1 to 30 */}
+                                                        <XAxis dataKey="street" hide="true" />
+                                                        <YAxis domain={[0, 10]} /> {/* Set range from 1 to 30 */}
                                                         <Tooltip />
                                                         <Legend />
-                                                        <Bar
-                                                            dataKey="Population"
-                                                            fill="#82ca9d"
-                                                        />
+                                                        <Bar dataKey="Population" fill="#82ca9d" />
                                                     </BarChart>
                                                 </ResponsiveContainer>
                                             </div>
@@ -305,8 +232,7 @@ const Dashboard = () => {
                         )}
 
                         {/* Upcoming Events Card */}
-                        {(isEventsHovered ||
-                            (!isTotalHovered && !isTransactionsHovered)) && (
+                        {(isEventsHovered || (!isTotalHovered && !isTransactionsHovered)) && (
                             <div
                                 className="transition-transform duration-700 ease-in-out transform hover:-translate-y-1 flex-1 relative"
                                 onMouseEnter={() => {
@@ -324,62 +250,33 @@ const Dashboard = () => {
                                 />
                                 {isEventsHovered && (
                                     <div className="absolute top-0 left-0 w-full h-full bg-white p-4 shadow-lg rounded-lg z-10 flex flex-col">
-                                        <h3 className="font-bold text-2xl text-[#333]">
-                                            Upcoming Events Details
-                                        </h3>
+                                        <h3 className="font-bold text-2xl text-[#333]">Upcoming Events Details</h3>
                                         <div className="flex w-full h-full overflow-x-auto space-x-4 py-2">
                                             {/* Display the active events horizontally */}
-                                            {upcomingEventDetails.filter(
-                                                (event) =>
-                                                    event.status === "Active",
-                                            ).length > 0 ? (
+                                            {upcomingEventDetails.filter((event) => event.status === "Active").length >
+                                            0 ? (
                                                 <div className="flex flex-row space-x-4">
                                                     {upcomingEventDetails
-                                                        .filter(
-                                                            (event) =>
-                                                                event.status ===
-                                                                "Active",
-                                                        )
-                                                        .slice(
-                                                            0,
-                                                            upcomingEvents.length,
-                                                        ) // Limit to 3 active events
+                                                        .filter((event) => event.status === "Active")
+                                                        .slice(0, upcomingEvents.length) // Limit to 3 active events
                                                         .map((event, index) => (
                                                             <div
                                                                 key={index}
                                                                 className="flex-shrink-0 w-64 p-4 bg-[#219dbc79] rounded-lg shadow-sm"
                                                             >
                                                                 <p className="font-semibold text-center pb-2">
-                                                                    <strong>
-                                                                        {
-                                                                            event.title
-                                                                        }
-                                                                    </strong>
+                                                                    <strong>{event.title}</strong>
                                                                 </p>
                                                                 <p>
-                                                                    {new Date(
-                                                                        event.date,
-                                                                    ).toLocaleDateString()}{" "}
-                                                                    |{" "}
-                                                                    <em>
-                                                                        {
-                                                                            event.location
-                                                                        }
-                                                                    </em>
+                                                                    {new Date(event.date).toLocaleDateString()} |{" "}
+                                                                    <em>{event.location}</em>
                                                                 </p>
-                                                                <p>
-                                                                    {
-                                                                        event.description
-                                                                    }
-                                                                </p>
+                                                                <p>{event.description}</p>
                                                             </div>
                                                         ))}
                                                 </div>
                                             ) : (
-                                                <p className="text-gray-500">
-                                                    No active events at the
-                                                    moment.
-                                                </p>
+                                                <p className="text-gray-500">No active events at the moment.</p>
                                             )}
                                         </div>
                                     </div>
@@ -388,8 +285,7 @@ const Dashboard = () => {
                         )}
 
                         {/* Pending Applications Card */}
-                        {(isTransactionsHovered ||
-                            (!isTotalHovered && !isEventsHovered)) && (
+                        {(isTransactionsHovered || (!isTotalHovered && !isEventsHovered)) && (
                             <div
                                 className="transition-transform duration-700 ease-in-out transform hover:-translate-y-1 flex-1 relative"
                                 onMouseEnter={() => {
@@ -397,9 +293,7 @@ const Dashboard = () => {
                                     setIsEventsHovered(false)
                                     setIsTransactionsHovered(true)
                                 }}
-                                onMouseLeave={() =>
-                                    setIsTransactionsHovered(false)
-                                }
+                                onMouseLeave={() => setIsTransactionsHovered(false)}
                             >
                                 <DashboardCard
                                     icon={TransactionIcon}
@@ -409,48 +303,27 @@ const Dashboard = () => {
                                 />
                                 {isTransactionsHovered && (
                                     <div className="absolute mb-4 top-0 left-0 w-full h-full bg-white p-6 shadow-lg rounded-lg z-10 flex flex-col space-y-4">
-                                        <h3 className="font-bold text-2xl text-[#333]">
-                                            Pending Applications Details
-                                        </h3>
+                                        <h3 className="font-bold text-2xl text-[#333]">Pending Applications Details</h3>
                                         <div className="flex flex-wrap gap-5 gap-x-8 overflow-x-hidden justify-center">
-                                            {pendingApplicationsDetails.map(
-                                                (application, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="bg-gray-100 p-4 rounded-lg shadow-md w-[400px] mb-2"
-                                                    >
-                                                        <div className="mb-4 border-b pb-3">
-                                                            <p className="text-gray-700">
-                                                                <strong>
-                                                                    Applicant:
-                                                                </strong>{" "}
-                                                                {
-                                                                    application.applicant_name
-                                                                }
-                                                            </p>
-                                                            <p className="text-gray-700">
-                                                                <strong>
-                                                                    Date
-                                                                    Submitted:
-                                                                </strong>{" "}
-                                                                {moment(
-                                                                    application.date_submitted,
-                                                                ).format(
-                                                                    "MMMM D, YYYY",
-                                                                )}
-                                                            </p>
-                                                            <p className="text-gray-700">
-                                                                <strong>
-                                                                    Form Type:
-                                                                </strong>{" "}
-                                                                {
-                                                                    application.form_type
-                                                                }
-                                                            </p>
-                                                        </div>
+                                            {pendingApplicationsDetails.map((application, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="bg-gray-100 p-4 rounded-lg shadow-md w-[400px] mb-2"
+                                                >
+                                                    <div className="mb-4 border-b pb-3">
+                                                        <p className="text-gray-700">
+                                                            <strong>Applicant:</strong> {application.applicant_name}
+                                                        </p>
+                                                        <p className="text-gray-700">
+                                                            <strong>Date Submitted:</strong>{" "}
+                                                            {moment(application.date_submitted).format("MMMM D, YYYY")}
+                                                        </p>
+                                                        <p className="text-gray-700">
+                                                            <strong>Form Type:</strong> {application.form_type}
+                                                        </p>
                                                     </div>
-                                                ),
-                                            )}
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
