@@ -86,7 +86,7 @@ const MembersList = () => {
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header searchQuery={searchQuery} onSearchChange={handleSearchChange} />
+            <Header searchQuery={searchQuery} onSearchChange={handleSearchChange} fetchMembersData={fetchMembersData} />
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards membersData={filteredMembers} />

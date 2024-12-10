@@ -61,6 +61,7 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
             },
         }))
     }
+    
     const handleSubmit = async () => {
         const { benefitType, Q1, Q2, Q3, Q4 } = formValues
 

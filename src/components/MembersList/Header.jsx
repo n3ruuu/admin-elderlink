@@ -5,7 +5,7 @@ import Modal from "./Modal"
 import HealthRecordsModal from "../HealthRecords/Modal"
 import FinancialRecordsModal from "../FinancialAssistance/Modal"
 
-const Header = ({ searchQuery, onSearchChange }) => {
+const Header = ({ searchQuery, onSearchChange, fetchMembersData }) => {
     const [currentStep, setCurrentStep] = useState(0) // Track modal steps
 
     const openNextModal = () => {
@@ -15,6 +15,7 @@ const Header = ({ searchQuery, onSearchChange }) => {
     const closeAllModals = () => {
         console.log("CLOSING ALL MODALS")
         setCurrentStep(0)
+        fetchMembersData()
     }
 
     const openPrevModal = () => {

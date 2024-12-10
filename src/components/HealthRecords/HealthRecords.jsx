@@ -47,10 +47,11 @@ const HealthRecords = () => {
         "Severe Mental Health Disorders",
     ]
 
-    // Filter members who meet the chronic condition criteria
     const getPriorityCareMembers = (members) => {
-        return members.filter((member) =>
-            member.medicalConditions?.split(",").some((condition) => chronicConditions.includes(condition.trim())),
+        return members.filter(
+            (member) =>
+                member.status === "Active" &&
+                member.medicalConditions?.split(",").some((condition) => chronicConditions.includes(condition.trim())),
         )
     }
 

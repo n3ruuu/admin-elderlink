@@ -1,7 +1,105 @@
 /* eslint-disable react/prop-types */
 import moment from "moment"
+import { useState } from "react"
+import Papa from "papaparse"
+import SuccessModal from "./SuccessModal"
+import axios from "axios"
 
 const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEditMode }) => {
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+    const [successModalMessage, setSuccessModalMessage] = useState("")
+    const [successModalTitle, setSuccessModalTitle] = useState("")
+    const [selectedFile, setSelectedFile] = useState(null)
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            setSelectedFile(file)
+        }
+    }
+
+    const handleImportCSV = () => {
+        if (!selectedFile) {
+            console.error("No file selected")
+            return
+        }
+
+        if (!(selectedFile instanceof Blob)) {
+            console.error("Selected file is not a valid Blob object")
+            return
+        }
+
+        // Create a FileReader instance
+        const reader = new FileReader()
+
+        // Set the onload function to handle the CSV file once it's read
+        reader.onload = () => {
+            const fileContent = reader.result
+
+            // Parse the CSV data using PapaParse
+            Papa.parse(fileContent, {
+                complete: (result) => {
+                    const rows = result.data
+
+                    // Process the rows to ensure proper data formatting
+                    const formattedData = rows
+                        .map((row, index) => {
+                            // Check if row data is valid or skip invalid rows
+                            if (index === 0 || !row.firstName || !row.lastName) return null // Skip invalid rows
+                            return {
+                                firstName: row.firstName || "",
+                                lastName: row.lastName || "",
+                                middleName: row.middleName || "", // Default empty if not available
+                                extension: row.extension || "",
+                                dob: moment(row.dob, "MM/DD/YYYY").format("YYYY-MM-DD"),
+                                sex: row.sex || "",
+                                civilStatus: row.civilStatus || "",
+                                address: row.address || "",
+                                contactNumber: row.contactNumber || "",
+                                controlNo: row.controlNo || "",
+                                purchaseBookletNo: row.purchaseBookletNo || "",
+                                medicineBookletNo: row.medicineBookletNo || "",
+                                dateIssued: moment(row.dateIssued, "MM/DD/YYYY").format("YYYY-MM-DD") || "",
+                                medicalConditions: row.medicalConditions || "",
+                                medications: row.medications || "",
+                                guardianFirstName: row.guardianFirstName || "",
+                                guardianMiddleName: row.guardianMiddleName || "",
+                                guardianLastName: row.guardianLastName || "",
+                                guardianEmail: row.guardianEmail || "",
+                                guardianContact: row.guardianContact || "",
+                                guardianRelationship: row.guardianRelationship || "",
+                            }
+                        })
+                        .filter((row) => row !== null) // Remove null values from the array
+
+                    console.log(formattedData)
+                    // Optionally send the formatted data to your backend
+                    sendDataToBackend(formattedData)
+                    setSuccessModalTitle("Imported Members!")
+                    setSuccessModalMessage("Members have been successfully imported.")
+                    setIsSuccessModalOpen(true) // Open the success modal
+                },
+                header: true, // Assumes the first row is the header
+                skipEmptyLines: true, // Skip empty lines if any
+            })
+        }
+
+        // Read the file as text (for CSV)
+        reader.readAsText(selectedFile)
+    }
+
+    // Function to send the data to the backend
+    const sendDataToBackend = async (data) => {
+        try {
+            const response = await axios.post("http://localhost:5000/members/import-csv", data)
+            console.log("Data imported successfully:", response.data)
+            // Optionally reset the selected file or do other UI updates
+            setSelectedFile(null)
+        } catch (error) {
+            console.error("Error importing data:", error)
+        }
+    }
+
     return (
         <>
             {/* Name Fields */}
@@ -224,12 +322,41 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
             <div className="flex justify-between mt-6">
                 <div>
                     {!isEditMode && (
-                        <button
-                            type="button"
-                            className="px-6 h-[45px] py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 font-bold"
-                        >
-                            Import .CSV File
-                        </button>
+                        <>
+                            {/* Hidden file input */}
+                            <input
+                                type="file"
+                                id="csvFile"
+                                accept=".csv"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                            <button
+                                type="button"
+                                className="px-6 h-[45px] py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 font-bold"
+                                onClick={() => document.getElementById("csvFile").click()}
+                            >
+                                Import .CSV File
+                            </button>
+
+                            {/* Display selected file name with small "X" button to remove */}
+                            {selectedFile && (
+                                <div className="mt-2 text-gray-500 flex items-center">
+                                    <p className="mr-2">{`Selected file: ${selectedFile?.name || "No file selected"}`}</p>
+
+                                    <button
+                                        type="button"
+                                        className="text-red-500 text-xl font-bold"
+                                        onClick={() => {
+                                            setSelectedFile(null) // Clear the selected file
+                                            document.getElementById("csvFile").value = "" // Reset the file input
+                                        }}
+                                    >
+                                        &times; {/* "X" character */}
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
                 <div className="flex space-x-4">
@@ -242,18 +369,36 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                     </button>
                     <button
                         type="button"
-                        disabled={!isFormValid}
-                        onClick={handleSubmit}
+                        disabled={!isFormValid && !selectedFile}
+                        onClick={() => {
+                            if (selectedFile) {
+                                handleImportCSV() // Function to handle the CSV import
+                            } else {
+                                handleSubmit() // Function for Save or Next, based on isEditMode
+                            }
+                        }}
                         className={`w-[100px] h-[45px] font-bold py-2 px-4 rounded transition-colors duration-300 ${
-                            isFormValid
+                            selectedFile || isFormValid
                                 ? "bg-[#219EBC] hover:bg-[#1A7A8A] text-white"
                                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
                     >
-                        {isEditMode ? "Save" : "Next"}
+                        {selectedFile ? "Import" : isEditMode ? "Save" : "Next"}
                     </button>
                 </div>
             </div>
+            {/* Success Modal */}
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => {
+                    setIsSuccessModalOpen(false)
+                    onClose()
+                }}
+                title={successModalTitle}
+                message={successModalMessage}
+                onGoToArchives={() => console.log("Navigating to Archives")}
+                isArchiving={false}
+            />
         </>
     )
 }
