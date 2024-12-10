@@ -110,9 +110,15 @@ const Dashboard = () => {
         // Fetch pending applications from the backend
         const fetchPendingApplications = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/application")
-                const pendingApps = response.data?.data.filter((application) => application.status === "Pending")
+                const response = await axios.get("http://localhost:5000/members")
 
+                // Ensure response.data contains the expected structure
+                const applications = response.data || []
+
+                // Filter pending applications
+                const pendingApps = applications.filter((application) => application.status === "Pending")
+
+                // Set the state with the filtered pending applications and count
                 setPendingApplications(pendingApps.length)
                 setPendingApplicationsDetails(pendingApps)
             } catch (error) {
@@ -312,14 +318,15 @@ const Dashboard = () => {
                                                 >
                                                     <div className="mb-4 border-b pb-3">
                                                         <p className="text-gray-700">
-                                                            <strong>Applicant:</strong> {application.applicant_name}
+                                                            <strong>Applicant:</strong> {application.firstName}{" "}
+                                                            {application.lastName}
                                                         </p>
                                                         <p className="text-gray-700">
                                                             <strong>Date Submitted:</strong>{" "}
                                                             {moment(application.date_submitted).format("MMMM D, YYYY")}
                                                         </p>
                                                         <p className="text-gray-700">
-                                                            <strong>Form Type:</strong> {application.form_type}
+                                                            <strong>Form Type:</strong> OSCA Registration Form
                                                         </p>
                                                     </div>
                                                 </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import SuccessModal from "./SuccessModal" // Import SuccessModal
 import axios from "axios"
+import moment from "moment"
 
 const AddFormModal = ({ isOpen, onClose, onAddNewInitiative }) => {
     const [categoryName, setCategoryName] = useState("") // Category name state
@@ -38,7 +39,6 @@ const AddFormModal = ({ isOpen, onClose, onAddNewInitiative }) => {
             setSuccessModalTitle("Initiative Added!")
             setSuccessModalMessage("Initiative has been successfully added.")
             setIsSuccessModalOpen(true) // Open the success modal
-
             // Add the new initiative to the list of initiatives (update parent component state)
             if (onAddNewInitiative) {
                 onAddNewInitiative(response.data) // Passing the new initiative data to parent

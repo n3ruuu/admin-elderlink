@@ -21,6 +21,29 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
     const [successModalMessage, setSuccessModalMessage] = useState("") // Success message state
     const [successModalTitle, setSuccessModalTitle] = useState("") // Success title state
 
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
+        }
+    }
+
     // Fetch members data from backend on component mount
     const fetchMembersData = async () => {
         try {
@@ -149,6 +172,7 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
 
         // Save the file locally
         doc.save(`${reportName}.pdf`) // This will trigger the download to your local computer
+        await logAction("New Report")
 
         // Include the file path (uploads/)
         const filePath = `uploads/${reportName}.pdf`

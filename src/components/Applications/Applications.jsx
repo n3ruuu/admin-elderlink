@@ -9,50 +9,57 @@ const Applications = () => {
     const [applications, setApplications] = useState([]) // Fetched applications
     const [searchQuery, setSearchQuery] = useState("") // Search query state
 
-    // Fetch applications from the API
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/application")
-                if (response.data?.data) {
-                    setApplications(response.data.data) // Set fetched data
-                } else {
-                    setApplications([])
-                }
+                const response = await axios.get("http://localhost:5000/members")
+                console.log(response.data) // Log the response to check its structure
+
+                // Filter applications based on the selected filter (only Pending, Approved, or Rejected)
+                const filteredApplications = response.data.filter((item) => {
+                    // Only consider statuses "Pending", "Approved", or "Rejected"
+                    const validStatuses = ["pending", "approved", "rejected"]
+
+                    if (filter === "all") {
+                        // Show all applications with valid statuses
+                        return validStatuses.includes(item.status.toLowerCase())
+                    }
+
+                    // Filter based on the selected filter
+                    return item.status.toLowerCase() === filter && validStatuses.includes(item.status.toLowerCase())
+                })
+
+                setApplications(filteredApplications) // Set filtered applications
             } catch (err) {
                 console.error("Error fetching applications:", err)
             }
         }
 
         fetchApplications()
-    }, [])
+    }, [filter]) // Include filter in the dependency array to refetch data when filter changes
 
-    // Update the status of an application
+    // Filter the applications by search query
+    const filteredApplications = applications.filter((application) => {
+        const fullName = `${application.firstName} ${application.lastName}`.toLowerCase()
+        return fullName.includes(searchQuery.toLowerCase())
+    })
+
+    // Function to update member status (Approve or Reject)
     const onStatusUpdate = async (id, newStatus) => {
         try {
-            const response = await axios.put(
-                `http://localhost:5000/application/update/${id}`,
-                { status: newStatus }, // Send 'status' instead of 'newStatus'
+            const response = await axios.put(`http://localhost:5000/application/members/${id}`, { status: newStatus })
+            console.log("Status updated:", response.data)
+
+            // Update the state with the new status
+            setApplications((prevApplications) =>
+                prevApplications.map((application) =>
+                    application.id === id ? { ...application, status: newStatus } : application,
+                ),
             )
-            if (response.status === 200) {
-                // Update the status in the local state
-                setApplications((prev) => prev.map((app) => (app.id === id ? { ...app, status: newStatus } : app)))
-            } else {
-                console.error("Failed to update status:", response.data)
-            }
         } catch (err) {
             console.error("Error updating status:", err)
         }
     }
-
-    const filteredData = applications.filter((item) => {
-        const matchesFilter = filter === "all" || (item.status && item.status.toLowerCase() === filter)
-        const matchesSearchQuery =
-            item.applicant_name?.toLowerCase().includes(searchQuery.toLowerCase()) || // Assuming 'name' is a field
-            item.form_type?.toLowerCase().includes(searchQuery.toLowerCase()) || // Add more fields as needed
-            item.status?.toLowerCase().includes(searchQuery.toLowerCase()) // Add more fields as needed
-        return matchesFilter && matchesSearchQuery
-    })
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
@@ -61,7 +68,8 @@ const Applications = () => {
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <FilterButtons filter={filter} setFilter={setFilter} />
                     <div className="mt-8">
-                        <Table filteredData={filteredData} onStatusUpdate={onStatusUpdate} />
+                        {/* Pass the filtered applications to the Table */}
+                        <Table applications={filteredApplications} onStatusUpdate={onStatusUpdate} />
                     </div>
                 </div>
             </div>

@@ -20,9 +20,38 @@ const MembersList = () => {
     const fetchMembersData = async () => {
         try {
             const response = await axios.get("http://localhost:5000/members")
-            setMembersData(response.data)
+
+            // Filter members to only include those with status "Active" or "Approved"
+            const filteredMembers = response.data.filter(
+                (member) => member.status === "Active" || member.status === "Approved",
+            )
+
+            setMembersData(filteredMembers)
         } catch (error) {
             console.error("Error fetching members data:", error)
+        }
+    }
+
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
         }
     }
 
@@ -38,6 +67,7 @@ const MembersList = () => {
         if (currentMember) {
             setSuccessModalTitle("Update Completed!")
             setSuccessModalMessage("Member information has been successfully updated.")
+            await logAction(`Update Member`)
         } else {
             setSuccessModalTitle("Member Added!")
             setSuccessModalMessage("New member has been successfully added.")
@@ -64,11 +94,6 @@ const MembersList = () => {
     const filteredMembers = membersData.filter((member) => {
         const lowercasedQuery = searchQuery.toLowerCase()
 
-        // Only include members with status 'Active'
-        if (member.status !== "Active") {
-            return false
-        }
-
         return (
             member.firstName.toLowerCase().includes(lowercasedQuery) ||
             member.lastName.toLowerCase().includes(lowercasedQuery) ||
@@ -90,7 +115,12 @@ const MembersList = () => {
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Cards membersData={filteredMembers} />
-                    <Table membersData={filteredMembers} onEdit={handleOpenModal} fetchMembersData={fetchMembersData} />
+                    <Table
+                        membersData={filteredMembers}
+                        onEdit={handleOpenModal}
+                        fetchMembersData={fetchMembersData}
+                        logAction={logAction}
+                    />
                 </div>
             </div>
 

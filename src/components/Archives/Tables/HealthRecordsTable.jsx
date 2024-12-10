@@ -26,7 +26,9 @@ const HealthRecordsTable = () => {
             const data = await response.json()
 
             // Only show active members (assuming 'status' is 'Active' for active members)
-            const archivedMembers = data.filter((member) => member.status !== "Active")
+            const archivedMembers = data.filter((member) =>
+                ["Relocated", "Deceased", "Inactive"].includes(member.status),
+            )
             setMembers(archivedMembers)
         } catch (error) {
             console.error("Error fetching members:", error)

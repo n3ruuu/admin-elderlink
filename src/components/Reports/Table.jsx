@@ -29,6 +29,29 @@ const Table = ({ reportsData, fetchReportsData }) => {
         setSelectedReport(null) // Clear the selected report
     }
 
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
+        }
+    }
+
     const handleConfirmArchive = async () => {
         if (!selectedReport) return
 
@@ -39,6 +62,7 @@ const Table = ({ reportsData, fetchReportsData }) => {
             setModalMessage("The report has been successfully archived.")
             handleCloseModal() // Close the modal after confirming the archive
             setSuccessModalOpen(true) // Show error message
+            await logAction("Archive Report")
         } catch (error) {
             console.error("Error archiving the report:", error)
             alert("Error archiving the report")

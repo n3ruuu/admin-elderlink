@@ -5,6 +5,7 @@ import Table from "./Table"
 import Modal from "./Modal"
 import SuccessModal from "./SuccessModal"
 import PriorityCareModal from "./PriorityCareModal" // Import the new PriorityCareModal
+import moment from "moment"
 
 const HealthRecords = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -55,6 +56,29 @@ const HealthRecords = () => {
         )
     }
 
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
+        }
+    }
+
     const fetchMembersData = async () => {
         try {
             const response = await fetch("http://localhost:5000/members")
@@ -62,8 +86,12 @@ const HealthRecords = () => {
                 throw new Error("Network response was not ok")
             }
             const data = await response.json()
-            setMembersData(data)
-            setPriorityCareMembers(getPriorityCareMembers(data)) // Set priority care members
+
+            // Filter members to only include those with status "Active" or "Approved"
+            const filteredMembers = data.filter((member) => member.status === "Active" || member.status === "Approved")
+
+            setMembersData(filteredMembers)
+            setPriorityCareMembers(getPriorityCareMembers(filteredMembers)) // Set priority care members based on filtered data
         } catch (error) {
             console.error("Error fetching members data:", error)
         }
@@ -92,6 +120,7 @@ const HealthRecords = () => {
         if (currentRecord) {
             setSuccessModalTitle("Update Completed!")
             setSuccessModalMessage("Member information has been successfully updated.")
+            await logAction("Update Health Record")
         } else {
             setSuccessModalTitle("Update Completed!")
             setSuccessModalMessage("Member information has been successfully updated.")
@@ -127,10 +156,6 @@ const HealthRecords = () => {
     // Filter members based on the search query
     const filteredMembers = membersData.filter((member) => {
         const lowercasedQuery = searchQuery.toLowerCase()
-        // Only include members with status 'Active'
-        if (member.status !== "Active") {
-            return false
-        }
 
         return (
             member.firstName.toLowerCase().includes(lowercasedQuery) ||
@@ -163,6 +188,7 @@ const HealthRecords = () => {
                         onEdit={handleOpenModal}
                         chronicConditions={chronicConditions}
                         fetchMembersData={fetchMembersData}
+                        logAction={logAction}
                     />
                 </div>
             </div>

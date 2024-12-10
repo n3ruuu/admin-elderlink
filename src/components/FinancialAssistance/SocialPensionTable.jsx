@@ -23,6 +23,7 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
         setCurrentPage(page)
     }
 
+    
     const generateCSV = () => {
         const header = ["Control No.", "Full Name", "Quarter", "Disbursement Date", "Status", "Claimer", "Relationship"]
 
@@ -151,16 +152,16 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
                     {currentMembers.map((member, index) => {
                         const isNullData = !member.disbursement_date && !member.claimer && !member.relationship
 
-                        const getStatusText = () => {
-                            if (isNullData) return "N/A"
-                            return member.status || "Unclaimed"
-                        }
-
                         const getStatusColor = () => {
                             if (isNullData) return "" // No color for N/A
                             if (member.status === "Claimed") return "text-green-500 font-semibold"
                             if (member.status === "Unclaimed") return "text-red-500 font-semibold"
                             return "" // Default case
+                        }
+
+                        const getStatusText = () => {
+                            if (isNullData) return "N/A"
+                            return member.status || "Unclaimed"
                         }
 
                         return (

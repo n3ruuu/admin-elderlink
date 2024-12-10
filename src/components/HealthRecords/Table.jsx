@@ -11,7 +11,7 @@ import ArchiveModal from "./ArchiveModal" // Import ArchiveModal
 import axios from "axios" // Make sure axios is imported
 import SuccessModal from "./SuccessModal"
 
-const Table = ({ membersData, onEdit, chronicConditions, fetchMembersData }) => {
+const Table = ({ membersData, onEdit, chronicConditions, fetchMembersData, logAction }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6 // Number of items to display per page
     const [showReportOptions, setShowReportOptions] = useState(false)
@@ -54,6 +54,7 @@ const Table = ({ membersData, onEdit, chronicConditions, fetchMembersData }) => 
                 setSuccessModalMessage("Member information has been successfully archived.")
                 setIsSuccessModalOpen(true) // Open the success modal
                 fetchMembersData()
+                await logAction("Archive Member")
             } catch (error) {
                 console.error("Error archiving member:", error)
             }

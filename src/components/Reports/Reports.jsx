@@ -7,6 +7,7 @@ import Table from "./Table"
 const Reports = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [reportsData, setReportsData] = useState([])
+    const [searchQuery, setSearchQuery] = useState("")
 
     // Fetch reports data from the API
     const fetchReportsData = async () => {
@@ -34,13 +35,31 @@ const Reports = () => {
         setIsModalOpen(true)
     }
 
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value)
+    }
+
+    // Filter the reports based on the search query
+    const filteredReports = reportsData.filter((report) => {
+        const reportName = report.report_name ? report.report_name.toLowerCase() : ""
+        const reportType = report.report_type ? report.report_type.toLowerCase() : ""
+        const reportCreatedBy = report.created_by ? report.created_by.toLowerCase() : ""
+
+        return (
+            reportName.includes(searchQuery.toLowerCase()) || // Filter by report name
+            reportType.includes(searchQuery.toLowerCase()) || // Filter by report type
+            reportCreatedBy.includes(searchQuery.toLowerCase()) // Filter by report creator
+        )
+    })
+
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-hidden">
-            <Header onOpen={handleOpenModal} /> {/* Pass the function as a prop */}
+            <Header onOpen={handleOpenModal} searchQuery={searchQuery} onSearchChange={handleSearchChange} />
+
             <div className="flex w-full h-full">
                 <div className="flex-1 flex flex-col pl-16 pr-16">
                     <Table
-                        reportsData={reportsData}
+                        reportsData={filteredReports} // Pass the filtered data to the Table component
                         fetchReportsData={fetchReportsData} // Allow Table to trigger a data refresh
                     />
                 </div>

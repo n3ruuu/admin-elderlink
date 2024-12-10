@@ -1,13 +1,6 @@
 /* eslint-disable react/prop-types */
 
-const SuccessModal = ({
-    isOpen,
-    onClose,
-    title,
-    message,
-    onGoToArchives,
-    isArchiving,
-}) => {
+const SuccessModal = ({ isOpen, onClose, title, message, isArchiving }) => {
     if (!isOpen) return null
 
     return (
@@ -22,12 +15,6 @@ const SuccessModal = ({
                 {isArchiving ? (
                     // Show both "Go to Archives" and "Got it" buttons if archiving
                     <div className="flex justify-end gap-5">
-                        <button
-                            onClick={onGoToArchives}
-                            className="text-[#219EBC] border w-[150px] border-[#219EBC] hover:bg-[#219EBC] hover:text-white font-bold py-2 px-4 rounded transition-colors duration-300"
-                        >
-                            Go to Archives
-                        </button>
                         <button
                             onClick={onClose}
                             className="bg-[#219EBC] w-[100px] hover:bg-[#168B99] text-white font-bold py-2 px-4 rounded transition-colors duration-300"

@@ -30,6 +30,29 @@ const FinancialAssistance = () => {
         }
     }
 
+    const logAction = async (action) => {
+        try {
+            const response = await fetch("http://localhost:5000/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action,
+                    timestamp: moment().format("YYYY-MM-DD HH:mm:ss"), // Current timestamp in ISO format
+                }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to log action")
+            }
+
+            console.log("Action logged successfully")
+        } catch (error) {
+            console.error("Error logging action:", error)
+        }
+    }
+
     const handleOpenModal = (member) => {
         setCurrentMember(member)
         setIsModalOpen(true)
@@ -77,6 +100,7 @@ const FinancialAssistance = () => {
             // If we're editing an existing member
             setSuccessModalTitle("Update Completed!")
             setSuccessModalMessage("Member financial record has been successfully updated.")
+            await logAction("Update Financial Record")
         }
 
         setIsSuccessModalOpen(true) // Open the success modal

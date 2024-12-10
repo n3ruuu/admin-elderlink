@@ -15,9 +15,7 @@ const Header = ({
             <div className="p-16 w-full pb-8 flex items-start justify-between">
                 <div className="w-1/2">
                     <h1 className="text-6xl font-bold">Form Library</h1>
-                    <p className="text-[#767171CC] mt-3">
-                        Create forms aligned to the community's need
-                    </p>
+                    <p className="text-[#767171CC] mt-3">Create forms aligned to the community's need</p>
                 </div>
                 <div className="w-1/2 text-[#333333] justify-end flex items-start">
                     <div className="relative w-full max-w-md mr-4">
@@ -37,38 +35,25 @@ const Header = ({
                         />
                     </div>
 
-              
-
                     {selectedCategory ? (
-    <button
-        className="bg-[#219EBC] text-white text-xl py-2.5 px-10 rounded-lg flex items-center gap-2"
-        onClick={() => document.getElementById("fileInput").click()}
-    >
-        <img
-            src={ImportIcon}
-            alt="Import Icon"
-            className="w-5 h-5"
-        />
-        <span>Import File</span>
-    </button>
-) : (
-    <button
-        className="text-[#F5F5FA] bg-[#219EBC] px-8 text-[24px] py-2 rounded-lg hover:bg-[#1A7F8C]"
-        onClick={onAddFormClick} // Open the modal
-    >
-        &#43; Add Forms
-    </button>
-)}
-
+                        <button
+                            className="bg-[#219EBC] text-white text-xl py-2.5 px-10 rounded-lg flex items-center gap-2"
+                            onClick={() => document.getElementById("fileInput").click()}
+                        >
+                            <img src={ImportIcon} alt="Import Icon" className="w-5 h-5" />
+                            <span>Import File</span>
+                        </button>
+                    ) : (
+                        <button
+                            className="text-[#F5F5FA] bg-[#219EBC] px-8 text-[24px] py-2 rounded-lg hover:bg-[#1A7F8C]"
+                            onClick={onAddFormClick} // Open the modal
+                        >
+                            &#43; Add Folder
+                        </button>
+                    )}
                 </div>
             </div>
-            <input
-                type="file"
-                id="fileInput"
-                accept=".pdf"
-                className="hidden"
-                onChange={onFileUpload}
-            />
+            <input type="file" id="fileInput" accept=".pdf" className="hidden" onChange={onFileUpload} />
         </section>
     )
 }

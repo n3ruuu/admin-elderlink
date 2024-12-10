@@ -5,14 +5,9 @@ import EditIcon from "../../assets/icons/edit.svg" // Import the archive icon
 import ArchiveIcon from "../../assets/icons/archive2.svg" // Import the archive icon
 import ArchiveModal from "./ArchiveModal" // Import the ArchiveModal component
 import axios from "axios" // Import axios for making API requests
-import SuccessModal from "../common/SuccessModal"
+import SuccessModal from "./SuccessModal"
 
-const FormsContainer = ({
-    groupedForms,
-    selectedCategory,
-    fetchFormsData,
-    logAction,
-}) => {
+const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData, logAction }) => {
     const [activeFormId, setActiveFormId] = useState(null) // Track the active form
     const [isModalOpen, setIsModalOpen] = useState(false) // Modal visibility state
     const [formTitle, setFormTitle] = useState("") // Store form title to display in modal
@@ -56,10 +51,7 @@ const FormsContainer = ({
                 fetchFormsData()
                 await logAction(`Update Form`)
             } catch (error) {
-                console.error(
-                    "Error updating title:",
-                    error.response?.data?.error || error.message,
-                )
+                console.error("Error updating title:", error.response?.data?.error || error.message)
             }
         }
     }
@@ -83,10 +75,7 @@ const FormsContainer = ({
             await logAction("Archive Form")
             fetchFormsData()
         } catch (error) {
-            console.error(
-                "Error archiving form:",
-                error.response?.data?.error || error.message,
-            )
+            console.error("Error archiving form:", error.response?.data?.error || error.message)
         }
     }
 
@@ -110,10 +99,7 @@ const FormsContainer = ({
                                         width="100%"
                                         height="100%"
                                     >
-                                        <p>
-                                            Your browser does not support PDF
-                                            preview.
-                                        </p>
+                                        <p>Your browser does not support PDF preview.</p>
                                     </object>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -122,24 +108,18 @@ const FormsContainer = ({
                                         <input
                                             type="text"
                                             value={editableTitle}
-                                            onChange={(e) =>
-                                                setEditableTitle(e.target.value)
-                                            }
+                                            onChange={(e) => setEditableTitle(e.target.value)}
                                             onKeyDown={handleTitleChange}
                                             className="text-lg font-semibold w-full border-b-2 border-gray-400 focus:outline-none"
                                         />
                                     ) : (
                                         <h3 className="text-lg font-semibold">
-                                            {formTitle || form.title}{" "}
-                                            {/* Display form title or current form title */}
+                                            {formTitle || form.title} {/* Display form title or current form title */}
                                         </h3>
                                     )}
                                 </div>
                                 <p className="text-sm text-gray-500">
-                                    Date Created:{" "}
-                                    {moment(form.createdAt).format(
-                                        "MMMM D, YYYY, h:mm A",
-                                    )}
+                                    Date Created: {moment(form.createdAt).format("MMMM D, YYYY, h:mm A")}
                                 </p>
                             </div>
                             <a
@@ -154,9 +134,7 @@ const FormsContainer = ({
                             <img
                                 src={EditIcon}
                                 alt="Edit"
-                                onClick={() =>
-                                    handleEditClick(form.id, form.title)
-                                }
+                                onClick={() => handleEditClick(form.id, form.title)}
                                 className="absolute bottom-6 right-16 w-6 h-6 cursor-pointer transition-transform hover:scale-110"
                             />
 
@@ -164,9 +142,7 @@ const FormsContainer = ({
                             <img
                                 src={ArchiveIcon}
                                 alt="Archive"
-                                onClick={() =>
-                                    handleArchiveClick(form.id, form.title)
-                                }
+                                onClick={() => handleArchiveClick(form.id, form.title)}
                                 className="absolute bottom-6 right-8 w-6 h-6 cursor-pointer transition-transform hover:scale-110"
                             />
                         </div>

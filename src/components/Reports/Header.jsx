@@ -1,10 +1,7 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react"
 import SearchIcon from "../../assets/icons/search.svg"
 
-const Header = ({ onOpen }) => {
-    const [searchQuery, setSearchQuery] = useState("")
-
+const Header = ({ onOpen, searchQuery, onSearchChange }) => {
     return (
         <div className="p-16 w-full pb-8 flex">
             <div className="w-1/2">
@@ -19,8 +16,8 @@ const Header = ({ onOpen }) => {
                                 type="search"
                                 name="search"
                                 id="search"
-                                value={searchQuery} // Bind input to state
-                                onChange={(e) => setSearchQuery(e.target.value)} // Update state on input change
+                                value={searchQuery} // Bind value to searchQuery
+                                onChange={onSearchChange} // Handle search input change
                                 className="p-3 pl-12 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full"
                                 placeholder="Search..."
                             />
