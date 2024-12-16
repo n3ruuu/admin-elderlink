@@ -1,9 +1,5 @@
-/* eslint-disable react/prop-types */
-
-// eslint-disable-next-line no-unused-vars
 const FormFields = ({ formData, onChange }) => {
     const isEndDateVisible = formData.recurrence && formData.recurrence !== "One-Time";
-
 
     return (
         <>
@@ -123,7 +119,7 @@ const FormFields = ({ formData, onChange }) => {
                 {isEndDateVisible && (
                     <div>
                         <label htmlFor="endDate" className="block text-lg font-medium text-gray-700 mb-1">
-                            End Date <span className="text-red-500">*</span>
+                            End Date
                         </label>
                         <input
                             type="date"
@@ -138,37 +134,37 @@ const FormFields = ({ formData, onChange }) => {
             </div>
 
             {/* Location and Organizer */}
-<div className="mb-4 grid grid-cols-2 gap-4">
-    <div>
-        <label htmlFor="location" className="block text-lg font-medium text-gray-700 mb-1">
-            Location <span className="text-red-500">*</span>
-        </label>
-        <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={onChange}
-            className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            required
-        />
-    </div>
+            <div className="mb-4 grid grid-cols-2 gap-4">
+                <div>
+                    <label htmlFor="location" className="block text-lg font-medium text-gray-700 mb-1">
+                        Location <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        value={formData.location}
+                        onChange={onChange}
+                        className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        required
+                    />
+                </div>
 
-    <div>
-        <label htmlFor="organizer" className="block text-lg font-medium text-gray-700 mb-1">
-            Organizer <span className="text-red-500">*</span>
-        </label>
-        <input
-            type="text"
-            id="organizer"
-            name="organizer"
-            value={formData.organizer}
-            onChange={onChange}
-            className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            required
-        />
-    </div>
-</div>
+                <div>
+                    <label htmlFor="organizer" className="block text-lg font-medium text-gray-700 mb-1">
+                        Organizer <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="organizer"
+                        name="organizer"
+                        value={formData.organizer}
+                        onChange={onChange}
+                        className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        required
+                    />
+                </div>
+            </div>
 
         </>
     )

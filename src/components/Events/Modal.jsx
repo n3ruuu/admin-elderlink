@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
 import moment from "moment"
 import FormFields from "./FormFields"
@@ -13,7 +12,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
         time: "",
         location: "",
         organizer: "",
-        endDate: "", // Added endDate to formData
+        endDate: "" // Added endDate
     })
 
     const [isModified, setIsModified] = useState(false)
@@ -21,7 +20,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
     const isEditMode = !!event
 
     useEffect(() => {
-        if (isEditMode && event) {
+        if (isEditMode) {
             setFormData({
                 title: event.title || "",
                 description: event.description || "",
@@ -31,7 +30,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 time: event.time || "",
                 location: event.location || "",
                 organizer: event.organizer || "",
-                endDate: event.endDate ? moment(event.endDate).format("YYYY-MM-DD") : "", // Ensure endDate is set properly
+                endDate: event.endDate ? moment(event.endDate).format("YYYY-MM-DD") : "" // Set endDate
             })
             setIsModified(false)
         } else {
@@ -44,8 +43,8 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 time: "",
                 location: "",
                 organizer: "",
-                endDate: "", // Reset endDate when adding a new event
-            })
+                endDate: "" // Clear endDate when not editing
+            })  
         }
     }, [event, isEditMode])
 
@@ -76,10 +75,10 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
             organizer: formData.organizer,
             category: formData.category,
             recurrence: formData.recurrence,
-            endDate: formData.endDate, // Add endDate to updated event
+            endDate: formData.endDate // Save endDate
         }
         onSave(updatedEvent)
-        console.log('Form Data on Save:', formData) // Log the form data for debugging
+        console.log(formData.endDate)
     }
 
     return (
