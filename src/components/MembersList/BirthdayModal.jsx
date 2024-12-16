@@ -95,6 +95,7 @@ const BirthdayModal = ({ isOpen, onClose, upcomingBirthdays }) => {
                                         src={SendIcon}
                                         alt="Send Icon"
                                         className="w-5 h-5 cursor-pointer"
+                                        title="Send Birthday Email" // Tooltip for the send icon
                                         onClick={() => openSMSModal(member)} // Open SMS modal on icon click
                                     />
                                 </div>

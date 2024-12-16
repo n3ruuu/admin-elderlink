@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react"
-import moment from "moment"
-import FormFields from "./FormFields"
+import { useState, useEffect } from "react";
+import moment from "moment";
+import FormFields from "./FormFields";
 
 const Modal = ({ isOpen, onClose, onSave, event }) => {
     const [formData, setFormData] = useState({
@@ -12,12 +12,13 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
         time: "",
         location: "",
         organizer: "",
-        endDate: "" // Added endDate
-    })
+        endDate: "", // Added endDate
+        recurrenceDates: [] // Array to store recurrence dates
+    });
 
-    const [isModified, setIsModified] = useState(false)
+    const [isModified, setIsModified] = useState(false);
 
-    const isEditMode = !!event
+    const isEditMode = !!event;
 
     useEffect(() => {
         if (isEditMode) {
@@ -30,9 +31,10 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 time: event.time || "",
                 location: event.location || "",
                 organizer: event.organizer || "",
-                endDate: event.endDate ? moment(event.endDate).format("YYYY-MM-DD") : "" // Set endDate
-            })
-            setIsModified(false)
+                endDate: event.endDate ? moment(event.endDate).format("YYYY-MM-DD") : "", // Set endDate
+                recurrenceDates: event.recurrenceDates || [] // Set recurrenceDates if editing
+            });
+            setIsModified(false);
         } else {
             setFormData({
                 title: "",
@@ -43,28 +45,79 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 time: "",
                 location: "",
                 organizer: "",
-                endDate: "" // Clear endDate when not editing
-            })  
+                endDate: "", // Clear endDate when not editing
+                recurrenceDates: [] // Clear recurrence dates when not editing
+            });
         }
-    }, [event, isEditMode])
+    }, [event, isEditMode]);
 
-    if (!isOpen) return null
+    if (!isOpen) return null;
 
     const handleChange = (e) => {
-        const { name, value } = e.target
+        const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
-        }))
-        setIsModified(true)
-    }
+        }));
+        setIsModified(true);
+    };
+
+    const generateRecurrenceDates = (startDate, endDate, recurrence) => {
+        let dates = [];
+        let currentDate = moment(startDate);
+        const finalDate = moment(endDate);
+    
+        // Daily recurrence
+        if (recurrence === "Daily") {
+            while (currentDate <= finalDate) {
+                dates.push(currentDate.format("YYYY-MM-DD"));
+                currentDate.add(1, "days");
+            }
+        }
+        // Weekly recurrence
+        else if (recurrence === "Weekly") {
+            while (currentDate <= finalDate) {
+                dates.push(currentDate.format("YYYY-MM-DD"));
+                currentDate.add(1, "weeks");
+            }
+        }
+        // Monthly recurrence
+        else if (recurrence === "Monthly") {
+            while (currentDate <= finalDate) {
+                dates.push(currentDate.format("YYYY-MM-DD"));
+                currentDate.add(1, "months");
+            }
+        }
+        // Yearly recurrence
+        else if (recurrence === "Yearly") {
+            while (currentDate <= finalDate) {
+                dates.push(currentDate.format("YYYY-MM-DD"));
+                currentDate.add(1, "years");
+            }
+        }
+    
+        return dates;
+    };
+    
 
     const isFormValid = () => {
-        const requiredFields = ["title", "description", "category", "recurrence", "date", "time", "location", "organizer"]
-        return requiredFields.every((field) => formData[field]?.trim() !== "")
-    }
+        const requiredFields = ["title", "description", "category", "recurrence", "date", "time", "location", "organizer"];
+        return requiredFields.every((field) => formData[field]?.trim() !== "");
+    };
 
     const handleSave = () => {
+        // Generate recurrence dates if recurrence is set
+        const generatedRecurrenceDates = formData.recurrence 
+            ? generateRecurrenceDates(formData.date, formData.endDate, formData.recurrence) 
+            : [];
+    
+        // Update formData with the generated recurrence dates
+        setFormData((prevData) => ({
+            ...prevData,
+            recurrenceDates: generatedRecurrenceDates // Set recurrenceDates in state
+        }));
+    
+        // Create the updated event object with formData values, including generated recurrenceDates
         const updatedEvent = {
             ...event,
             title: formData.title,
@@ -75,11 +128,18 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
             organizer: formData.organizer,
             category: formData.category,
             recurrence: formData.recurrence,
-            endDate: formData.endDate // Save endDate
-        }
-        onSave(updatedEvent)
-        console.log(formData.endDate)
-    }
+            endDate: formData.endDate, // Save endDate
+            recurrenceDates: generatedRecurrenceDates // Save the generated recurrence dates
+        };
+    
+        // Call the onSave callback with the updated event data
+        onSave(updatedEvent);
+    
+        // Log the generated recurrence dates and formData for debugging
+        console.log("Generated Recurrence Dates:", generatedRecurrenceDates);
+        console.log("Updated Form Data:", formData);
+    };
+    
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -113,7 +173,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Modal
+export default Modal;

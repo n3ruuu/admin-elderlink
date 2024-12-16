@@ -5,6 +5,7 @@ import timeGridPlugin from "@fullcalendar/timegrid"
 import interactionPlugin from "@fullcalendar/interaction"
 import axios from "axios" // Import axios for API calls
 import "../../css/calendar.css" // Import the external CSS file
+import moment from "moment" // Import Moment.js for date manipulation
 
 const Calendar = () => {
     const [events, setEvents] = useState([])
@@ -19,22 +20,79 @@ const Calendar = () => {
             const formattedEvents = response.data
                 .filter((event) => event.status === "Active") // Filter to include only active events
                 .map((event) => ({
-                    title: event.title,
-                    date: formatDate(event.date),
-                    location: event.location,
-                    organizer: event.organizer,
-                    category: event.category,
+                    ...event,
+                    occurrences: getEventOccurrences(event),
                 }))
+                .flatMap((event) => event.occurrences) // Flatten the recurring events
             setEvents(formattedEvents)
         } catch (error) {
             console.error("Error fetching events:", error)
         }
     }
 
-    const formatDate = (dateStr) => {
-        // Convert MM-DD-YYYY to YYYY-MM-DD
-        const [month, day, year] = dateStr.split("-")
-        return `${month}-${day}-${year}`
+    const getEventOccurrences = (event) => {
+        const occurrences = []
+        const startDate = moment(event.date)
+        const endDate = moment(event.endDate)
+
+        switch (event.recurrence) {
+            case "Weekly":
+                for (let date = startDate; date.isBefore(endDate) || date.isSame(endDate, 'day'); date.add(1, 'week')) {
+                    occurrences.push({
+                        title: event.title,
+                        date: date.format("YYYY-MM-DD"),
+                        location: event.location,
+                        organizer: event.organizer,
+                        category: event.category,
+                    })
+                }
+                break
+            case "Monthly":
+                for (let date = startDate; date.isBefore(endDate) || date.isSame(endDate, 'day'); date.add(1, 'month')) {
+                    occurrences.push({
+                        title: event.title,
+                        date: date.format("YYYY-MM-DD"),
+                        location: event.location,
+                        organizer: event.organizer,
+                        category: event.category,
+                    })
+                }
+                break
+            case "Yearly":
+                for (let date = startDate; date.isBefore(endDate) || date.isSame(endDate, 'day'); date.add(1, 'year')) {
+                    occurrences.push({
+                        title: event.title,
+                        date: date.format("YYYY-MM-DD"),
+                        location: event.location,
+                        organizer: event.organizer,
+                        category: event.category,
+                    })
+                }
+                break
+            case "Daily":
+                for (let date = startDate; date.isBefore(endDate) || date.isSame(endDate, 'day'); date.add(1, 'day')) {
+                    occurrences.push({
+                        title: event.title,
+                        date: date.format("YYYY-MM-DD"),
+                        location: event.location,
+                        organizer: event.organizer,
+                        category: event.category,
+                    })
+                }
+                break
+            default:
+                // For one-time events, only add the start date
+                occurrences.push({
+                    title: event.title,
+                    date: startDate.format("YYYY-MM-DD"),
+                    location: event.location,
+                    organizer: event.organizer,
+                    category: event.category,
+                })
+                break
+        }
+
+        return occurrences
     }
 
     return (

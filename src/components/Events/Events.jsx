@@ -81,9 +81,9 @@ const Events = () => {
                 organizer: updatedEvent.organizer,
                 category: updatedEvent.category,
                 recurrence: updatedEvent.recurrence, // Add recurrence
-                endDate: updatedEvent.endDate // Add endDate
-            }
-    
+                endDate: updatedEvent.endDate, // Add endDate
+                recurrenceDates: updatedEvent.recurrenceDates // Add an array to store recurrence dates
+            };
             if (updatedEvent.id) {
                 const response = await axios.put(`http://localhost:5000/events/${updatedEvent.id}`, eventData)
                 setEventsData((prevData) =>

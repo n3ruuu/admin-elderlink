@@ -89,24 +89,67 @@ const Dashboard = () => {
         const fetchUpcomingEvents = async () => {
             try {
                 const response = await axios.get("http://localhost:5000/events")
-                const currentDate = new Date()
-
-                // Filter events that are within the next month and have "Active" status
-                const upcoming = response.data.filter((event) => {
-                    const eventDate = new Date(event.date)
-                    const diffTime = eventDate - currentDate
-                    return (
-                        event.status === "Active" && diffTime >= 0 && diffTime <= 30 * 24 * 60 * 60 * 1000 // within the next month
-                    )
+                const currentDate = moment()
+                const oneMonthLater = moment().add(1, "month")
+        
+                const upcoming = []
+        
+                // Loop through each event and calculate its occurrences
+                response.data.forEach((event) => {
+                    if (event.status === "Active") {
+                        if (event.recurrence === "One-Time") {
+                            // For one-time events
+                            const eventDate = moment(event.date)
+                            if (eventDate.isBetween(currentDate, oneMonthLater, "day", "[]")) {
+                                upcoming.push(event)
+                            }
+                        } else {
+                            // For recurring events, calculate occurrences
+                            const startDate = moment(event.startDate)
+                            const endDate = moment(event.endDate)
+        
+                            let recurrenceInterval
+                            switch (event.recurrence) {
+                                case "Daily":
+                                    recurrenceInterval = "days"
+                                    break
+                                case "Weekly":
+                                    recurrenceInterval = "weeks"
+                                    break
+                                case "Monthly":
+                                    recurrenceInterval = "months"
+                                    break
+                                case "Yearly":
+                                    recurrenceInterval = "years"
+                                    break
+                                default:
+                                    return // Skip unknown recurrence types
+                            }
+        
+                            // Generate all dates for the recurrence
+                            for (
+                                let date = startDate.clone();
+                                date.isSameOrBefore(endDate) && date.isSameOrBefore(oneMonthLater);
+                                date.add(1, recurrenceInterval)
+                            ) {
+                                if (date.isSameOrAfter(currentDate)) {
+                                    upcoming.push({
+                                        ...event,
+                                        date: date.format("YYYY-MM-DD"), // Replace the single date with the recurring date
+                                    })
+                                }
+                            }
+                        }
+                    }
                 })
-
+        
                 setUpcomingEventDetails(upcoming)
                 setUpcomingEvents(upcoming.length)
             } catch (error) {
                 console.error("Error fetching upcoming events:", error)
             }
         }
-
+        
         // Fetch pending applications from the backend
         const fetchPendingApplications = async () => {
             try {
