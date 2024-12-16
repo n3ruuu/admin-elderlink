@@ -2,6 +2,9 @@
 
 // eslint-disable-next-line no-unused-vars
 const FormFields = ({ formData, onChange }) => {
+    const isEndDateVisible = formData.recurrence && formData.recurrence !== "One-Time";
+
+
     return (
         <>
             {/* Event Title */}
@@ -87,8 +90,8 @@ const FormFields = ({ formData, onChange }) => {
                 </div>
             </div>
 
-            {/* Date and Time */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            {/* Date, Time, and End Date */}
+            <div className={`grid ${isEndDateVisible ? 'grid-cols-3' : 'grid-cols-2'} gap-4 mb-4`}>
                 <div>
                     <label htmlFor="date" className="block text-lg font-medium text-gray-700 mb-1">
                         Date <span className="text-red-500">*</span>
@@ -117,41 +120,56 @@ const FormFields = ({ formData, onChange }) => {
                         required
                     />
                 </div>
+                {isEndDateVisible && (
+                    <div>
+                        <label htmlFor="endDate" className="block text-lg font-medium text-gray-700 mb-1">
+                            End Date <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="date"
+                            id="endDate"
+                            name="endDate"
+                            value={formData.endDate}
+                            onChange={onChange}
+                            className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Location and Organizer */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label htmlFor="location" className="block text-lg font-medium text-gray-700 mb-1">
-                        Location <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        id="location"
-                        name="location"
-                        value={formData.location}
-                        onChange={onChange}
-                        className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Enter event location"
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="organizer" className="block text-lg font-medium text-gray-700 mb-1">
-                        Organizer <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        id="organizer"
-                        name="organizer"
-                        value={formData.organizer}
-                        onChange={onChange}
-                        className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Enter event organizer"
-                        required
-                    />
-                </div>
-            </div>
+<div className="mb-4 grid grid-cols-2 gap-4">
+    <div>
+        <label htmlFor="location" className="block text-lg font-medium text-gray-700 mb-1">
+            Location <span className="text-red-500">*</span>
+        </label>
+        <input
+            type="text"
+            id="location"
+            name="location"
+            value={formData.location}
+            onChange={onChange}
+            className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+        />
+    </div>
+
+    <div>
+        <label htmlFor="organizer" className="block text-lg font-medium text-gray-700 mb-1">
+            Organizer <span className="text-red-500">*</span>
+        </label>
+        <input
+            type="text"
+            id="organizer"
+            name="organizer"
+            value={formData.organizer}
+            onChange={onChange}
+            className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+        />
+    </div>
+</div>
+
         </>
     )
 }

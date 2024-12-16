@@ -4,13 +4,14 @@ import { useState, useEffect } from "react"
 import SendIcon from "../../assets/icons/news-send.svg"
 import PhotoIcon from "../../assets/icons/photo.svg"
 import axios from "axios"
+import moment from 'moment'
 
 const Modal = ({ onClose, onSubmit, news }) => {
     const loggedInUsername = localStorage.getItem("username") || ""
 
     const [headline, setHeadline] = useState(news?.headline || "")
     const [author, setAuthor] = useState(news?.author || loggedInUsername)
-    const [date, setDate] = useState(news?.date || "")
+const [date, setDate] = useState(news?.date ? moment(news.date).format("YYYY-MM-DD") : "")
     const [body, setBody] = useState(news?.body || "")
     const [images, setImages] = useState(news.images || "")
     const [imagePreviews, setImagePreviews] = useState(

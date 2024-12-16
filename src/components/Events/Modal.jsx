@@ -13,6 +13,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
         time: "",
         location: "",
         organizer: "",
+        endDate: "", // Added endDate to formData
     })
 
     const [isModified, setIsModified] = useState(false)
@@ -20,7 +21,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
     const isEditMode = !!event
 
     useEffect(() => {
-        if (isEditMode) {
+        if (isEditMode && event) {
             setFormData({
                 title: event.title || "",
                 description: event.description || "",
@@ -30,6 +31,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 time: event.time || "",
                 location: event.location || "",
                 organizer: event.organizer || "",
+                endDate: event.endDate ? moment(event.endDate).format("YYYY-MM-DD") : "", // Ensure endDate is set properly
             })
             setIsModified(false)
         } else {
@@ -42,6 +44,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 time: "",
                 location: "",
                 organizer: "",
+                endDate: "", // Reset endDate when adding a new event
             })
         }
     }, [event, isEditMode])
@@ -58,7 +61,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
     }
 
     const isFormValid = () => {
-        const requiredFields = ["title", "description", "category", "date", "time", "location", "organizer"]
+        const requiredFields = ["title", "description", "category", "recurrence", "date", "time", "location", "organizer"]
         return requiredFields.every((field) => formData[field]?.trim() !== "")
     }
 
@@ -73,9 +76,10 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
             organizer: formData.organizer,
             category: formData.category,
             recurrence: formData.recurrence,
+            endDate: formData.endDate, // Add endDate to updated event
         }
         onSave(updatedEvent)
-        console.log(formData)
+        console.log('Form Data on Save:', formData) // Log the form data for debugging
     }
 
     return (
