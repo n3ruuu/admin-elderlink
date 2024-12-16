@@ -90,23 +90,40 @@ const Dashboard = () => {
             try {
                 const response = await axios.get("http://localhost:5000/events")
                 const currentDate = moment()
-                const oneMonthLater = moment().add(1, "month")
+                const oneWeekLater = moment().add(1, "week") // Set the range to 7 days from now
         
                 const upcoming = []
         
                 // Loop through each event and calculate its occurrences
                 response.data.forEach((event) => {
                     if (event.status === "Active") {
+                        const eventStartDate = moment(event.date || event.startDate) // Use startDate if available, otherwise the event's date
+                        const eventEndDate = event.endDate ? moment(event.endDate) : null
+        
                         if (event.recurrence === "One-Time") {
                             // For one-time events
-                            const eventDate = moment(event.date)
-                            if (eventDate.isBetween(currentDate, oneMonthLater, "day", "[]")) {
-                                upcoming.push(event)
+                            if (eventStartDate.isBetween(currentDate, oneWeekLater, "day", "[]")) {
+                                upcoming.push({
+                                    ...event,
+                                    date: eventStartDate.format("YYYY-MM-DD"),
+                                })
                             }
-                        } else {
-                            // For recurring events, calculate occurrences
+                        } else if (event.recurrenceDates && Array.isArray(event.recurrenceDates)) {
+                            // For recurring events with a set of recurrenceDates
+                            event.recurrenceDates.forEach((recurrenceDate) => {
+                                const recurrenceMoment = moment(recurrenceDate)
+                                // Check if the recurrenceDate is within the next week
+                                if (recurrenceMoment.isBetween(currentDate, oneWeekLater, "day", "[]")) {
+                                    upcoming.push({
+                                        ...event,
+                                        date: recurrenceMoment.format("YYYY-MM-DD"),
+                                    })
+                                }
+                            })
+                        } else if (event.recurrence) {
+                            // For other recurring events (daily, weekly, etc.)
                             const startDate = moment(event.startDate)
-                            const endDate = moment(event.endDate)
+                            const endDate = moment(event.endDate || startDate) // Use endDate or startDate as fallback
         
                             let recurrenceInterval
                             switch (event.recurrence) {
@@ -126,10 +143,10 @@ const Dashboard = () => {
                                     return // Skip unknown recurrence types
                             }
         
-                            // Generate all dates for the recurrence
+                            // Generate all dates for the recurrence within the next 7 days
                             for (
                                 let date = startDate.clone();
-                                date.isSameOrBefore(endDate) && date.isSameOrBefore(oneMonthLater);
+                                date.isSameOrBefore(endDate) && date.isSameOrBefore(oneWeekLater);
                                 date.add(1, recurrenceInterval)
                             ) {
                                 if (date.isSameOrAfter(currentDate)) {
@@ -143,12 +160,13 @@ const Dashboard = () => {
                     }
                 })
         
-                setUpcomingEventDetails(upcoming)
-                setUpcomingEvents(upcoming.length)
+                setUpcomingEventDetails(upcoming) // Store the filtered upcoming events
+                setUpcomingEvents(upcoming.length) // Set the count of upcoming events
             } catch (error) {
                 console.error("Error fetching upcoming events:", error)
             }
         }
+        
         
         // Fetch pending applications from the backend
         const fetchPendingApplications = async () => {
