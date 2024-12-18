@@ -9,6 +9,8 @@ import FinancialIcon from "./assets/icons/finance.svg"
 import EventsIcon from "./assets/icons/events.svg"
 import FormsAndAppIcon from "./assets/icons/forms-and-app.svg"
 import FormsIcon from "./assets/icons/forms.svg"
+import ReportIcon from "./assets/icons/report copy.svg"
+import CMSIcon from "./assets/icons/cms.svg"
 import ApplicationIcon from "./assets/icons/applications.svg"
 import ArchiveIcon from "./assets/icons/archive.svg"
 import NewsIcon from "./assets/icons/news.svg"
@@ -261,7 +263,7 @@ const Sidebar = () => {
                         }`}
                     >
                         <img
-                            src={NewsIcon}
+                            src={ReportIcon}
                             alt="Reports Icon"
                             className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
                                 isActive("/admin-elderlink/reports") && "filter brightness-0 invert"
@@ -297,7 +299,7 @@ const Sidebar = () => {
                         }`}
                     >
                         <img
-                            src={ArchiveIcon}
+                            src={CMSIcon}
                             alt="Content Management Icon"
                             className={`group-hover:filter group-hover:brightness-0 group-hover:invert ${
                                 isActive("/admin-elderlink/content-management") && "filter brightness-0 invert"

@@ -7,23 +7,37 @@ import EditIcon from "../../assets/icons/edit.svg"
 import ViewIcon from "../../assets/icons/eye.svg"
 import { jsPDF } from "jspdf"
 import ReportIcon from "../../assets/icons/report.svg"
+import AddIcon from "../../assets/icons/add.svg"
 import ElderlinkLogo from "../../assets/elderlink-logo.png"
+import AddModal from "./AddModal"
 
 const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5 // Number of items to display per page
     const [showReportOptions, setShowReportOptions] = useState(false)
+    const [showAddModal, setShowAddModal] = useState(false)
 
     const totalPages = Math.ceil(socialPensionMembers.length / itemsPerPage) // Calculate total pages
     const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
     const currentMembers = socialPensionMembers.slice(startIndex, startIndex + itemsPerPage) // Get current active members for display
     const loggedInUsername = localStorage.getItem("username") || ""
+    const [selectedMember, setSelectedMember] = useState(null)
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
     }
 
-    
+    const handleAddClick = (member) => {
+        setSelectedMember(member) // Set the selected member data
+        setShowAddModal(true) // Show the AddModal
+        console.log(selectedMember)
+    }
+
+    const handleCloseAddModal = () => {
+        setShowAddModal(false) // Close the AddModal
+        setSelectedMember(null) // Reset the selected member data
+    }
+
     const generateCSV = () => {
         const header = ["Control No.", "Full Name", "Quarter", "Disbursement Date", "Status", "Claimer", "Relationship"]
 
@@ -183,6 +197,9 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
                                     <button aria-label="View" onClick={() => handleViewClick(member)}>
                                         <img src={ViewIcon} alt="View" />
                                     </button>
+                                    <button aria-label="Add" onClick={() => handleAddClick(member)}>
+                                        <img src={AddIcon} alt="Add" />
+                                    </button>
                                 </td>
                             </tr>
                         )
@@ -266,6 +283,13 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
                             Close
                         </button>
                     </div>
+                )}
+
+                {showAddModal && (
+                    <AddModal
+                        onClose={handleCloseAddModal} // Pass the close handler to the modal
+                        member={selectedMember}
+                    />
                 )}
             </div>
         </div>

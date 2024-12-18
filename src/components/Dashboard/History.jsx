@@ -15,6 +15,7 @@ const getIconForActivity = (title) => {
     if (title.includes("Form")) return formsIcon
     if (title.includes("Health")) return healthIcon
     if (title.includes("Member")) return memberIcon
+    if (title.includes("Report")) return formsIcon
     return null // Return null if no match is found
 }
 
@@ -70,11 +71,7 @@ const History = () => {
                             </div>
                             <div>
                                 <p className="font-medium">{activity.action}</p>
-                                <p className="text-sm text-gray-500">
-                                    {new Date(
-                                        activity.timestamp,
-                                    ).toLocaleString()}
-                                </p>
+                                <p className="text-sm text-gray-500">{new Date(activity.timestamp).toLocaleString()}</p>
                             </div>
                         </div>
                     ))

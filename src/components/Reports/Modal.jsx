@@ -44,11 +44,16 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
         }
     }
 
-    // Fetch members data from backend on component mount
     const fetchMembersData = async () => {
         try {
             const response = await axios.get("http://localhost:5000/members")
-            setMembersData(response.data)
+            const membersWithFullName = response.data.map((member) => ({
+                ...member,
+                fullName: `${member.firstName || ""} ${member.middleName || ""} ${member.lastName || ""}`.trim(),
+                guardianFullName: `${member.guardianFirstName || ""} ${member.guardianLastName || ""}`.trim(),
+            }))
+
+            setMembersData(membersWithFullName)
         } catch (error) {
             console.error("Error fetching members data:", error)
         }
@@ -61,7 +66,7 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
     useEffect(() => {
         // Automatically select the columns id, controlNo, firstName, lastName if membersData is available
         if (membersData.length > 0) {
-            setSelectedColumns(["id", "controlNo", "firstName", "lastName"])
+            setSelectedColumns(["id", "controlNo", "fullName"])
         }
     }, [membersData]) // Runs every time membersData changes
 
@@ -124,29 +129,37 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
         logo.src = ElderlinkLogo
         doc.addImage(logo, "PNG", 10, 10, 30, 16) // Smaller size for the logo
 
-        // Center the Report Name
+        // Brgy. Mojon Header - Centered Below the Logo
         doc.setFontSize(18)
         doc.setFont("helvetica", "bold")
-        doc.setTextColor("#219EBC")
+        doc.setTextColor("#000000") // Black color for text
+        const brgyHeader = "Brgy. Mojon"
+        const brgyHeaderWidth = doc.getTextWidth(brgyHeader)
+        doc.text(brgyHeader, doc.internal.pageSize.width / 2 - brgyHeaderWidth / 2, 20)
+
+        // Center the Report Name Below Brgy. Mojon
+        doc.setFontSize(16)
+        doc.setFont("helvetica", "bold")
         const reportNameWidth = doc.getTextWidth(reportName)
-        doc.text(reportName, doc.internal.pageSize.width / 2 - reportNameWidth / 2, 20)
+        doc.text(reportName, doc.internal.pageSize.width / 2 - reportNameWidth / 2, 30)
 
         const headers = selectedColumns.map((col) => formatColumnName(col))
         const rows = filteredData.map((item) => selectedColumns.map((column) => item[column]))
 
         doc.autoTable({
-            startY: 30,
+            startY: 40,
             head: [headers],
             body: rows,
             headStyles: {
-                fillColor: "#219EBC",
-                textColor: "#FFFFFF",
+                fillColor: "#000000", // Black background for headers
+                textColor: "#FFFFFF", // White text for headers
                 fontSize: 12,
                 halign: "center",
             },
             bodyStyles: {
                 fontSize: 10,
                 halign: "center",
+                textColor: "#000000", // Black text for body
             },
             theme: "grid",
             didDrawPage: function (data) {
@@ -202,10 +215,12 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
     }
 
     const formatColumnName = (columnName) => {
+        if (columnName === "fullName") {
+            return "Full Name"
+        }
         if (columnName === "dob") {
             return "Date of Birth"
         }
-
         return columnName
             .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
             .replace(/_/g, " ")
@@ -213,7 +228,23 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
             .replace(/\b\w/g, (char) => char.toUpperCase())
     }
 
-    const columnNames = membersData.length ? Object.keys(membersData[0]) : []
+    const columnNames = membersData.length
+        ? (() => {
+              const allColumns = Object.keys(membersData[0]).filter(
+                  (key) =>
+                      !["firstName", "middleName", "lastName", "guardianFirstName", "guardianLastName"].includes(key),
+              )
+              // Remove `fullName` and `guardianFullName` if they exist, then reinsert them in the desired order
+              const withoutNames = allColumns.filter((col) => col !== "fullName" && col !== "guardianFullName")
+              return [
+                  withoutNames[0], // First column
+                  withoutNames[1], // Second column
+                  "fullName", // Full Name as the third column
+                  "guardianFullName", // Guardian Full Name as the fourth column
+                  ...withoutNames.slice(2), // Remaining columns
+              ]
+          })()
+        : []
 
     if (!isOpen) return null
 

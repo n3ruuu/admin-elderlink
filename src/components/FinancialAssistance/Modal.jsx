@@ -27,17 +27,31 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
     useEffect(() => {
         if (member) {
             const updatedFormValues = { ...formValues }
-            memberRecords.forEach((record) => {
-                updatedFormValues[record.quarter] = {
-                    disbursement_date: record.disbursement_date ? formatDateToLocal(record.disbursement_date) : null,
-                    claimer: record.claimer || null,
-                    relationship: record.relationship || null,
+
+            // Filter memberRecords based on both member_id and social_pension_id for exact matching
+            const currentMemberRecords = memberRecords.filter(
+                (record) => record.social_pension_id === member.social_pension_id,
+            )
+
+            currentMemberRecords.forEach((record) => {
+                // Ensure we only update form values for records with the correct social_pension_id
+                if (record.social_pension_id === member.social_pension_id) {
+                    updatedFormValues[record.quarter] = {
+                        disbursement_date: record.disbursement_date
+                            ? formatDateToLocal(record.disbursement_date)
+                            : null,
+                        claimer: record.claimer || null,
+                        relationship: record.relationship || null,
+                    }
                 }
             })
+
+            // Set the benefit type from the member data or default to "Social Pension"
             updatedFormValues.benefitType = member.benefitType || "Social Pension"
+
             setFormValues(updatedFormValues)
         }
-    }, [member])
+    }, [member]) // Run effect whenever member or memberRecords change
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
@@ -61,9 +75,11 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
             },
         }))
     }
-    
+
     const handleSubmit = async () => {
         const { benefitType, Q1, Q2, Q3, Q4 } = formValues
+
+        const socialPensionId = member?.social_pension_id // Keep the existing ID for updates
 
         // Map quarters and ensure missing values are null
         const allQuarterData = [Q1, Q2, Q3, Q4].map((quarterData, idx) => ({
@@ -72,12 +88,13 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
             claimer: quarterData.claimer || null,
             relationship: quarterData.relationship || null,
             proof: null, // Default proof as null
+            social_pension_id: socialPensionId, // Use the existing social_pension_id
         }))
 
         try {
             let memberId = member?.member_id || null
             let fullName = `${memberInfo?.firstName} ${memberInfo?.lastName}` // Combine first and last name
-            let controlNo = null // Variable to hold control_no
+            let controlNo = null
 
             // If adding a new member
             if (!member) {
@@ -100,16 +117,23 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
             }
 
             // Check if the member already has a social pension record
-            if (member) {
-                // If member exists, update the record
+            if (socialPensionId && memberId) {
+                // Include memberId in the socialPensionData
+                const updatedSocialPensionData = {
+                    ...socialPensionData,
+                    member_id: memberId, // Add memberId to the data
+                }
+
+                // Send the updated data to the server for updating the record
                 await axios.put(
-                    `http://localhost:5000/financial-assistance/social-pension/${member.member_id}`,
-                    socialPensionData,
+                    `http://localhost:5000/financial-assistance/social-pension/${socialPensionId}/${memberId}`,
+                    updatedSocialPensionData,
                 )
+
                 // Notify parent to refresh data
                 onSave()
             } else {
-                // If no member, create a new record
+                // If no social_pension_id, create a new record
                 await axios.post("http://localhost:5000/financial-assistance/social-pension", socialPensionData)
                 setSuccessModalTitle("Member Added!")
                 setSuccessModalMessage("New member has been successfully added.")
@@ -159,7 +183,6 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
                 }}
                 title={successModalTitle}
                 message={successModalMessage}
-                onGoToArchives={() => console.log("Navigating to Archives")}
                 isArchiving={false}
             />
         </div>
