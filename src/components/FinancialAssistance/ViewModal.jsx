@@ -99,7 +99,7 @@ const ViewModal = ({ member, onClose }) => {
 
     return (
         <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-md w-[1200px]">
+            <div className="bg-white p-6 rounded-md w-[1200px] overflow-y-auto max-h-[90%]">
                 <h2 className="text-xl font-semibold mb-4">{member.full_name} | Social Pension Record</h2>
                 <table className="min-w-full table-auto border-collapse">
                     <thead>

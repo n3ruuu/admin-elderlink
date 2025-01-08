@@ -106,7 +106,7 @@
 }
 
 .fc-event-title {
-    background-color: #219ebc;
+    background-color: none;
     color: white; /* Ensure the text is readable */
     padding: 4px 8px; /* Optional: Add some padding for better visual separation */
     border-radius: 4px; /* Optional: Give the event title rounded corners */

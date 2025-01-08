@@ -3,8 +3,13 @@ import { useState, useEffect } from "react"
 import Form from "./Form"
 import moment from "moment" // Import Moment.js
 import axios from "axios" // Ensure axios is imported for API calls
+import SuccessModal from "./SuccessModal"
 
 const Modal = ({ onClose, member }) => {
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+    const [successModalMessage, setSuccessModalMessage] = useState("")
+    const [successModalTitle, setSuccessModalTitle] = useState("")
+
     // Filter member records based on the passed `member` prop
     const memberRecords = member?.quarterData || []
 
@@ -90,11 +95,11 @@ const Modal = ({ onClose, member }) => {
             // Send a POST request to create a new financial assistance record
             await axios.post("http://localhost:5000/financial-assistance/social-pension", socialPensionData)
 
-            // Set the success message
-            setSuccessMessage("Financial record added successfully!")
+            setSuccessModalTitle("New Record Added!")
+            setSuccessModalMessage("New social pension has been successfully added.")
+            setIsSuccessModalOpen(true)
 
             // Optionally notify parent to refresh data (you can adjust this depending on your use case)
-            onClose() // Close the modal after successful submission
         } catch (error) {
             console.error("Error saving data", error)
             setSuccessMessage("Failed to add the financial record. Please try again.")
@@ -124,6 +129,21 @@ const Modal = ({ onClose, member }) => {
                     handleDateChange={handleDateChange}
                 />
             </div>
+             {/* Success Modal */}
+             <SuccessModal
+    isOpen={isSuccessModalOpen}
+    onClose={() => {
+        setIsSuccessModalOpen(false); // Close the success modal
+        onClose(); // Call parent modal's onClose to close the parent modal
+        setTimeout(() => {
+            window.location.reload(); // Reload the page (optional)
+        }, 0); // Optional delay for user experience
+    }}
+    title={successModalTitle}
+    message={successModalMessage}
+    isArchiving={false}
+/>
+
         </div>
     )
 }

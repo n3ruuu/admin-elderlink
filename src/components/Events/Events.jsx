@@ -72,6 +72,12 @@ const Events = () => {
 
     const handleSave = async (updatedEvent) => {
         try {
+
+            if (moment(updatedEvent.date).isBefore(moment(), "day")) {
+                alert("Error: The event date cannot be in the past.");
+                return; // Exit the function without saving
+            }
+
             const eventData = {
                 title: updatedEvent.title,
                 description: updatedEvent.description, // Add description

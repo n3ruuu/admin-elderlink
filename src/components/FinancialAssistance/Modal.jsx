@@ -176,10 +176,7 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
                 onClose={() => {
                     closeAllModal() // Close parent modal after dismissing success modal
                     setIsSuccessModalOpen(false)
-                    // Reload the page
-                    setTimeout(() => {
-                        window.location.reload() // Reloads the page
-                    }, 0) // Optional delay for user experience
+                  
                 }}
                 title={successModalTitle}
                 message={successModalMessage}
