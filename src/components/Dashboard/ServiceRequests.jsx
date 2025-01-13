@@ -46,29 +46,33 @@ const ServiceRequests = () => {
             try {
                 const response = await axios.get("http://localhost:5000/log")
                 const logs = response.data
-
-                // Extract labels (timestamps) and data (count of requests by day)
+    
+                // Aggregate data by date
                 const aggregatedData = logs.reduce((acc, log) => {
-                    const date = new Date(log.timestamp).toLocaleDateString(
-                        "en-US",
-                        {
-                            month: "short",
-                            day: "numeric",
-                        },
-                    )
+                    // Standardize the date to ISO format for consistent sorting
+                    const date = new Date(log.timestamp).toISOString().split("T")[0]
                     acc[date] = (acc[date] || 0) + 1
                     return acc
                 }, {})
-
-                const labels = Object.keys(aggregatedData)
-                const data = Object.values(aggregatedData)
-
+    
+                // Sort dates in ascending order
+                const sortedDates = Object.keys(aggregatedData).sort(
+                    (a, b) => new Date(a) - new Date(b)
+                )
+                const sortedData = sortedDates.map((date) => aggregatedData[date])
+    
+                // Update chart data
                 setChartData({
-                    labels,
+                    labels: sortedDates.map((date) =>
+                        new Date(date).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                        })
+                    ),
                     datasets: [
                         {
                             label: "Service Requests",
-                            data,
+                            data: sortedData,
                             borderColor: "#0096C7",
                             backgroundColor: "#0096C7",
                             tension: 0.3,
@@ -84,10 +88,11 @@ const ServiceRequests = () => {
                 setLoading(false)
             }
         }
-
+    
         fetchLogs()
     }, [])
-
+    
+    
     const options = {
         responsive: true,
         maintainAspectRatio: false,

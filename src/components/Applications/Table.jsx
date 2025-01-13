@@ -3,24 +3,40 @@ import ApproveIcon from "../../assets/icons/approve.svg";
 import RejectIcon from "../../assets/icons/reject.svg";
 import PreviewIcon from "../../assets/icons/preview.svg";
 import UndoIcon from "../../assets/icons/cancel.svg";
+import SendIcon from "../../assets/icons/send-icon.svg";
 import axios from "axios";
-import moment from 'moment';
-import Modal from "./Register/Modal";  // Import Modal component
+import moment from "moment";
+import Modal from "./Register/Modal";
+import EmailModal from "./EmailModal";  // Import the EmailModal
 
 const Table = ({ applications, onStatusUpdate }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false); // State to manage the EmailModal visibility
     const [selectedApplication, setSelectedApplication] = useState(null);
+    const [recipients, setRecipients] = useState([]); // For sending email to selected recipients
 
-    // Function to open the modal with the selected application
+    // Function to open the preview modal with the selected application
     const openModal = (application) => {
         setSelectedApplication(application);
         setIsModalVisible(true);
     };
 
-    // Function to close the modal
+    // Function to close the preview modal
     const closeModal = () => {
         setIsModalVisible(false);
         setSelectedApplication(null);
+    };
+
+    // Function to open the email modal and set the recipient as the guardianEmail
+    const openEmailModal = (application) => {
+        setRecipients([application.guardianEmail]);  // Add guardianEmail to recipients
+        setIsEmailModalOpen(true);  // Open the EmailModal
+    };
+
+    // Function to close the email modal
+    const closeEmailModal = () => {
+        setIsEmailModalOpen(false);
+        setRecipients([]); // Clear recipients after closing the modal
     };
 
     const handleStatusUpdate = async (application, status) => {
@@ -83,7 +99,9 @@ const Table = ({ applications, onStatusUpdate }) => {
                             className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                             key={item.id}
                         >
-                            <td className="px-16 py-4">{item.firstName}</td>
+                            <td className="px-16 py-4">
+                                {item.firstName} {item.middleName} {item.lastName}
+                            </td>
                             <td>OSCA Registration</td>
                             <td>{item.applicationType.charAt(0).toUpperCase() + item.applicationType.slice(1)} Registration</td>
                             <td>{item.applicationStatus}</td>
@@ -126,13 +144,25 @@ const Table = ({ applications, onStatusUpdate }) => {
                                 )}
 
                                 {item.applicationStatus === "Rejected" && (
-                                    <button
-                                        className="p-2 rounded-full hover:bg-gray-200"
-                                        aria-label="Cancel"
-                                        onClick={() => handleStatusUpdate(item, "Pending")}
-                                    >
-                                        <img src={UndoIcon} alt="Cancel Icon" className="w-5 h-5" />
-                                    </button>
+                                    <div className="flex">
+                                        {/* Undo Button */}
+                                        <button
+                                            className="p-2 rounded-full hover:bg-gray-200"
+                                            aria-label="Cancel"
+                                            onClick={() => handleStatusUpdate(item, "Pending")}
+                                        >
+                                            <img src={UndoIcon} alt="Cancel Icon" className="w-5 h-5" />
+                                        </button>
+
+                                        {/* Send Button */}
+                                        <button
+                                            className="p-2 rounded-full hover:bg-gray-200"
+                                            aria-label="Send"
+                                            onClick={() => openEmailModal(item)} // Open Email Modal when Send button is clicked
+                                        >
+                                            <img src={SendIcon} alt="Send Icon" className="w-5 h-5" />
+                                        </button>
+                                    </div>
                                 )}
                             </td>
                         </tr>
@@ -143,6 +173,11 @@ const Table = ({ applications, onStatusUpdate }) => {
             {/* Conditionally render Modal */}
             {isModalVisible && selectedApplication && (
                 <Modal onClose={closeModal} application={selectedApplication} />
+            )}
+
+            {/* Conditionally render EmailModal */}
+            {isEmailModalOpen && (
+                <EmailModal isOpen={isEmailModalOpen} onClose={closeEmailModal} recipients={recipients} />
             )}
         </div>
     );

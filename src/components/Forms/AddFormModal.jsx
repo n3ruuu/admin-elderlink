@@ -55,7 +55,6 @@ const AddFormModal = ({ isOpen, onClose, onAddNewInitiative }) => {
     const closeSuccessModal = () => {
         setIsSuccessModalOpen(false) // Close the success modal first
         onClose() // Now close the AddFormModal after success modal closes
-        window.location.reload() // Reload the page
     }
 
     // Reset success modal state when AddFormModal is closed

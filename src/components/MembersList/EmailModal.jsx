@@ -26,6 +26,7 @@ const generateBirthdayGreeting = () => {
     const handleSendEmail = async () => {
         const formData = new FormData()
         formData.append("message", message)
+        formData.append("subject", "Greeting Notice!"); 
         formData.append("recipients", JSON.stringify([member?.guardianEmail])) // Send the recipient email as a list
 
         if (image) {
@@ -39,6 +40,7 @@ const generateBirthdayGreeting = () => {
             })
             if (response.ok) {
                 console.log("Email sent successfully!")
+                alert("Email sent successfully!")
                 onClose() // Close the modal after sending the email
             } else {
                 console.error("Failed to send email")

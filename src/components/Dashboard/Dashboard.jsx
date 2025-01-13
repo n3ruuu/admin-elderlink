@@ -313,7 +313,7 @@ const Dashboard = () => {
                                                         .map((event, index) => (
                                                             <div
                                                                 key={index}
-                                                                className="flex-shrink-0 w-64 p-4 bg-[#219dbc79] rounded-lg shadow-sm"
+                                                                className="flex-shrink-0 h-fit w-64 p-4 bg-[#219dbc79] rounded-lg shadow-sm"
                                                             >
                                                                 <p className="font-semibold text-center pb-2">
                                                                     <strong>{event.title}</strong>

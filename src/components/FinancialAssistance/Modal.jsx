@@ -10,7 +10,9 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
     const [successModalMessage, setSuccessModalMessage] = useState("")
     const [successModalTitle, setSuccessModalTitle] = useState("")
 
+
     const memberRecords = member ? membersData.filter((data) => data.member_id === member.member_id) : []
+    console.log(memberRecords)
 
     const [formValues, setFormValues] = useState({
         Q1: { disbursement_date: null, claimer: null, relationship: null },
@@ -26,6 +28,7 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
 
     useEffect(() => {
         if (member) {
+            console.log(member)
             const updatedFormValues = { ...formValues }
 
             // Filter memberRecords based on both member_id and social_pension_id for exact matching
@@ -105,6 +108,7 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
             } else {
                 fullName = `${member.firstName} ${member.lastName}` // Construct full_name for an existing member
                 controlNo = member.control_no // Get control_no from the existing member
+
             }
 
             // Prepare data for social pension

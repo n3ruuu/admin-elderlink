@@ -50,6 +50,7 @@ const EmailModal = ({ isOpen, onClose }) => {
     const handleSendEmail = async () => {
         const formData = new FormData()
         formData.append("message", message)
+        formData.append("subject", "Event Notice!"); 
 
         // Clean recipient emails to remove whitespace
         const sanitizedRecipients = recipients.map((email) => email.trimEnd()) // Use trimEnd to clean trailing spaces
@@ -66,6 +67,7 @@ const EmailModal = ({ isOpen, onClose }) => {
             })
             if (response.ok) {
                 console.log("Email sent successfully!")
+                alert("Email sent successfully!")
                 onClose() // Close the modal after sending the email
             } else {
                 console.error("Failed to send email")

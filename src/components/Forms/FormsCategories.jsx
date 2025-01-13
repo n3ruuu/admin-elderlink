@@ -64,14 +64,14 @@ const FormsCategories = ({ onCategoryClick }) => {
                     <img
                         src={`http://localhost:5000${category.icon_path}`}
                         alt={`${category.category_name} Icon`}
-                        className="mr-4" // Add margin to separate the icon
+                        className="mr-4 w-16 h-16 rounded-[50%] " // Add margin to separate the icon
                     />
-                    <p className="flex items-center">
-                        {category.category_name} Initiatives
+                    <p className="flex items-center w-[80%] justify-between">
+                        {category.category_name}
                         <img
                             src={ArchiveIcon}
                             alt="Archive Icon"
-                            className="ml-10 w-5 h-5 cursor-pointer"
+                            className=" w-5 h-5 mr-4 cursor-pointer"
                             onClick={(e) => {
                                 e.stopPropagation() // Prevent the button's click from being triggered
                                 handleArchiveClick(category) // Open the modal on click

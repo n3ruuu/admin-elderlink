@@ -10,26 +10,31 @@ const ContentManagement = () => {
     const [newCoordinator, setNewCoordinator] = useState({ name: "", area: "" })
     const [newSignatory, setNewSignatory] = useState({ name: "", position: "" }) // State for new signatory
 
-    // Fetch officers, coordinators, and signatory data
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const officerResponse = await axios.get("http://localhost:5000/cms/officers")
-                const coordinatorResponse = await axios.get("http://localhost:5000/cms/area-coordinators")
-                const signatoryResponse = await axios.get("http://localhost:5000/cms/signatory")  // Fetching single signatory
-                console.log("Officers:", officerResponse.data)
-                console.log("Coordinators:", coordinatorResponse.data)
-                console.log("Signatory:", signatoryResponse.data)  // Log signatory data
-                setOfficers(officerResponse.data)
-                setCoordinators(coordinatorResponse.data)
-                setSignatory(signatoryResponse.data[0] || {})  // Set only the first (and only) signatory
+                const officerResponse = await axios.get("http://localhost:5000/cms/officers");
+                const coordinatorResponse = await axios.get("http://localhost:5000/cms/area-coordinators");
+                const signatoryResponse = await axios.get("http://localhost:5000/cms/signatory");
+    
+                // Log the fetched data for debugging
+                console.log("Officers:", officerResponse.data);
+                console.log("Coordinators:", coordinatorResponse.data);
+                console.log("Signatory:", signatoryResponse.data);
+    
+                // Set data into the state
+                setOfficers(officerResponse.data);
+                setCoordinators(coordinatorResponse.data);
+                setSignatory(signatoryResponse.data[0] || {});  // Assuming the signatory is an array with one item
+    
             } catch (error) {
-                console.error("Error fetching data", error)
+                console.error("Error fetching data", error);
             }
         }
-
-        fetchData()
-    }, [])
+    
+        fetchData();
+    }, []);
+    
 
     // Handle adding a new officer
     const handleAddOfficer = async () => {
