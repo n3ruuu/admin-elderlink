@@ -14,6 +14,16 @@ const Table = ({ reportsData, fetchReportsData }) => {
     const [modalTitle, setModalTitle] = useState("")
     const [modalMessage, setModalMessage] = useState("")
 
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 10
+
+    const totalPages = Math.ceil(reportsData.length / itemsPerPage) // Corrected from membersData
+    const startIndex = (currentPage - 1) * itemsPerPage
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page)
+    }
+
     const handleDownload = (report) => {
         const fileUrl = `http://localhost:5000/${report.pdf_file_path}`
         window.open(fileUrl, "_blank")
@@ -60,21 +70,23 @@ const Table = ({ reportsData, fetchReportsData }) => {
 
             setModalTitle("Report Archived!")
             setModalMessage("The report has been successfully archived.")
-            handleCloseModal() // Close the modal after confirming the archive
-            setSuccessModalOpen(true) // Show error message
+            setSuccessModalOpen(true) // Show success modal
             await logAction("Archive Report")
         } catch (error) {
             console.error("Error archiving the report:", error)
             alert("Error archiving the report")
         }
+
+        // Refresh data after archiving and close modal
         fetchReportsData()
+        setIsModalOpen(false)
+        setSelectedReport(null)
     }
 
     return (
         <div>
-            <div className="overflow-y-auto max-h-[650px] w-full shadow-lg rounded-xl border">
-                <table className="min-w-full bg-white">
-                    <thead className="text-gray-500 border-b">
+            <table className="min-w-full bg-[#FFFFFF] rounded-xl shadow-lg">
+            <thead className="text-gray-500 border-b">
                         <tr>
                             <th className="px-8 py-4 text-left font-medium whitespace-nowrap">Report Name</th>
                             <th className="px-6 py-4 text-left font-medium">Report Type</th>
@@ -84,7 +96,7 @@ const Table = ({ reportsData, fetchReportsData }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {reportsData.map((report, index) => (
+                        {reportsData.slice(startIndex, startIndex + itemsPerPage).map((report, index) => (
                             <tr
                                 className={`text-[#333333] font-[500] transition-colors hover:bg-[#F1F1F1] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                                 key={report.id}
@@ -115,6 +127,32 @@ const Table = ({ reportsData, fetchReportsData }) => {
                         ))}
                     </tbody>
                 </table>
+
+              {/* Pagination Controls */}
+            <div className="flex fixed bottom-5 mt-4">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                >
+                    Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                >
+                    Next
+                </button>
             </div>
 
             {/* Pass the state to the ArchiveModal */}

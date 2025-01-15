@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react"
 import moment from "moment"
-import UndoModal from "../UndoModal" // Assuming UndoModal is in the same folder
+import UndoModal from "../UndoModal"
+import UndoIcon from "../../../assets/icons/cancel.svg"
+import DeleteIcon from "../../../assets/icons/archive.svg"
+import DeleteModal from "../DeleteModal" // Import the DeleteModal component
+
 import { FiArrowDown, FiArrowUp } from "react-icons/fi"
 
 const NewsTable = () => {
     const [news, setNews] = useState([]) // State to hold fetched News data
-    const [isModalOpen, setIsModalOpen] = useState(false) // Modal visibility state
-    const [selectedNewsId, setSelectedNewsId] = useState(null) // Store selected news ID for undo
+    const [isUndoModalOpen, setIsUndoModalOpen] = useState(false) // Undo modal visibility state
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false) // Delete modal visibility state
+    const [selectedNewsId, setSelectedNewsId] = useState(null) // Store selected news ID for undo or delete
     const [sortOrder, setSortOrder] = useState("asc") // "asc" for ascending, "desc" for descending
 
     useEffect(() => {
@@ -36,9 +41,9 @@ const NewsTable = () => {
         setSortOrder(newSortOrder)
     }
 
-    const handleUndoClick = (id) => {
-        setSelectedNewsId(id) // Set the ID of the news to be undone
-        setIsModalOpen(true) // Open the UndoModal
+    const handleUndoClick = (newsItem) => {
+        setSelectedNewsId(newsItem.id) // Set the ID of the news to be undone
+        setIsUndoModalOpen(true) // Open the UndoModal
     }
 
     const handleUndoConfirm = async () => {
@@ -65,8 +70,8 @@ const NewsTable = () => {
                             : newsItem,
                     ),
                 )
-                console.log("News status updated.")
-                setIsModalOpen(false) // Close the modal after confirming the action
+                alert("News has been successfully restored.")
+                setIsUndoModalOpen(false) // Close the modal after confirming the action
                 fetchNews()
             } else {
                 console.error("Failed to update news status")
@@ -76,8 +81,40 @@ const NewsTable = () => {
         }
     }
 
+    const handleDeleteClick = (newsItem) => {
+        setSelectedNewsId(newsItem.id) // Set the ID of the news to be deleted
+        setIsDeleteModalOpen(true) // Open the DeleteModal
+    }
+
+    const handleDeleteConfirm = async () => {
+        console.log("Deleting news ID:", selectedNewsId)
+
+        try {
+            // Send a DELETE request to delete the news item
+            const response = await fetch(`http://localhost:5000/news/${selectedNewsId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+
+            if (response.ok) {
+                // Remove the deleted news from local state
+                setNews((prevNews) => prevNews.filter((newsItem) => newsItem.id !== selectedNewsId))
+                console.log("News deleted.")
+                alert("News has been successfully deleted.")
+                setIsDeleteModalOpen(false) // Close the modal after confirming the action
+            } else {
+                console.error("Failed to delete news")
+            }
+        } catch (error) {
+            console.error("Error deleting news:", error)
+        }
+    }
+
     const handleModalClose = () => {
-        setIsModalOpen(false) // Close the modal when Cancel is clicked
+        setIsUndoModalOpen(false) // Close the modal when Cancel is clicked
+        setIsDeleteModalOpen(false) // Close the delete modal
     }
 
     return (
@@ -141,14 +178,12 @@ const NewsTable = () => {
                                         "No Image"
                                     )}
                                 </td>
-                                <td className="pl-8 text-left">
-                                    <button
-                                        onClick={() => {
-                                            handleUndoClick(news.id)
-                                        }}
-                                        className="cursor-pointer text-[#219EBC] font-semibold underline"
-                                    >
-                                        Undo
+                                <td className="pl-16 text-left flex gap-2 mt-3">
+                                    <button onClick={() => handleUndoClick(news)} className="cursor-pointer">
+                                        <img src={UndoIcon} alt="Undo Icon" className="w-5 h-5" />
+                                    </button>
+                                    <button onClick={() => handleDeleteClick(news)} className="cursor-pointer">
+                                        <img src={DeleteIcon} alt="Delete Icon" className="w-5 h-5" />
                                     </button>
                                 </td>
                             </tr>
@@ -158,7 +193,14 @@ const NewsTable = () => {
             </div>
 
             {/* Undo Modal */}
-            <UndoModal isOpen={isModalOpen} onClose={handleModalClose} onConfirm={handleUndoConfirm} />
+            <UndoModal isOpen={isUndoModalOpen} onClose={handleModalClose} onConfirm={handleUndoConfirm} />
+
+            {/* Delete Modal */}
+            <DeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={handleModalClose}
+                onConfirm={handleDeleteConfirm}
+            />
         </div>
     )
 }

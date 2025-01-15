@@ -6,7 +6,7 @@ const UndoModal = ({ isOpen, onClose, onConfirm }) => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
                 <h3 className="text-xl font-semibold mb-4">
-                    Are you sure you want to undo?
+                    Are you sure you want to restore this item?
                 </h3>
                 <div className="flex justify-end mt-8">
                     <button

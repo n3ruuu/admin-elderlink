@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react"
 import UndoModal from "../UndoModal" // Import the UndoModal
+import UndoIcon from "../../../assets/icons/cancel.svg"
+import DeleteIcon from "../../../assets/icons/archive.svg"
+import DeleteModal from "../DeleteModal" // Import the DeleteModal component
 
 const HealthRecordsTable = () => {
     const [members, setMembers] = useState([]) // State to hold fetched members data
     const [showModal, setShowModal] = useState(false) // State for showing the UndoModal
     const [selectedMember, setSelectedMember] = useState(null) // State to store the member being archived/undo-archived
     const [currentPage, setCurrentPage] = useState(1) // Current page state
+    const [showDeleteModal, setShowDeleteModal] = useState(false) // State for DeleteModal visibility
 
     const itemsPerPage = 6 // Number of items to display per page
     const totalPages = Math.ceil(members.length / itemsPerPage) // Calculate total pages
@@ -18,6 +22,36 @@ const HealthRecordsTable = () => {
 
     const handlePageChange = (page) => {
         setCurrentPage(page)
+    }
+
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false)
+        setSelectedMember(null)
+    }
+
+    const openDeleteModal = (memberId) => {
+        setSelectedMember({ id: memberId })
+        setShowDeleteModal(true) // Open the Delete Modal
+    }
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/members/${selectedMember.id}`, {
+                method: "DELETE",
+            })
+
+            if (response.ok) {
+                setMembers((prevMembers) =>
+                    prevMembers.filter((member) => member.id !== selectedMember.id)
+                )
+                closeDeleteModal()
+                alert("Member has been successfully deleted.")
+            } else {
+                console.error("Failed to delete member.")
+            }
+        } catch (error) {
+            console.error("Error deleting member:", error)
+        }
     }
 
     const fetchMembers = async () => {
@@ -143,13 +177,12 @@ const HealthRecordsTable = () => {
                             <td className={`text-left pl-8 ${getStatusColor(member.status) || "text-gray-500"}`}>
                                 {member.status || "N/A"}
                             </td>
-
-                            <td className="pl-8 text-left">
-                                <button
-                                    onClick={() => openUndoModal(member.id, member.status)}
-                                    className="cursor-pointer text-[#219EBC] font-semibold underline"
-                                >
-                                    Undo
+                            <td className="pl-8 text-left flex gap-2 mt-3">
+                                <button onClick={() => openUndoModal(member.id, member.status)} className="cursor-pointer">
+                                    <img src={UndoIcon} alt="Undo Icon" className="w-5 h-5" />
+                                </button>
+                                <button onClick={() => openDeleteModal(member.id)} className="cursor-pointer">
+                                    <img src={DeleteIcon} alt="Delete Icon" className="w-5 h-5" />
                                 </button>
                             </td>
                         </tr>
@@ -188,6 +221,8 @@ const HealthRecordsTable = () => {
 
             {/* Undo Modal */}
             <UndoModal isOpen={showModal} onClose={closeUndoModal} onConfirm={handleUndoArchive} />
+            <DeleteModal isOpen={showDeleteModal} onClose={closeDeleteModal} onConfirm={handleDelete} />
+     
         </div>
     )
 }

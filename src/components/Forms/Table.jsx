@@ -4,7 +4,7 @@ import axios from "axios" // Import axios for API requests
 
 import ArchiveIcon from "../../assets/icons/archive2.svg" // Import Archive Icon
 import ArchiveModal from "./ArchiveModal" // Import your ArchiveModal
-import SuccessModal from "../common/SuccessModal" // Import your SuccessModal
+import SuccessModal from "./SuccessModal" // Import your SuccessModal
 import { useNavigate } from "react-router-dom" // Import useNavigate
 import moment from "moment"
 
