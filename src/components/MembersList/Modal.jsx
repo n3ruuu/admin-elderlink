@@ -2,10 +2,32 @@
 import { useState, useEffect } from "react"
 import ErrorModal from "./ErrorModal"
 import Form from "./Form"
+import moment from "moment"
 import axios from "axios"
 import HealthRecordsModal from "../HealthRecords/Modal"
 
 const Modal = ({ onClose, member, onSave }) => {
+    const fetchNextControlNo = async () => {
+        try {
+            const response = await axios.get("http://localhost:5000/members")
+            const members = response.data
+
+            // Get all controlNos that match "MOJ####" format
+            const mojNumbers = members
+                .map((m) => m.controlNo)
+                .filter((no) => /^MOJ\d{4}$/.test(no))
+                .map((no) => parseInt(no.slice(3))) // Get the numeric part
+
+            const maxNumber = mojNumbers.length > 0 ? Math.max(...mojNumbers) : 0
+            const nextNumber = (maxNumber + 1).toString().padStart(4, "0")
+
+            return `MOJ${nextNumber}`
+        } catch (error) {
+            console.error("Error fetching next Control No:", error)
+            return "MOJ0001" // fallback if DB is empty or fails
+        }
+    }
+
     const [formValues, setFormValues] = useState({
         firstName: "",
         lastName: "",
@@ -31,14 +53,14 @@ const Modal = ({ onClose, member, onSave }) => {
     const isEditMode = !!member // Check if the modal is in Edit mode
 
     useEffect(() => {
-        console.log("Member prop:", member)
         if (member) {
+            // Editing existing member
             setFormValues({
                 firstName: member.firstName || "",
                 lastName: member.lastName || "",
                 middleName: member.middleName || "",
                 extension: member.extension || "",
-                dob: member.dob ? member.dob.split("T")[0] : "", // Format date
+                dob: member.dob ? moment(member.dob).format("MM/DD/YYYY") : "",
                 sex: member.sex || "",
                 civilStatus: member.civilStatus || "",
                 address: member.address || "",
@@ -46,7 +68,15 @@ const Modal = ({ onClose, member, onSave }) => {
                 controlNo: member.controlNo || "",
                 purchaseBookletNo: member.purchaseBookletNo || "",
                 medicineBookletNo: member.medicineBookletNo || "",
-                dateIssued: member.dateIssued ? member.dateIssued.split("T")[0] : "", // Format date
+                dateIssued: member.dateIssued ? moment(member.dateIssued).format("MM/DD/YYYY") : "",
+            })
+        } else {
+            // Adding new member → fetch next Control No
+            fetchNextControlNo().then((nextNo) => {
+                setFormValues((prev) => ({
+                    ...prev,
+                    controlNo: nextNo,
+                }))
             })
         }
     }, [member])
@@ -191,6 +221,7 @@ const Modal = ({ onClose, member, onSave }) => {
             try {
                 if (member) {
                     // Edit existing member in the database
+
                     await axios.put(`http://localhost:5000/members/members-list/${member.id}`, formValues)
                 } else {
                     onOpenHealthRecordsModal(formValues)

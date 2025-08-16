@@ -4,61 +4,47 @@ import SendIcon from "../../assets/icons/send-icon.svg"
 
 const EmailModal = ({ isOpen, onClose }) => {
     const [message, setMessage] = useState("")
-    const [recipients, setRecipients] = useState([]) // Storing guardianEmail addresses
+    const [recipients, setRecipients] = useState([])
     const [members, setMembers] = useState([])
     const [searchTerm, setSearchTerm] = useState("")
     const [filteredMembers, setFilteredMembers] = useState([])
-    const [image, setImage] = useState(null) // State to store uploaded image
+    const [image, setImage] = useState(null)
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // New state for success
 
     useEffect(() => {
         const fetchMembers = async () => {
             try {
                 const response = await fetch("http://localhost:5000/members")
                 const data = await response.json()
-                setMembers(data) // Assuming data is an array of member objects
-
-                // Log all guardianEmail values
-                const guardianEmails = data.map((member) => member.guardianEmail)
-                console.log("All Guardian Emails:", guardianEmails)
-
-                // Optional: Log only Gmail addresses
-                const gmailAddresses = guardianEmails.filter((email) => email?.includes("@gmail.com"))
-                console.log("Gmail Addresses:", gmailAddresses)
+                setMembers(data)
             } catch (error) {
                 console.error("Error fetching members:", error)
             }
         }
 
-        if (isOpen) {
-            fetchMembers()
-        }
+        if (isOpen) fetchMembers()
     }, [isOpen])
 
     useEffect(() => {
         if (searchTerm) {
             const filtered = members.filter((member) => {
-                // Concatenate firstName, middleName, and lastName into full name
                 const fullName = `${member.firstName} ${member.middleName || ""} ${member.lastName}`
                 return fullName.toLowerCase().includes(searchTerm.toLowerCase())
             })
             setFilteredMembers(filtered)
         } else {
-            setFilteredMembers([]) // Clear the filtered members when there's no search term
+            setFilteredMembers([])
         }
     }, [searchTerm, members])
 
     const handleSendEmail = async () => {
+        if (!message.trim() || recipients.length === 0) return
+
         const formData = new FormData()
         formData.append("message", message)
-        formData.append("subject", "Event Notice!"); 
-
-        // Clean recipient emails to remove whitespace
-        const sanitizedRecipients = recipients.map((email) => email.trimEnd()) // Use trimEnd to clean trailing spaces
-        formData.append("recipients", JSON.stringify(sanitizedRecipients))
-
-        if (image) {
-            formData.append("image", image)
-        }
+        formData.append("subject", "Event Notice!")
+        formData.append("recipients", JSON.stringify(recipients.map((r) => r.trimEnd())))
+        if (image) formData.append("image", image)
 
         try {
             const response = await fetch("http://localhost:5000/events/send-email", {
@@ -66,62 +52,55 @@ const EmailModal = ({ isOpen, onClose }) => {
                 body: formData,
             })
             if (response.ok) {
-                console.log("Email sent successfully!")
-                alert("Email sent successfully!")
-                onClose() // Close the modal after sending the email
-            } else {
-                console.error("Failed to send email")
-            }
+                setIsSuccessModalOpen(true) // Show success modal
+            } else console.error("Failed to send email")
         } catch (error) {
             console.error("Error sending email:", error)
         }
     }
 
+    const closeSuccessModal = () => {
+        setIsSuccessModalOpen(false)
+        onClose() // Close main EmailModal as well
+    }
+
     const addRecipient = (guardianEmail) => {
-        if (!recipients.includes(guardianEmail)) {
-            setRecipients((prev) => [...prev, guardianEmail])
-        }
-        setSearchTerm("") // Clear the search term after selection
-        setFilteredMembers([]) // Clear suggestions
+        if (!recipients.includes(guardianEmail)) setRecipients((prev) => [...prev, guardianEmail])
+        setSearchTerm("")
+        setFilteredMembers([])
     }
 
     const toggleAllSeniorCitizens = () => {
-        // Filter all Gmail addresses from the members list
         const gmailAddresses = members
             .map((member) => member.guardianEmail)
             .filter((email) => email?.includes("@gmail.com"))
 
         if (recipients.includes("All Senior Citizens")) {
-            // Remove all Gmail addresses from recipients
             setRecipients([])
         } else {
-            // Add all Gmail addresses to recipients if not already included
             setRecipients([...new Set([...recipients, ...gmailAddresses])])
         }
-        setSearchTerm("") // Clear search term
-        setFilteredMembers([]) // Clear suggestions
+        setSearchTerm("")
+        setFilteredMembers([])
     }
 
     const removeRecipient = (guardianEmail) => {
-        setRecipients(recipients.filter((recipient) => recipient !== guardianEmail))
+        setRecipients(recipients.filter((r) => r !== guardianEmail))
     }
 
     const handleImageChange = (e) => {
         const file = e.target.files[0]
-        if (file) {
-            setImage(file)
-        }
+        if (file) setImage(file)
     }
 
     if (!isOpen) return null
 
-    const isMessageEmpty = !message.trim()
-    const isRecipientsEmpty = recipients.length === 0
-
     return (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white w-[500px] h-[700px] rounded-lg shadow-lg p-6 flex flex-col">
-                <h2 className="text-xl font-semibold mb-4">Compose Email</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+            <div className="bg-white w-[500px] h-[800px] rounded-2xl shadow-2xl p-6 flex flex-col relative">
+                <h2 className="text-2xl font-bold text-[#219EBC] mb-4 flex items-center gap-2">✉️ Compose Email</h2>
+
+                {/* Recipients */}
                 <div className="mb-4">
                     <label className="block text-gray-700 font-medium mb-2">Recipients:</label>
                     <div className="flex mb-2">
@@ -130,7 +109,7 @@ const EmailModal = ({ isOpen, onClose }) => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search names or emails..."
-                            className="p-2 border border-gray-300 rounded-lg flex-grow focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="p-2 border border-gray-300 rounded-lg flex-grow focus:outline-none focus:ring-2 focus:ring-[#219EBC]"
                         />
                         <button
                             onClick={toggleAllSeniorCitizens}
@@ -143,28 +122,30 @@ const EmailModal = ({ isOpen, onClose }) => {
                             {recipients.includes("All Senior Citizens") ? "Remove All" : "All Senior Citizens"}
                         </button>
                     </div>
+
                     {filteredMembers.length > 0 && !recipients.includes("All Senior Citizens") && (
                         <div className="border border-gray-300 rounded-lg max-h-40 overflow-auto">
                             {filteredMembers.map((member) => (
                                 <div
                                     key={member.id}
-                                    className="p-2 hover:bg-gray-200 cursor-pointer"
-                                    onClick={() => addRecipient(member.guardianEmail)} // Store guardianEmail
+                                    className="p-2 hover:bg-[#e0f4fb] cursor-pointer"
+                                    onClick={() => addRecipient(member.guardianEmail)}
                                 >
                                     {member.firstName} {member.middleName && `${member.middleName} `} {member.lastName}{" "}
-                                    ({member.guardianEmail}) {/* Display full name and guardianEmail */}
+                                    ({member.guardianEmail})
                                 </div>
                             ))}
                         </div>
                     )}
+
                     {recipients.length > 0 && (
                         <div className="mt-2">
                             <p className="font-medium">Selected Recipients:</p>
                             <div className="flex flex-wrap">
-                                {recipients.map((recipient, index) => (
+                                {recipients.map((recipient, idx) => (
                                     <span
-                                        key={index}
-                                        className="bg-blue-100 text-blue-800 rounded-full px-2 py-1 mr-2 mb-2 flex items-center"
+                                        key={idx}
+                                        className="bg-[#e0f4fb] text-[#219EBC] rounded-full px-2 py-1 mr-2 mb-2 flex items-center"
                                     >
                                         {recipient}
                                         <button
@@ -179,16 +160,20 @@ const EmailModal = ({ isOpen, onClose }) => {
                         </div>
                     )}
                 </div>
+
+                {/* Message */}
                 <div className="mb-4 flex-grow">
                     <label className="block text-gray-700 font-medium mb-2">Message Content:</label>
                     <textarea
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         rows="5"
-                        className="w-full h-[90%] p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="w-full h-[90%] p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#219EBC]"
                         placeholder="Enter your message here..."
                     ></textarea>
                 </div>
+
+                {/* Image */}
                 <div className="mb-4">
                     <label className="block text-gray-700 font-medium mb-2">Upload Image:</label>
                     <input type="file" onChange={handleImageChange} className="p-2 border border-gray-300 rounded-lg" />
@@ -197,36 +182,49 @@ const EmailModal = ({ isOpen, onClose }) => {
                             <p className="text-gray-700">Selected Image:</p>
                             <img
                                 src={URL.createObjectURL(image)}
-                                alt="Uploaded preview"
-                                className="w-32 h-32 object-cover mt-2"
+                                alt="Preview"
+                                className="w-32 h-32 object-cover mt-2 border border-gray-300 rounded-lg"
                             />
                         </div>
                     )}
                 </div>
+
+                {/* Buttons */}
                 <div className="flex justify-end mt-auto gap-2">
                     <button
                         onClick={onClose}
-                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-200"
+                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-200"
                     >
                         Cancel
                     </button>
                     <button
-                        onClick={handleSendEmail} // Send Email Logic
-                        disabled={isMessageEmpty || isRecipientsEmpty}
+                        onClick={handleSendEmail}
+                        disabled={!message.trim() || recipients.length === 0}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg transition duration-200 ${
-                            isMessageEmpty || isRecipientsEmpty
+                            !message.trim() || recipients.length === 0
                                 ? "bg-gray-300 text-white cursor-not-allowed"
                                 : "bg-[#219EBC] text-white hover:bg-[#1b87a1]"
                         }`}
                     >
-                        <img
-                            src={SendIcon}
-                            alt="Send Icon"
-                            className={`h-4 w-4 ${isMessageEmpty || isRecipientsEmpty ? "text-white" : ""}`}
-                        />
-                        <span className={`${isMessageEmpty || isRecipientsEmpty ? "text-white" : ""}`}>Send Email</span>
+                        <img src={SendIcon} alt="Send" className="h-4 w-4" />
+                        Send Email
                     </button>
                 </div>
+
+                {/* Success Modal */}
+                {isSuccessModalOpen && (
+                    <div className="absolute inset-0 bg-black bg-opacity-40 flex justify-center items-center rounded-2xl">
+                        <div className="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center gap-4 w-64">
+                            <h3 className="text-xl font-bold text-[#219EBC]">✅ Email Sent!</h3>
+                            <button
+                                onClick={closeSuccessModal}
+                                className="px-4 py-2 bg-[#219EBC] text-white rounded-lg hover:bg-[#1b87a1]"
+                            >
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )

@@ -41,9 +41,7 @@ const HealthRecordsTable = () => {
             })
 
             if (response.ok) {
-                setMembers((prevMembers) =>
-                    prevMembers.filter((member) => member.id !== selectedMember.id)
-                )
+                setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id))
                 closeDeleteModal()
                 alert("Member has been successfully deleted.")
             } else {
@@ -127,62 +125,87 @@ const HealthRecordsTable = () => {
     }
 
     return (
-        <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
-            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
-                <thead className="text-[#767171CC]">
+        <div className="max-h-[450px] overflow-y-auto rounded-xl shadow-xl mx-16">
+            <table className="min-w-full bg-white rounded-xl shadow-lg border border-gray-200">
+                <thead className="text-white sticky top-0 bg-[#219EBC] opacity-90">
                     <tr>
-                        <th className="pl-8 py-4 text-left font-medium whitespace-nowrap w-[10%]">Control No.</th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Full Name</th>
-                        <th className="text-left font-medium whitespace-normal">Medical Conditions</th>
-                        <th className="text-left font-medium whitespace-normal">Medications</th>
-                        <th className="text-left font-medium whitespace-nowrap">Guardian Name</th>
-                        <th className="text-left font-medium whitespace-nowrap">Guardian Email</th>
-                        <th className="text-left font-medium whitespace-nowrap">Guardian Contact</th>
-                        <th className="text-left font-medium whitespace-nowrap">Relationship</th>
-                        <th className="text-left pl-8 font-medium whitespace-nowrap">Status</th>
-                        <th className="text-left pl-8 font-medium whitespace-nowrap">Action</th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Control No.
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap w-[200px] border-x border-gray-200">
+                            Full Name
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Medical Conditions
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Medications
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Guardian Name
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Guardian Email
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Guardian Contact
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Relationship
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Status
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {currentMembers.map((member, index) => (
-                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
-                            <td className="px-8 py-4 text-left align-baseline">{member.controlNo}</td>
-                            <td className="text-left whitespace-nowrap align-baseline">
+                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                            <td className="p-4 text-center border-x border-gray-200 align-baseline">
+                                {member.controlNo}
+                            </td>
+                            <td className="p-4 text-center border-x border-gray-200 whitespace-nowrap align-baseline">
                                 {member.firstName} {member.lastName}
                             </td>
-
-                            <td className="whitespace-normal py-4 align-baseline">
+                            <td className="p-4 text-left border-x border-gray-200 align-baseline">
                                 {member.medicalConditions
                                     ? member.medicalConditions
                                           .split(",")
                                           .map((condition, idx) => <div key={idx}>{condition.trim()}</div>)
-                                    : ""}
+                                    : "N/A"}
                             </td>
-                            <td className="whitespace-normal py-4 align-baseline">
+                            <td className="p-4 text-left border-x border-gray-200 align-baseline">
                                 {member.medications
-                                    ? member.medications
-                                          .split(",")
-                                          .map((medication, idx) => <div key={idx}>{medication.trim()}</div>)
-                                    : ""}
+                                    ? member.medications.split(",").map((med, idx) => <div key={idx}>{med.trim()}</div>)
+                                    : "N/A"}
                             </td>
-
-                            <td className="whitespace-nowrap align-baseline">
+                            <td className="p-4 text-center border-x border-gray-200 align-baseline">
                                 {member.guardianFirstName} {member.guardianLastName}
                             </td>
-
-                            <td className="whitespace-nowrap align-baseline">{member.guardianEmail}</td>
-                            <td className="text-left align-baseline">{member.guardianContact}</td>
-                            <td className="whitespace-nowrap align-baseline">{member.guardianRelationship}</td>
-                            <td className={`text-left pl-8 ${getStatusColor(member.status) || "text-gray-500"}`}>
+                            <td className="p-4 text-center border-x border-gray-200 align-baseline">
+                                {member.guardianEmail}
+                            </td>
+                            <td className="p-4 text-center border-x border-gray-200 align-baseline">
+                                {member.guardianContact}
+                            </td>
+                            <td className="p-4 text-center border-x border-gray-200 align-baseline">
+                                {member.guardianRelationship}
+                            </td>
+                            <td
+                                className={`p-4 text-center border-x border-gray-200 align-baseline ${getStatusColor(member.status) || "text-gray-500"}`}
+                            >
                                 {member.status || "N/A"}
                             </td>
-                            <td className="pl-8 text-left flex gap-2 mt-3">
-                                <button onClick={() => openUndoModal(member.id, member.status)} className="cursor-pointer">
-                                    <img src={UndoIcon} alt="Undo Icon" className="w-5 h-5" />
+                            <td className="p-4 text-center border-x border-gray-200 flex justify-center gap-2 align-baseline">
+                                <button onClick={() => openUndoModal(member.id, member.status)}>
+                                    <img src={UndoIcon} alt="Undo" className="w-5 h-5" />
                                 </button>
-                                <button onClick={() => openDeleteModal(member.id)} className="cursor-pointer">
-                                    <img src={DeleteIcon} alt="Delete Icon" className="w-5 h-5" />
+                                <button onClick={() => openDeleteModal(member.id)}>
+                                    <img src={DeleteIcon} alt="Delete" className="w-5 h-5" />
                                 </button>
                             </td>
                         </tr>
@@ -222,7 +245,6 @@ const HealthRecordsTable = () => {
             {/* Undo Modal */}
             <UndoModal isOpen={showModal} onClose={closeUndoModal} onConfirm={handleUndoArchive} />
             <DeleteModal isOpen={showDeleteModal} onClose={closeDeleteModal} onConfirm={handleDelete} />
-     
         </div>
     )
 }

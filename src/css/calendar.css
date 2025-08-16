@@ -18,6 +18,16 @@
     overflow: hidden; /* Hide scrollbars */
 }
 
+.fc .fc-daygrid-event {
+  color: white !important; /* Make text white for contrast */
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  font-size: 16px;
+  padding: 4px;
+}
+
+
 /* FullCalendar styling */
 .fc {
     font-family: Inter, sans-serif; /* Font family */

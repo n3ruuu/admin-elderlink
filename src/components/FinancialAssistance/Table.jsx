@@ -8,6 +8,7 @@ const Tables = ({ membersData, onEdit }) => {
     const [selectedMember, setSelectedMember] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedQuarter, setSelectedQuarter] = useState("") // Initially empty
+    const [socialPensionMembers, setSocialPensionMembers] = useState([])
 
     // Function to determine the current quarter using moment.js
     const getCurrentQuarter = () => {
@@ -18,11 +19,17 @@ const Tables = ({ membersData, onEdit }) => {
         return "Q4" // for months 10-12
     }
 
+    // Initialize quarter on mount
     useEffect(() => {
-        setSelectedQuarter(getCurrentQuarter())
+        const currentQuarter = getCurrentQuarter()
+        setSelectedQuarter(currentQuarter)
     }, [])
 
-    const socialPensionMembers = membersData.filter((member) => member.quarter === selectedQuarter)
+    // Update filtered members whenever selectedQuarter or membersData changes
+    useEffect(() => {
+        const filtered = membersData.filter((member) => member.quarter === selectedQuarter)
+        setSocialPensionMembers(filtered)
+    }, [selectedQuarter, membersData])
 
     // Function to handle viewing a member's details
     const handleViewClick = (member) => {
@@ -57,7 +64,7 @@ const Tables = ({ membersData, onEdit }) => {
             <SocialPensionTable
                 socialPensionMembers={socialPensionMembers}
                 onEdit={onEdit}
-                handleViewClick={handleViewClick} // Pass handleViewClick here\
+                handleViewClick={handleViewClick}
             />
 
             {/* ViewModal to display member details */}

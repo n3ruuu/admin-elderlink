@@ -51,7 +51,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                                 lastName: row.lastName || "",
                                 middleName: row.middleName || "", // Default empty if not available
                                 extension: row.extension || "",
-                                dob: moment(row.dob, "MM/DD/YYYY").format("YYYY-MM-DD"),
+                                dob: moment(row.dob).format("MM/DD/YYYY"),
                                 sex: row.sex || "",
                                 civilStatus: row.civilStatus || "",
                                 address: row.address || "",
@@ -59,7 +59,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                                 controlNo: row.controlNo || "",
                                 purchaseBookletNo: row.purchaseBookletNo || "",
                                 medicineBookletNo: row.medicineBookletNo || "",
-                                dateIssued: moment(row.dateIssued, "MM/DD/YYYY").format("YYYY-MM-DD") || "",
+                                dateIssued: moment(row.dateIssued).format("MM/DD/YYYY") || "",
                                 medicalConditions: row.medicalConditions || "",
                                 medications: row.medications || "",
                                 guardianFirstName: row.guardianFirstName || "",
@@ -377,7 +377,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                 <div>
                     {!isEditMode && (
                         <>
-                            {/* Hidden file input */}
+                            {/* Hidden file input
                             <input
                                 type="file"
                                 id="csvFile"
@@ -391,7 +391,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                                 onClick={() => document.getElementById("csvFile").click()}
                             >
                                 Import .CSV File
-                            </button>
+                            </button> */}
 
                             {/* Display selected file name with small "X" button to remove */}
                             {selectedFile && (

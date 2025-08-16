@@ -3,179 +3,127 @@ import moment from "moment"
 import UndoModal from "../UndoModal"
 import UndoIcon from "../../../assets/icons/cancel.svg"
 import DeleteIcon from "../../../assets/icons/archive.svg"
-import DeleteModal from "../DeleteModal" // Import the DeleteModal component
+import DeleteModal from "../DeleteModal"
 
 const EventsTable = () => {
-    const [events, setEvents] = useState([]) // State to hold fetched events data
-    const [showUndoModal, setShowUndoModal] = useState(false) // State to control undo modal visibility
-    const [showDeleteModal, setShowDeleteModal] = useState(false) // State to control delete modal visibility
-    const [selectedEvent, setSelectedEvent] = useState(null) // State to hold the selected event
+    const [currentPage, setCurrentPage] = useState(1)
+    const [events, setEvents] = useState([]) // All fetched events
+    const [showUndoModal, setShowUndoModal] = useState(false)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [selectedEvent, setSelectedEvent] = useState(null)
+
+    const itemsPerPage = 6
+
+    useEffect(() => {
+        fetchEvents()
+    }, [])
 
     const fetchEvents = async () => {
         try {
             const response = await fetch("http://localhost:5000/events")
             const data = await response.json()
-
-            // Filter out archived events
-            const archivedEvents = data.filter(
-                (event) => event.status === "Archived" || event.status === "Deleted",
-            )
+            // Only fetch Archived or Deleted events
+            const archivedEvents = data.filter((event) => event.status === "Archived" || event.status === "Deleted")
             setEvents(archivedEvents)
         } catch (error) {
             console.error("Error fetching events:", error)
         }
     }
 
-    // Call the fetchEvents function inside useEffect
-    useEffect(() => {
-        fetchEvents()
-    }, [])
+    const sortedEvents = events.sort((a, b) => new Date(a.date) - new Date(b.date))
 
-    // Handle opening the undo modal and setting the selected event
+    // Pagination
+    const totalPages = Math.ceil(sortedEvents.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const paginatedEvents = sortedEvents.slice(startIndex, startIndex + itemsPerPage)
+
+    const handlePageChange = (page) => {
+        if (page >= 1 && page <= totalPages) setCurrentPage(page)
+    }
+
+    // Undo modal handlers
     const handleUndoClick = (event) => {
-        setSelectedEvent(event) // Set the event to undo
-        setShowUndoModal(true) // Show the undo modal
+        setSelectedEvent(event)
+        setShowUndoModal(true)
+    }
+    const handleUndoConfirm = async () => {
+        if (!selectedEvent) return
+        try {
+            const response = await fetch(`http://localhost:5000/events/archive/${selectedEvent.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "Active" }),
+            })
+            if (response.ok) {
+                setEvents((prev) => prev.map((ev) => (ev.id === selectedEvent.id ? { ...ev, status: "Active" } : ev)))
+                alert("Event has been successfully restored.")
+            } else console.error("Failed to undo archive")
+        } catch (error) {
+            console.error("Error undoing archive:", error)
+        }
+        handleCloseModal()
+        fetchEvents()
     }
 
-    // Handle opening the delete modal and setting the selected event
+    // Delete modal handlers
     const handleDeleteClick = (event) => {
-        setSelectedEvent(event) // Set the event to delete
-        setShowDeleteModal(true) // Show the delete modal
+        setSelectedEvent(event)
+        setShowDeleteModal(true)
+    }
+    const handleDeleteConfirm = async () => {
+        if (!selectedEvent) return
+        try {
+            const response = await fetch(`http://localhost:5000/events/delete/${selectedEvent.id}`, {
+                method: "DELETE",
+            })
+            if (response.ok) {
+                setEvents((prev) => prev.filter((ev) => ev.id !== selectedEvent.id))
+                alert("Event has been successfully deleted.")
+            } else console.error("Failed to delete event")
+        } catch (error) {
+            console.error("Error deleting event:", error)
+        }
+        handleCloseModal()
+        fetchEvents()
     }
 
-    // Handle closing the modals
     const handleCloseModal = () => {
         setShowUndoModal(false)
         setShowDeleteModal(false)
         setSelectedEvent(null)
     }
 
-    // Handle undo action (restore the event to active status)
-    const handleUndoConfirm = async () => {
-        if (selectedEvent) {
-            try {
-                const response = await fetch(
-                    `http://localhost:5000/events/archive/${selectedEvent.id}`,
-                    {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ status: "Active" }), // Undo the archive
-                    }
-                )
-
-                if (response.ok) {
-                    // Update the event state
-                    setEvents((prevEvents) =>
-                        prevEvents.map((event) =>
-                            event.id === selectedEvent.id
-                                ? { ...event, status: "Active" }
-                                : event
-                        )
-                    )
-                alert("Event has been successfully restored.");
-
-                } else {
-                    console.error("Failed to undo archive")
-                }
-            } catch (error) {
-                console.error("Error undoing archive:", error)
-            }
-        }
-        handleCloseModal() // Close the modal after the action
-        fetchEvents() // Re-fetch events after the change
-    }
-
-    // Handle delete action (mark the event as deleted)
-    const handleDeleteConfirm = async () => {
-        if (selectedEvent) {
-            try {
-                const response = await fetch(
-                    `http://localhost:5000/events/delete/${selectedEvent.id}`,
-                    {
-                        method: "DELETE", // Send DELETE request to mark the event as deleted
-                    }
-                )
-
-                if (response.ok) {
-                    // Update the event state
-                    setEvents((prevEvents) =>
-                        prevEvents.filter((event) => event.id !== selectedEvent.id)
-                    )
-                alert("Event has been successfully deleted.")
-
-                } else {
-                    console.error("Failed to delete event")
-                }
-            } catch (error) {
-                console.error("Error deleting event:", error)
-            }
-        }
-        handleCloseModal() // Close the modal after the action
-        fetchEvents() // Re-fetch events after the change
-    }
-
     return (
-        <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
-            {/* Set max height and enable vertical scrolling */}
-            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
-                <thead className="text-[#767171CC] border-b">
+        <div className="rounded-xl opacity-80 shadow-xl overflow-hidden max-h-[calc(90vh-200px)] mx-16">
+            <table className="min-w-full bg-white rounded-xl border border-gray-300">
+                <thead className="bg-[#219EBC] text-white border-b border-gray-300">
                     <tr>
-                        <th className="px-16 py-4 text-left font-medium whitespace-nowrap">
-                            Event Title
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Date
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Location
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Organizer
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Category
-                        </th>
-                        <th className="text-left font-medium whitespace-nowrap">
-                            Status
-                        </th>
-                        <th className="px-8 text-left font-medium whitespace-nowrap">
-                            Actions
-                        </th>
+                        <th className="px-8 py-4 text-left font-medium rounded-tl-xl">Event Title</th>
+                        <th className="text-left font-medium">Date</th>
+                        <th className="text-left font-medium">Location</th>
+                        <th className="text-left font-medium">Organizer</th>
+                        <th className="text-left font-medium">Category</th>
+                        <th className="px-8 w-[150px] text-left font-medium rounded-tr-xl">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {events.map((event, index) => (
+                    {paginatedEvents.map((event, index) => (
                         <tr
-                            className={`text-[#333333] font-[500] ${
-                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
-                            }`}
                             key={event.id}
+                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                         >
-                            <td className="px-16 py-4 text-left whitespace-nowrap">
-                                {event.title}
-                            </td>
-                            <td className="text-left whitespace-nowrap">
+                            <td className="px-8 py-4 text-left">{event.title}</td>
+                            <td className="text-left py-4 whitespace-nowrap">
                                 {moment(event.date).format("MMMM D, YYYY")}
                             </td>
-                            <td className="text-left whitespace-nowrap">
-                                {event.location}
-                            </td>
-                            <td className="text-left whitespace-nowrap">
-                                {event.organizer}
-                            </td>
-                            <td className="text-left whitespace-nowrap">
-                                {event.category}
-                            </td>
-                            <td className="text-left text-red-500 whitespace-nowrap">
-                                {event.status}
-                            </td>
-                            <td className="pl-16 text-left flex gap-2 mt-3">
-                                <button onClick={() => handleUndoClick(event)} className="cursor-pointer">
+                            <td className="text-left py-4 whitespace-nowrap">{event.location}</td>
+                            <td className="text-left py-4 whitespace-nowrap">{event.organizer}</td>
+                            <td className="text-left py-4 whitespace-nowrap">{event.category}</td>
+                            <td className="px-8 py-4 text-left flex gap-3">
+                                <button onClick={() => handleUndoClick(event)}>
                                     <img src={UndoIcon} alt="Undo Icon" className="w-5 h-5" />
                                 </button>
-                                <button onClick={() => handleDeleteClick(event)} className="cursor-pointer">
+                                <button onClick={() => handleDeleteClick(event)}>
                                     <img src={DeleteIcon} alt="Delete Icon" className="w-5 h-5" />
                                 </button>
                             </td>
@@ -184,17 +132,47 @@ const EventsTable = () => {
                 </tbody>
             </table>
 
-            {/* Pass the modal props */}
-            <UndoModal
-                isOpen={showUndoModal}
-                onClose={handleCloseModal}
-                onConfirm={handleUndoConfirm}
-            />
-            <DeleteModal
-                isOpen={showDeleteModal}
-                onClose={handleCloseModal}
-                onConfirm={handleDeleteConfirm}
-            />
+            <div className="flex fixed bottom-5 mt-4">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 ${
+                        currentPage === 1
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                    } rounded-md`}
+                >
+                    Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`px-4 py-2 ${
+                            currentPage === index + 1
+                                ? "bg-[#219EBC] text-white"
+                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                        } rounded-md mx-1`}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 ${
+                        currentPage === totalPages
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                    } rounded-md`}
+                >
+                    Next
+                </button>
+            </div>
+
+            {/* Modals */}
+            <UndoModal isOpen={showUndoModal} onClose={handleCloseModal} onConfirm={handleUndoConfirm} />
+            <DeleteModal isOpen={showDeleteModal} onClose={handleCloseModal} onConfirm={handleDeleteConfirm} />
         </div>
     )
 }

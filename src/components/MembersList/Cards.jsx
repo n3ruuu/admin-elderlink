@@ -3,36 +3,25 @@ import { useState } from "react"
 import TotalNumberIcon from "../../assets/icons/total-senior.svg"
 import BirthdayIcon from "../../assets/icons/birthday.svg"
 import RegisteredIcon from "../../assets/icons/registered.svg"
-import moment from "moment" // Import Moment.js
-import BirthdayModal from "./BirthdayModal" // Import the BirthdayModal component
+import moment from "moment"
+import BirthdayModal from "./BirthdayModal"
 
 const Cards = ({ membersData }) => {
-    const [isBirthdayModalOpen, setIsBirthdayModalOpen] = useState(false) // State for the BirthdayModal
-    const currentDate = moment() // Current date
-    const currentMonth = currentDate.month() // Get the current month (0-11)
+    const [isBirthdayModalOpen, setIsBirthdayModalOpen] = useState(false)
+    const today = moment()
 
-    // Calculate upcoming birthdays
-    const upcomingBirthdays = membersData.filter((member) => {
-        const birthDate = moment(member.dob) // Parse member's date of birth
-        const birthMonth = birthDate.month() // Get birth month (0-11)
-        // Check if birthday is in the current month or next month
-        if (birthMonth === currentMonth) {
-            return birthDate.date() >= currentDate.date() // Birthday is today or later this month
-        } else if (birthMonth === (currentMonth + 1) % 12) {
-            return true // Birthday is in next month
-        }
-        return false // Not an upcoming birthday
+    // Filter members whose birthday is today
+    const birthdaysToday = membersData.filter((member) => {
+        const birthDate = moment(member.dob)
+        return birthDate.date() === today.date() && birthDate.month() === today.month()
     })
 
     // Calculate newly registered members in the last 30 days
-    const thirtyDaysAgo = currentDate.clone().subtract(30, "days") // Date 30 days ago
-    const newlyRegistered = membersData.filter((member) => {
-        const registrationDate = moment(member.registered_at) // Parse member's registration date
-        return registrationDate.isAfter(thirtyDaysAgo) // Check if registered within the last 30 days
-    })
+    const thirtyDaysAgo = today.clone().subtract(30, "days")
+    const newlyRegistered = membersData.filter((member) => moment(member.registered_at).isAfter(thirtyDaysAgo))
 
     const handleSeeAllBirthdaysClick = () => {
-        setIsBirthdayModalOpen(true) // Open the BirthdayModal when the "See all upcoming birthdays" is clicked
+        setIsBirthdayModalOpen(true)
     }
 
     return (
@@ -51,17 +40,14 @@ const Cards = ({ membersData }) => {
                     <img src={BirthdayIcon} alt="Birthday Icon" />
                 </div>
                 <div className="flex flex-col">
-                    <h3 className="font-bold text-5xl">
-                        {upcomingBirthdays.length}
-                    </h3>
-                    <p className="text-[24px]">Upcoming Birthdays</p>
+                    <h3 className="font-bold text-5xl">{birthdaysToday.length}</h3>
+                    <p className="text-[24px]">Birthday Today</p>
                 </div>
-                {/* Add "See all upcoming birthdays" text with updated color and underline */}
                 <div
-                    onClick={handleSeeAllBirthdaysClick} // Trigger opening the BirthdayModal
+                    onClick={handleSeeAllBirthdaysClick}
                     className="absolute bottom-2 right-5 text-[#FF69B4] cursor-pointer underline"
                 >
-                    See all upcoming birthdays
+                    See all birthdays today
                 </div>
             </div>
             <div className="bg-white w-1/3 h-[200px] rounded-[12px] p-8 flex gap-4 items-center">
@@ -69,9 +55,7 @@ const Cards = ({ membersData }) => {
                     <img src={RegisteredIcon} alt="Newly Registered Icon" />
                 </div>
                 <div className="flex flex-col">
-                    <h3 className="font-bold text-5xl">
-                        {newlyRegistered.length}
-                    </h3>
+                    <h3 className="font-bold text-5xl">{newlyRegistered.length}</h3>
                     <p className="text-[24px]">Newly Registered</p>
                 </div>
             </div>
@@ -80,8 +64,8 @@ const Cards = ({ membersData }) => {
             {isBirthdayModalOpen && (
                 <BirthdayModal
                     isOpen={isBirthdayModalOpen}
-                    onClose={() => setIsBirthdayModalOpen(false)} // Close the modal
-                    upcomingBirthdays={upcomingBirthdays} // Pass the upcoming birthdays data
+                    onClose={() => setIsBirthdayModalOpen(false)}
+                    upcomingBirthdays={birthdaysToday} // Pass today's birthdays
                 />
             )}
         </div>

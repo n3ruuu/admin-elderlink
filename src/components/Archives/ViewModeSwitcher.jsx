@@ -5,9 +5,9 @@ const ViewModeSwitcher = ({ filter, handleFilterChange }) => {
         <div className="flex pl-16 pb-8 text-[20px] gap-5 justify-between">
             <div className="flex gap-2 items-center">
                 <div className="flex items-center">
-                    <div className="flex border border-[#219EBC] rounded-2xl ml-2">
+                    <div className="flex border border-[#219EBC] rounded-lg ml-2">
                         <button
-                            className={`border-1 border-[#219EBC] text-[#219EBC] border-r border-r-[#219EBC] rounded-l-xl px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
+                            className={`border-1 border-[#219EBC] text-[#219EBC] border-r border-r-[#219EBC] rounded-l-lg px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
                                 filter === "members" ? "bg-[#219EBC] text-white" : ""
                             }`}
                             onClick={() => handleFilterChange("members")}
@@ -31,7 +31,7 @@ const ViewModeSwitcher = ({ filter, handleFilterChange }) => {
                             Finance
                         </button>
                         <button
-                            className={`border-1 border-[#219EBC] text-[#219EBC] px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
+                            className={`border-1 border-[#219EBC] text-[#219EBC] border-r px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
                                 filter === "events" ? "bg-[#219EBC] text-white" : ""
                             }`}
                             onClick={() => handleFilterChange("events")}
@@ -47,15 +47,15 @@ const ViewModeSwitcher = ({ filter, handleFilterChange }) => {
                             News
                         </button>
                         <button
-                            className={`border-1 border-[#219EBC] text-[#219EBC] border-l border-l-[#219EBC]  px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
+                            className={`border-1 border-[#219EBC] text-[#219EBC] border-l border-l-[#219EBC] px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
                                 filter === "forms" ? "bg-[#219EBC] text-white" : ""
                             }`}
                             onClick={() => handleFilterChange("forms")}
                         >
                             Forms
-                        </button>{" "}
+                        </button>
                         <button
-                            className={`border-1 border-[#219EBC] text-[#219EBC] border-l border-l-[#219EBC] rounded-r-xl px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
+                            className={`border-1 border-[#219EBC] text-[#219EBC] border-l border-l-[#219EBC] rounded-r-lg px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
                                 filter === "reports" ? "bg-[#219EBC] text-white" : ""
                             }`}
                             onClick={() => handleFilterChange("reports")}

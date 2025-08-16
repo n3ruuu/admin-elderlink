@@ -58,23 +58,24 @@ const ContentManagement = () => {
         }
     }
 
-    // Handle adding or updating the signatory (only one)
     const handleAddSignatory = async () => {
         try {
+            let response;
             if (signatory.id) {
-                // If a signatory already exists, update it
-                await axios.put(`http://localhost:5000/cms/signatory/${signatory.id}`, newSignatory)
-                setSignatory(newSignatory)
+                // Update the existing signatory
+                response = await axios.put(`http://localhost:5000/cms/signatory/${signatory.id}`, newSignatory);
             } else {
-                // If no signatory exists, create a new one
-                await axios.post("http://localhost:5000/cms/signatory", newSignatory)
-                setSignatory(newSignatory)
+                // Create a new signatory
+                response = await axios.post("http://localhost:5000/cms/signatory", newSignatory);
             }
-            setNewSignatory({ name: "", position: "" })
+    
+            setSignatory(response.data); // Update state with server's response
+            setNewSignatory({ name: "", position: "" }); // Reset input fields
         } catch (error) {
-            console.error("Error adding/updating signatory", error)
+            console.error("Error adding/updating signatory:", error);
         }
-    }
+    };
+    
 
     // Handle deleting the signatory
     const handleDeleteSignatory = async () => {
@@ -95,6 +96,17 @@ const ContentManagement = () => {
             console.error("Error deleting officer", error)
         }
     }
+
+    // Handle deleting a coordinator
+const handleDeleteCoordinator = async (coordinatorId) => {
+    try {
+        await axios.delete(`http://localhost:5000/cms/area-coordinators/${coordinatorId}`)
+        setCoordinators(coordinators.filter((coordinator) => coordinator.id !== coordinatorId))
+    } catch (error) {
+        console.error("Error deleting coordinator", error)
+    }
+}
+
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-auto">

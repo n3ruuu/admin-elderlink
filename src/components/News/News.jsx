@@ -22,14 +22,18 @@ const News = () => {
         fetchNews()
     }, [])
 
-    const fetchNews = async () => {
-        try {
-            const response = await axios.get("http://localhost:5000/news")
-            setNewsData(response.data)
-        } catch (error) {
-            console.error("Error fetching news:", error)
-        }
+   const fetchNews = async () => {
+    try {
+        const response = await axios.get("http://localhost:5000/news")
+        const sortedNews = response.data
+            .filter(news => news.status === 'Active')
+            .sort((a, b) => new Date(a.date) - new Date(b.date)) // Oldest first
+        setNewsData(sortedNews)
+    } catch (error) {
+        console.error("Error fetching news:", error)
     }
+}
+
 
     const logAction = async (action) => {
         try {

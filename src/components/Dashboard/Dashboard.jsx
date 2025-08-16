@@ -88,89 +88,88 @@ const Dashboard = () => {
 
         const fetchUpcomingEvents = async () => {
             try {
-              const response = await axios.get("http://localhost:5000/events");
-              console.log("Fetched events:", response.data); // Log the raw fetched events
-          
-              const upcomingEvents = [];
-          
-              response.data.forEach((event) => {
-                const startDate = moment(event.date);
-                const endDate = moment(event.endDate || startDate); // If no endDate, use startDate as fallback
-          
-                // Handle One-Time events
-                if (event.recurrence === "One-Time") {
-                  upcomingEvents.push({
-                    ...event,
-                    date: startDate.format("YYYY-MM-DD"),
-                  });
-                } else {
-                  // Handle recurring events (Daily, Weekly, Monthly, Yearly)
-                  let recurrenceInterval = null;
-                  let dateFormat = "YYYY-MM-DD";
-          
-                  switch (event.recurrence) {
-                    case "Daily":
-                      recurrenceInterval = "days";
-                      break;
-                    case "Weekly":
-                      recurrenceInterval = "weeks";
-                      break;
-                    case "Monthly":
-                      recurrenceInterval = "months";
-                      break;
-                    case "Yearly":
-                      recurrenceInterval = "years";
-                      break;
-                    default:
-                      return; // Skip unknown recurrence types
-                  }
-          
-                  // Generate occurrences for recurring events
-                  let date = startDate.clone();
-                  while (date.isBefore(endDate) || date.isSame(endDate, "day")) {
-                    upcomingEvents.push({
-                      ...event,
-                      date: date.format(dateFormat),
-                    });
-          
-                    // Move to the next recurrence date
-                    date.add(1, recurrenceInterval);
-                  }
-                }
-              });
-          
-              // Sort events by date, latest first
-              upcomingEvents.sort((b, a) => moment(b.date).diff(moment(a.date)));
-          
-              console.log("Upcoming events:", upcomingEvents); // Log the filtered upcoming events
-              setUpcomingEventDetails(upcomingEvents); // Store the filtered upcoming events
-              setUpcomingEvents(upcomingEvents.length); // Set the count of upcoming events
+                const response = await axios.get("http://localhost:5000/events")
+                console.log("Fetched events:", response.data) // Log the raw fetched events
+
+                const upcomingEvents = []
+
+                response.data.forEach((event) => {
+                    // Skip events that are not active
+                    if (event.status !== "Active") return
+
+                    const startDate = moment(event.date)
+                    const endDate = moment(event.endDate || startDate) // If no endDate, use startDate
+
+                    // Handle One-Time events
+                    if (event.recurrence === "One-Time") {
+                        upcomingEvents.push({
+                            ...event,
+                            date: startDate.format("YYYY-MM-DD"),
+                        })
+                    } else {
+                        // Handle recurring events (Daily, Weekly, Monthly, Yearly)
+                        let recurrenceInterval = null
+                        let dateFormat = "YYYY-MM-DD"
+
+                        switch (event.recurrence) {
+                            case "Daily":
+                                recurrenceInterval = "days"
+                                break
+                            case "Weekly":
+                                recurrenceInterval = "weeks"
+                                break
+                            case "Monthly":
+                                recurrenceInterval = "months"
+                                break
+                            case "Yearly":
+                                recurrenceInterval = "years"
+                                break
+                            default:
+                                return // Skip unknown recurrence types
+                        }
+
+                        // Generate occurrences for recurring events
+                        let date = startDate.clone()
+                        while (date.isSameOrBefore(endDate, "day")) {
+                            upcomingEvents.push({
+                                ...event,
+                                date: date.format(dateFormat),
+                            })
+                            date.add(1, recurrenceInterval)
+                        }
+                    }
+                })
+
+                // Sort events by date (earliest first)
+                upcomingEvents.sort((a, b) => moment(a.date).diff(moment(b.date)))
+
+                console.log("Upcoming events:", upcomingEvents) // Log the filtered upcoming events
+                setUpcomingEventDetails(upcomingEvents) // Store the filtered upcoming events
+                setUpcomingEvents(upcomingEvents.length) // Set the count of upcoming events
             } catch (error) {
-              console.error("Error fetching upcoming events:", error);
+                console.error("Error fetching upcoming events:", error)
             }
-          };
-          
-          
-        
+        }
+
         // Fetch pending applications from the backend
         const fetchPendingApplications = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/members/registrations");
-        
+                const response = await axios.get("http://localhost:5000/members/registrations")
+
                 // Ensure response.data contains the expected structure
-                const applications = response.data || [];
-        
+                const applications = response.data || []
+
                 // Filter pending applications using applicationStatus
-                const pendingApps = applications.filter((application) => application.applicationStatus === "Pending");
-        
+                const pendingApps = applications.filter((application) => application.applicationStatus === "Pending")
+
                 // Set the state with the filtered pending applications and count
-                setPendingApplications(pendingApps.length);
-                setPendingApplicationsDetails(pendingApps);
+                setPendingApplications(pendingApps.length)
+                setPendingApplicationsDetails(pendingApps)
             } catch (error) {
-                console.error("Error fetching pending applications:", error);
+                console.error("Error fetching pending applications:", error)
             }
-        };
-        
+        }
+
         fetchTotalSeniorCitizens()
         fetchUpcomingEvents()
         fetchPendingApplications()

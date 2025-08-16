@@ -65,17 +65,21 @@ const FinancialAssistance = () => {
     }
 
     const getMonthlyTotalPayouts = () => {
-        const startOfMonth = moment().startOf("month")
-        const endOfMonth = moment().endOf("month")
-
+        const startOfMonth = moment().startOf("month");
+        const endOfMonth = moment().endOf("month");
+    
         return membersData.filter((member) => {
-            const claimDate = moment(member.disbursement_date) // Assuming 'disbursement_date' is used to filter
+            const claimDate = moment(member.disbursement_date); // Assuming 'disbursement_date' is used to filter
+            
+            // Ensure the member's disbursement is unclaimed, not inactive, and within the current month
             return (
-                member.status === "Unclaimed" && // Adjust status to 'Claimed' (or 'Unclaimed' if you prefer)
-                claimDate.isBetween(startOfMonth, endOfMonth, null, "[]")
-            )
-        }).length // Return the number of active payouts in this month
-    }
+                member.status === "Unclaimed" && 
+                member.memberStatus === "Inactive" && 
+                claimDate.isBetween(startOfMonth, endOfMonth, null, "[]") // inclusive of start and end
+            );
+        }).length; // Return the number of active payouts in this month
+    };
+    
 
     // Calculate upcoming payouts for the current week
     const getUpcomingPayoutsThisWeek = () => {

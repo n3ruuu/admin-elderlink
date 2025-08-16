@@ -6,6 +6,11 @@ import moment from "moment"
 import ArchiveModal from "./ArchiveModal" // Import the ArchiveModal
 import SuccessModal from "../common/SuccessModal"
 import axios from "axios"
+import ReportIcon from "../../assets/icons/report.svg"
+import jsPDF from "jspdf"
+import "jspdf-autotable" // Ensure autoTable is imported for table generation
+import MojonLogo from "../../assets/mojon-logo.png"
+import ElderlinkLogo from "../../assets/elderlink-logo.png"
 
 const Table = ({ reportsData, fetchReportsData }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -83,57 +88,140 @@ const Table = ({ reportsData, fetchReportsData }) => {
         setSelectedReport(null)
     }
 
+    // Generate PDF Function
+    const generatePDF = () => {
+        const doc = new jsPDF("l", "mm", "a4") // 'l' for landscape orientation
+
+        // Logo - Upper Left (Smaller Size)
+        const logo = new Image()
+        logo.src = ElderlinkLogo
+        doc.addImage(logo, "PNG", 15, 10, 25, 20) // Smaller size for the logo
+
+        const mojonLogo = new Image()
+        mojonLogo.src = MojonLogo
+
+        // Position the logo in the upper-right corner
+        doc.addImage(mojonLogo, "PNG", doc.internal.pageSize.width - 40, 10, 22, 22)
+
+        doc.setFontSize(18)
+        doc.setFont("helvetica", "bold")
+        doc.setTextColor("#000000") // Black color for text
+        const brgyHeader = "Brgy. Mojon"
+        const brgyHeaderWidth = doc.getTextWidth(brgyHeader)
+        doc.text(brgyHeader, doc.internal.pageSize.width / 2 - brgyHeaderWidth / 2, 28)
+
+        // Title
+        doc.setFontSize(18)
+        doc.setFont("helvetica", "bold")
+        doc.text("Reports Data", doc.internal.pageSize.width / 2, 35, { align: "center" })
+
+        // Address and Contact Number
+        doc.setFontSize(12)
+        doc.setFont("helvetica", "normal")
+        const address = "123 Main Street, Brgy. Mojon"
+        const contactNumber = "Contact No: (123) 456-7890"
+        doc.text(address, doc.internal.pageSize.width / 2, 15, { align: "center" })
+        doc.text(contactNumber, doc.internal.pageSize.width / 2, 20, { align: "center" })
+
+        // Table Headers and Data
+        const headers = ["Report Name", "Report Type", "Time Created", "Created By"]
+        const rows = reportsData.map((report) => [
+            report.report_name,
+            report.report_type,
+            moment(report.created_at).format("MM-DD-YYYY, h:mm:ss A"),
+            report.created_by,
+        ])
+
+        // Add Table to PDF
+        doc.autoTable({
+            head: [headers],
+            body: rows,
+            startY: 40, // Position the table below the title and address
+            theme: "grid",
+            headStyles: {
+                fillColor: [240, 240, 240],
+                textColor: [0, 0, 0],
+            },
+        })
+
+        // Footer
+        doc.setFontSize(10)
+        doc.text(`Generated on ${moment().format("MM-DD-YYYY h:mm:ss A")}`, 10, doc.internal.pageSize.height - 10)
+
+        // Page Number - Lower Right (Page x of y)
+        const pageCount = doc.internal.getNumberOfPages()
+        const currentPage = doc.internal.getCurrentPageInfo().pageNumber
+        doc.text(
+            `Page ${currentPage} of ${pageCount}`,
+            doc.internal.pageSize.width - 30,
+            doc.internal.pageSize.height - 10,
+        )
+
+        // Save the PDF
+        doc.save("reports_data.pdf")
+    }
+
     return (
-        <div>
-            <table className="min-w-full bg-[#FFFFFF] rounded-xl shadow-lg">
-            <thead className="text-gray-500 border-b">
-                        <tr>
-                            <th className="px-8 py-4 text-left font-medium whitespace-nowrap">Report Name</th>
-                            <th className="px-6 py-4 text-left font-medium">Report Type</th>
-                            <th className="px-6 py-4 text-left font-medium">Time Created</th>
-                            <th className="px-6 py-4 text-left font-medium">Created by</th>
-                            <th className="px-6 py-4 text-left font-medium">Actions</th>
+        <div className="rounded-xl shadow-lg overflow-hidden">
+            <table className="min-w-full bg-white border border-gray-300">
+                <thead className="border-b bg-[#219EBC] text-white">
+                    <tr>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Report Name
+                        </th>
+                        <th className="p-4 text-center font-medium border-x border-gray-200">Report Type</th>
+                        <th className="p-4 text-center font-medium border-x border-gray-200">Time Created</th>
+                        <th className="p-4 text-center font-medium border-x border-gray-200">Created By</th>
+                        <th className="p-4 text-center font-medium border-x border-gray-200">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {reportsData.slice(startIndex, startIndex + itemsPerPage).map((report, index) => (
+                        <tr
+                            key={report.id}
+                            className={`${
+                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
+                            } text-[#333333] font-[500] transition-colors hover:bg-[#F1F1F1]`}
+                        >
+                            <td className="p-4 text-left border-x border-gray-300">{report.report_name}</td>
+                            <td className="p-4 text-left border-x border-gray-300">{report.report_type}</td>
+                            <td className="p-4 text-left border-x border-gray-300">
+                                {moment(report.created_at).format("MM-DD-YYYY, h:mm:ss A")}
+                            </td>
+                            <td className="p-4 text-left border-x border-gray-300 whitespace-nowrap">
+                                {report.created_by}
+                            </td>
+                            <td className="p-4 border-x border-gray-300 flex justify-center items-center gap-3">
+                                <button
+                                    onClick={() => handleDownload(report)}
+                                    className="text-[#219EBC] hover:text-[#1A8CB5] transition-colors"
+                                >
+                                    <img src={PrintIcon} alt="Print Icon" className="h-5" />
+                                </button>
+
+                                <button
+                                    onClick={() => handleOpenModal(report)}
+                                    className="text-[#FF9800] hover:text-[#F57C00] transition-colors"
+                                >
+                                    <img src={ArchiveIcon} alt="Archive Icon" className="h-5" />
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {reportsData.slice(startIndex, startIndex + itemsPerPage).map((report, index) => (
-                            <tr
-                                className={`text-[#333333] font-[500] transition-colors hover:bg-[#F1F1F1] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
-                                key={report.id}
-                            >
-                                <td className="px-8 py-4 text-left align-top">{report.report_name}</td>
-                                <td className="px-6 py-4 text-left align-top">{report.report_type}</td>
-                                <td className="px-6 py-4 text-left align-top">
-                                    {moment(report.created_at).format("MM-DD-YYYY, h:mm:ss A")}
-                                </td>
+                    ))}
+                </tbody>
+            </table>
 
-                                <td className="px-6 py-4 text-left align-top whitespace-nowrap">{report.created_by}</td>
-                                <td className="px-6 py-4 text-left flex gap-4 items-center">
-                                    <button
-                                        onClick={() => handleDownload(report)}
-                                        className="text-[#219EBC] hover:text-[#1A8CB5] transition-colors"
-                                    >
-                                        <img src={PrintIcon} alt="Print Icon" className="h-5" />
-                                    </button>
-
-                                    <button
-                                        onClick={() => handleOpenModal(report)} // Open the modal with the selected report
-                                        className="text-[#FF9800] hover:text-[#F57C00] transition-colors"
-                                    >
-                                        <img src={ArchiveIcon} alt="Archive Icon" className="h-5" />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-              {/* Pagination Controls */}
+            {/* Pagination Controls */}
             <div className="flex fixed bottom-5 mt-4">
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    className={`px-4 py-2 ${
+                        currentPage === 1
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                    } rounded-md`}
                 >
                     Previous
                 </button>
@@ -141,7 +229,11 @@ const Table = ({ reportsData, fetchReportsData }) => {
                     <button
                         key={index + 1}
                         onClick={() => handlePageChange(index + 1)}
-                        className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
+                        className={`px-4 py-2 ${
+                            currentPage === index + 1
+                                ? "bg-[#219EBC] text-white"
+                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                        } rounded-md mx-1`}
                     >
                         {index + 1}
                     </button>
@@ -149,26 +241,37 @@ const Table = ({ reportsData, fetchReportsData }) => {
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    className={`px-4 py-2 ${
+                        currentPage === totalPages
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                    } rounded-md`}
                 >
                     Next
                 </button>
             </div>
 
-            {/* Pass the state to the ArchiveModal */}
-            <ArchiveModal
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                onConfirm={handleConfirmArchive}
-                article={selectedReport?.report_name} // Pass the report name to the modal
-            />
-            {successModalOpen && (
-                <SuccessModal
-                    isOpen={successModalOpen}
-                    onClose={() => setSuccessModalOpen(false)}
-                    title={modalTitle}
-                    message={modalMessage}
+            {/* Generate Report button */}
+            <button
+                onClick={generatePDF}
+                className="fixed bottom-5 right-16 border text-[#219EBC] border-[#219EBC] flex px-5 py-3 rounded-md hover:bg-[#219EBC] hover:text-white transition-colors duration-300 group"
+            >
+                <img src={ReportIcon} alt="Report Icon" className="h-5 w-5 mr-2" />
+                Generate Report
+            </button>
+
+            {/* Archive Modal */}
+            {isModalOpen && (
+                <ArchiveModal
+                    onClose={handleCloseModal}
+                    reportName={selectedReport?.report_name} // Pass the report name to the modal
+                    onConfirm={handleConfirmArchive}
                 />
+            )}
+
+            {/* Success Modal */}
+            {successModalOpen && (
+                <SuccessModal onClose={() => setSuccessModalOpen(false)} title={modalTitle} message={modalMessage} />
             )}
         </div>
     )

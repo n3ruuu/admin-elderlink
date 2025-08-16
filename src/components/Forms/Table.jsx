@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect} from "react"
+import { useState, useEffect } from "react"
 import axios from "axios" // Import axios for API requests
 
 import ArchiveIcon from "../../assets/icons/archive2.svg" // Import Archive Icon
@@ -17,27 +17,27 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
 
     const navigate = useNavigate() // Initialize useNavigate hook
 
-    const [categories, setCategories] = useState([]); // To store categories and icon paths
+    const [categories, setCategories] = useState([]) // To store categories and icon paths
 
     useEffect(() => {
         // Fetch categories with icon paths from the backend
         const fetchCategories = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/forms/initiatives");
-                setCategories(response.data); // Set categories to state
+                const response = await axios.get("http://localhost:5000/forms/initiatives")
+                setCategories(response.data) // Set categories to state
             } catch (error) {
-                console.error("Error fetching categories:", error);
+                console.error("Error fetching categories:", error)
             }
-        };
+        }
 
-        fetchCategories(); // Call function to fetch categories
-    }, []); // Empty dependency array ensures it runs only once on mount
+        fetchCategories() // Call function to fetch categories
+    }, []) // Empty dependency array ensures it runs only once on mount
 
     // Find category icon path by category name
     const getCategoryIcon = (categoryName) => {
-        const category = categories.find(c => c.category_name === categoryName);
-        return category ? `http://localhost:5000${category.icon_path}` : "/path/to/default-icon.svg"; // Fallback to default icon if not found
-    };
+        const category = categories.find((c) => c.category_name === categoryName)
+        return category ? `http://localhost:5000${category.icon_path}` : "/path/to/default-icon.svg" // Fallback to default icon if not found
+    }
 
     // Open the modal and set the selected form
     const handleArchiveClick = (form) => {
@@ -60,8 +60,7 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
         if (!selectedForm) return
 
         // Toggle the new status based on current form's status
-        const newStatus =
-            selectedForm.status === "Archived" ? "Active" : "Archived"
+        const newStatus = selectedForm.status === "Archived" ? "Active" : "Archived"
 
         try {
             // Send PUT request to archive the form with the new status
@@ -84,10 +83,7 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
             // Re-fetch forms data after archiving
             fetchFormsData()
         } catch (error) {
-            console.error(
-                "Error archiving form:",
-                error.response?.data?.error || error.message,
-            )
+            console.error("Error archiving form:", error.response?.data?.error || error.message)
         }
     }
 
@@ -95,22 +91,16 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
     const activeForms = formsData.filter((form) => form.status === "Active")
 
     return (
-        <div className="overflow-x-auto max-w-full mx-16 shadow-xl">
-            <table className="w-full bg-[#FFFFFF] shadow-xl rounded-xl">
-                <thead className="font-[100] text-left border-b border-[#e0e0e0]">
-                    <tr className="text-[#767171CC]">
-                        <th className="font-[500] w-[40%] px-8 py-4">
+        <div className="max-h-[450px] mx-16 overflow-y-auto rounded-xl shadow-xl">
+            <table className="min-w-full bg-white rounded-xl shadow-lg border border-gray-200">
+                <thead className="bg-[#219EBC] opacity-80 text-white text-left border-b border-[#e0e0e0]">
+                    <tr>
+                        <th className="font-[500] w-[40%] px-8 py-4 first:rounded-tl-xl last:rounded-tr-none">
                             Form Title
                         </th>
-                        <th className="font-[500] w-[30%]  px-4 py-4">
-                            Date Created
-                        </th>
-                        <th className="font-[500] w-[30%]  px-4 py-4">
-                            Category
-                        </th>
-                        <th className="font-[500] w-[10%]  px-4 py-4">
-                            Actions
-                        </th>
+                        <th className="font-[500] w-[30%] px-4 py-4">Date Created</th>
+                        <th className="font-[500] w-[20%] px-4 py-4">Category</th>
+                        <th className="font-[500] w-[10%] px-4 py-4 last:rounded-tr-xl">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -118,10 +108,10 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
                         <tr
                             className={`text-[#333333] font-[500] ${
                                 index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
-                            }`}
+                            } ${index === activeForms.length - 1}`}
                             key={form.id}
                         >
-                            <td className="px-4 w-[40%] py-2">
+                            <td className="px-4 w-[40%] py-2 first:rounded-bl-xl">
                                 <div className="flex items-center gap-4">
                                     <img
                                         src={getCategoryIcon(form.category)}
@@ -131,23 +121,11 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
                                     <span>{form.title}</span>
                                 </div>
                             </td>
-                            <td className="px-4 w-[30%] py-2">
-                                {moment(form.createdAt).format("MMMM D, YYYY")}
-                            </td>
-
-                            <td className="px-4 w-[20%] py-2">
-                                {form.category}
-                            </td>
+                            <td className="px-4 w-[30%] py-2">{moment(form.createdAt).format("MMMM D, YYYY")}</td>
+                            <td className="px-4 w-[20%] py-2">{form.category}</td>
                             <td className="px-4 py-2 text-right pr-8">
-                                {/* Archive icon */}
-                                <button
-                                    onClick={() => handleArchiveClick(form)}
-                                >
-                                    <img
-                                        src={ArchiveIcon} // Use Archive Icon
-                                        alt="Archive"
-                                        className="h-5 w-5"
-                                    />
+                                <button onClick={() => handleArchiveClick(form)}>
+                                    <img src={ArchiveIcon} alt="Archive" className="h-5 w-5" />
                                 </button>
                             </td>
                         </tr>

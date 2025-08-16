@@ -3,13 +3,13 @@ import moment from "moment"
 import UndoModal from "../UndoModal"
 import UndoIcon from "../../../assets/icons/cancel.svg"
 import DeleteIcon from "../../../assets/icons/archive.svg"
-import DeleteModal from "../DeleteModal" // Import the DeleteModal component
+import DeleteModal from "../DeleteModal"
 
 const MembersListTable = () => {
-    const [members, setMembers] = useState([]) 
-    const [showModal, setShowModal] = useState(false) 
-    const [showDeleteModal, setShowDeleteModal] = useState(false) // State for DeleteModal visibility
-    const [selectedMember, setSelectedMember] = useState(null) 
+    const [members, setMembers] = useState([])
+    const [showModal, setShowModal] = useState(false)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [selectedMember, setSelectedMember] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
 
     const itemsPerPage = 6
@@ -20,10 +20,6 @@ const MembersListTable = () => {
     useEffect(() => {
         fetchMembers()
     }, [])
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page)
-    }
 
     const fetchMembers = async () => {
         try {
@@ -67,21 +63,15 @@ const MembersListTable = () => {
         try {
             const response = await fetch(`http://localhost:5000/members/undo/${selectedMember.id}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    status: "Active",
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "Active" }),
             })
 
             if (response.ok) {
-                setMembers((prevMembers) =>
-                    prevMembers.map((member) =>
-                        member.id === selectedMember.id ? { ...member, status: "Active" } : member,
-                    ),
+                setMembers((prev) =>
+                    prev.map((member) => (member.id === selectedMember.id ? { ...member, status: "Active" } : member)),
                 )
-                alert("Member has been successfully restored.");
+                alert("Member has been successfully restored.")
                 closeUndoModal()
             } else {
                 console.error("Failed to undo archive.")
@@ -93,7 +83,7 @@ const MembersListTable = () => {
 
     const openDeleteModal = (memberId) => {
         setSelectedMember({ id: memberId })
-        setShowDeleteModal(true) // Open the Delete Modal
+        setShowDeleteModal(true)
     }
 
     const closeDeleteModal = () => {
@@ -108,9 +98,7 @@ const MembersListTable = () => {
             })
 
             if (response.ok) {
-                setMembers((prevMembers) =>
-                    prevMembers.filter((member) => member.id !== selectedMember.id)
-                )
+                setMembers((prev) => prev.filter((member) => member.id !== selectedMember.id))
                 closeDeleteModal()
                 alert("Member has been successfully deleted.")
             } else {
@@ -121,53 +109,85 @@ const MembersListTable = () => {
         }
     }
 
+    const handlePageChange = (page) => {
+        if (page >= 1 && page <= totalPages) setCurrentPage(page)
+    }
+
     return (
-        <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
-            <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-lg">
-                <thead className="text-[#767171CC] h-[80px] align-baseline">
+        <div className="max-h-[450px] overflow-y-auto rounded-xl shadow-xl mx-16">
+            <table className="min-w-full bg-white rounded-xl shadow-lg border border-gray-200">
+                <thead className="text-white sticky bg-[#219EBC] opacity-90 top-0 h-[50px]">
                     <tr>
-                        <th className="pl-8 py-4 text-left font-medium whitespace-nowrap w-[10%]">Control No.</th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Full Name</th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Birthdate</th>
-                        <th className="text-left font-medium whitespace-nowrap w-[5%]">Sex</th>
-                        <th className="text-left font-medium whitespace-nowrap w-[7%]">Civil Status</th>
-                        <th className="text-left font-medium whitespace-nowrap w-[12%]">Address</th>
-                        <th className="text-left font-medium whitespace-nowrap w-[10%]">Contact Number</th>
-                        <th className="text-left font-medium whitespace-nowrap w-[7%]">
-                            Purchase <br /> Booklet No.
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Control No.
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[8%]">
-                            Medicine <br /> Booklet No.
+                        <th className="p-4 text-center font-medium whitespace-nowrap w-[200px] border-x border-gray-200">
+                            Full Name
                         </th>
-                        <th className="text-left font-medium whitespace-nowrap w-[5%]">Date Issued</th>
-                        <th className="text-left pl-8 font-medium whitespace-nowrap w-[5%]">Status</th>
-                        <th className="text-left pl-16 font-medium whitespace-nowrap w-[10%]">Action</th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Birthdate
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">Sex</th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Civil Status
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap w-[200px] border-x border-gray-200">
+                            Address
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Contact Number
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            PB No.
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            MB No.
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Date Issued
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Status
+                        </th>
+                        <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     {currentMembers.map((member, index) => (
-                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
-                            <td className="px-8 py-4 text-left">{member.controlNo}</td>
-                            <td className="text-left whitespace-nowrap">{member.firstName} {member.lastName}</td>
-                            <td className="text-left whitespace-nowrap">{moment(member.dob).format("MM-DD-YYYY")}</td>
-                            <td className="text-left">{member.sex}</td>
-                            <td className="text-left">{member.civilStatus}</td>
-                            <td className="text-left whitespace-nowrap">{member.address}</td>
-                            <td className="text-left">{member.contactNumber}</td>
-                            <td className="text-left">{member.purchaseBookletNo || "N/A"}</td>
-                            <td className="text-left">{member.medicineBookletNo || "N/A"}</td>
-                            <td className="text-left whitespace-nowrap">
+                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} text-center`}>
+                            <td className="p-4 border-x align-baseline border-gray-200">{member.controlNo}</td>
+                            <td className="p-4 border-x align-baseline border-gray-200">
+                                {member.firstName} {member.lastName}
+                            </td>
+                            <td className="p-4 border-x whitespace-nowrap align-baseline border-gray-200">
+                                {moment(member.dob).format("MM-DD-YYYY")}
+                            </td>
+                            <td className="p-4 border-x align-baseline border-gray-200">{member.sex}</td>
+                            <td className="p-4 border-x align-baseline border-gray-200">{member.civilStatus}</td>
+                            <td className="p-4 border-x align-baseline border-gray-200">{member.address}</td>
+                            <td className="p-4 border-x align-baseline border-gray-200">{member.contactNumber}</td>
+                            <td className="p-4 border-x align-baseline border-gray-200">
+                                {member.purchaseBookletNo || "N/A"}
+                            </td>
+                            <td className="p-4 border-x align-baseline border-gray-200">
+                                {member.medicineBookletNo || "N/A"}
+                            </td>
+                            <td className="p-4 border-x align-baseline border-gray-200">
                                 {member.dateIssued ? moment(member.dateIssued).format("MM-DD-YYYY") : "N/A"}
                             </td>
-                            <td className={`text-left pl-8 ${getStatusColor(member.status) || "text-gray-500"}`}>
+                            <td
+                                className={`p-4 border-x align-baseline border-gray-200 font-medium ${getStatusColor(member.status)}`}
+                            >
                                 {member.status || "N/A"}
                             </td>
-                            <td className="pl-16 text-left flex gap-2 mt-3">
-                                <button onClick={() => openUndoModal(member.id, member.status)} className="cursor-pointer">
-                                    <img src={UndoIcon} alt="Undo Icon" className="w-5 h-5" />
+                            <td className="p-4 border-x border-gray-200 flex justify-center gap-2">
+                                <button onClick={() => openUndoModal(member.id, member.status)}>
+                                    <img src={UndoIcon} alt="Undo" className="w-5 h-5" />
                                 </button>
-                                <button onClick={() => openDeleteModal(member.id)} className="cursor-pointer">
-                                    <img src={DeleteIcon} alt="Delete Icon" className="w-5 h-5" />
+                                <button onClick={() => openDeleteModal(member.id)}>
+                                    <img src={DeleteIcon} alt="Delete" className="w-5 h-5" />
                                 </button>
                             </td>
                         </tr>
@@ -175,38 +195,38 @@ const MembersListTable = () => {
                 </tbody>
             </table>
 
+            {/* Pagination Controls */}
             <div className="flex fixed bottom-5 mt-4">
-                <div>
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                >
+                    Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, index) => (
                     <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
                     >
-                        Previous
+                        {index + 1}
                     </button>
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            onClick={() => handlePageChange(index + 1)}
-                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                    <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
-                    >
-                        Next
-                    </button>
-                </div>
+                ))}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                >
+                    Next
+                </button>
             </div>
 
+            {/* Modals */}
             <UndoModal isOpen={showModal} onClose={closeUndoModal} onConfirm={handleUndoArchive} />
             <DeleteModal isOpen={showDeleteModal} onClose={closeDeleteModal} onConfirm={handleDelete} />
         </div>
     )
 }
 
-export default MembersListTable;
+export default MembersListTable

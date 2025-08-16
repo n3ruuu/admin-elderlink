@@ -3,6 +3,10 @@ import moment from "moment";
 import FormFields from "./FormFields";
 
 const Modal = ({ isOpen, onClose, onSave, event }) => {
+
+    const loggedInUsername = localStorage.getItem("username") || ""
+
+
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -11,7 +15,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
         date: "",
         time: "",
         location: "",
-        organizer: "",
+        organizer: loggedInUsername,
         endDate: "", // Added endDate
         recurrenceDates: [] // Array to store recurrence dates
     });
@@ -30,7 +34,7 @@ const Modal = ({ isOpen, onClose, onSave, event }) => {
                 date: event.date ? moment(event.date).format("YYYY-MM-DD") : "",
                 time: event.time || "",
                 location: event.location || "",
-                organizer: event.organizer || "",
+                organizer: loggedInUsername,
                 endDate: event.endDate ? moment(event.endDate).format("YYYY-MM-DD") : "", // Set endDate
                 recurrenceDates: event.recurrenceDates || [] // Set recurrenceDates if editing
             });

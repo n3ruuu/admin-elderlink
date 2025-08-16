@@ -64,7 +64,7 @@ const Modal = ({ onClose, member }) => {
             },
         }))
     }
-    
+
     const handleSubmit = async () => {
         // Extract data from formValues
         const { benefitType, Q1, Q2, Q3, Q4 } = formValues
@@ -110,12 +110,7 @@ const Modal = ({ onClose, member }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg shadow-lg p-8 w-[40%]">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6">Add Financial Record</h2>
-                <div className="mb-6">
-                    <div className="w-full h-2 bg-gray-200 rounded-full">
-                        <div className="h-2 bg-[#219EBC] rounded-full w-2/3"></div>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-2 mb-6">Step 3 of 3</p>
-                </div>
+                <div className="mb-6"></div>
 
                 {/* Success Message Display */}
                 {successMessage && <div className="text-green-600 font-semibold mb-4">{successMessage}</div>}
@@ -129,21 +124,20 @@ const Modal = ({ onClose, member }) => {
                     handleDateChange={handleDateChange}
                 />
             </div>
-             {/* Success Modal */}
-             <SuccessModal
-    isOpen={isSuccessModalOpen}
-    onClose={() => {
-        setIsSuccessModalOpen(false); // Close the success modal
-        onClose(); // Call parent modal's onClose to close the parent modal
-        setTimeout(() => {
-            window.location.reload(); // Reload the page (optional)
-        }, 0); // Optional delay for user experience
-    }}
-    title={successModalTitle}
-    message={successModalMessage}
-    isArchiving={false}
-/>
-
+            {/* Success Modal */}
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => {
+                    setIsSuccessModalOpen(false) // Close the success modal
+                    onClose() // Call parent modal's onClose to close the parent modal
+                    setTimeout(() => {
+                        window.location.reload() // Reload the page (optional)
+                    }, 0) // Optional delay for user experience
+                }}
+                title={successModalTitle}
+                message={successModalMessage}
+                isArchiving={false}
+            />
         </div>
     )
 }

@@ -1,195 +1,194 @@
-import { useState, useEffect } from "react";
-import UndoModal from "../UndoModal";
-import UndoIcon from "../../../assets/icons/cancel.svg";
-import DeleteIcon from "../../../assets/icons/archive.svg";
-import DeleteModal from "../DeleteModal"; // Import the DeleteModal component
-import moment from "moment";
-import axios from "axios"; // Don't forget to import axios
+import { useState, useEffect } from "react"
+import UndoModal from "../UndoModal"
+import UndoIcon from "../../../assets/icons/cancel.svg"
+import DeleteIcon from "../../../assets/icons/archive.svg"
+import DeleteModal from "../DeleteModal"
+import moment from "moment"
+import axios from "axios"
 
 const FormsTable = () => {
-    const [forms, setForms] = useState([]); // State to hold fetched forms data
-    const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
-    const [selectedFormId, setSelectedFormId] = useState(null); // Store selected form ID for undo
-    const [categories, setCategories] = useState([]); // To store categories and icon paths
-    const [showDeleteModal, setShowDeleteModal] = useState(false); // State to manage DeleteModal visibility
-    const [formToDelete, setFormToDelete] = useState(null); // State to hold form ID for delete confirmation
+    const [forms, setForms] = useState([])
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [selectedFormId, setSelectedFormId] = useState(null)
+    const [categories, setCategories] = useState([])
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [formToDelete, setFormToDelete] = useState(null)
+    const [currentPage, setCurrentPage] = useState(1)
 
-    // Fetch categories with icon paths from the backend
+    const itemsPerPage = 8
+
+    // Pagination calculation
+    const totalPages = Math.ceil(forms.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const paginatedForms = forms
+        .filter((form) => form.status === "Archived")
+        .slice(startIndex, startIndex + itemsPerPage)
+
+    useEffect(() => {
+        fetchCategories()
+        fetchForms()
+    }, [])
+
     const fetchCategories = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/forms/initiatives");
-            setCategories(response.data); // Set categories to state
+            const response = await axios.get("http://localhost:5000/forms/initiatives")
+            setCategories(response.data)
         } catch (error) {
-            console.error("Error fetching categories:", error);
+            console.error("Error fetching categories:", error)
         }
-    };
+    }
 
-    // Find category icon path by category name
-    const getCategoryIcon = (categoryName) => {
-        const category = categories.find((c) => c.category_name === categoryName);
-        return category ? `http://localhost:5000${category.icon_path}` : "/path/to/default-icon.svg"; // Fallback to default icon if not found
-    };
-
-    // Fetch forms data
     const fetchForms = async () => {
         try {
-            const response = await fetch("http://localhost:5000/forms");
-            const data = await response.json();
-            setForms(data); // Set forms to state
+            const response = await fetch("http://localhost:5000/forms")
+            const data = await response.json()
+            setForms(data)
         } catch (error) {
-            console.error("Error fetching Forms:", error);
+            console.error("Error fetching forms:", error)
         }
-    };
+    }
 
-    // Fetch data once the component mounts
-    useEffect(() => {
-        fetchCategories(); // Fetch categories on mount
-        fetchForms(); // Fetch forms data
-    }, []); // Empty dependency array ensures it runs only once on mount
+    const getCategoryIcon = (categoryName) => {
+        const category = categories.find((c) => c.category_name === categoryName)
+        return category ? `http://localhost:5000${category.icon_path}` : "/path/to/default-icon.svg"
+    }
 
     const handleUndoClick = (form) => {
-        setSelectedFormId(form.id); // Set the ID of the form to be undone
-        setIsModalOpen(true); // Open the UndoModal
-    };
+        setSelectedFormId(form.id)
+        setIsModalOpen(true)
+    }
 
     const handleUndoConfirm = async () => {
-        console.log("Undoing action for form ID:", selectedFormId);
-
-        const formToUpdate = forms.find(form => form.id === selectedFormId);
-        const newStatus = formToUpdate.status === "Archived" ? "Active" : "Archived";
+        const formToUpdate = forms.find((form) => form.id === selectedFormId)
+        const newStatus = formToUpdate.status === "Archived" ? "Active" : "Archived"
 
         try {
-            // Send a PUT request to update the status of the form (either archive or undo)
-            const response = await fetch(
-                `http://localhost:5000/forms/archive/${selectedFormId}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ newStatus }), // Send the new status in the request body
-                }
-            );
+            const response = await fetch(`http://localhost:5000/forms/archive/${selectedFormId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ newStatus }),
+            })
 
             if (response.ok) {
-                // Update the local state to reflect the status change (archive or undo)
-                setForms(prevForms =>
-                    prevForms.map(form =>
-                        form.id === selectedFormId
-                            ? { ...form, status: newStatus } // Update status to the new value
-                            : form
-                    )
-                );
+                setForms((prevForms) =>
+                    prevForms.map((form) => (form.id === selectedFormId ? { ...form, status: newStatus } : form)),
+                )
                 alert("Form has been successfully restored.")
-                setIsModalOpen(false); // Close the modal after confirming the action
-                fetchForms(); // Refresh the forms list after the update
-            } else {
-                console.error("Failed to update form status");
+                setIsModalOpen(false)
+                fetchForms()
             }
         } catch (error) {
-            console.error("Error undoing action:", error);
+            console.error("Error undoing action:", error)
         }
-    };
-
-    const handleModalClose = () => {
-        setIsModalOpen(false); // Close the modal when Cancel is clicked
-    };
+    }
 
     const handleDeleteClick = (form) => {
-        setFormToDelete(form); // Store the form to delete
-        setShowDeleteModal(true); // Open the DeleteModal
-    };
+        setFormToDelete(form)
+        setShowDeleteModal(true)
+    }
 
-    // Handle delete confirmation
     const handleDeleteConfirm = async () => {
         try {
-            // Send delete request to the backend
             const response = await fetch(`http://localhost:5000/forms/${formToDelete.id}`, {
                 method: "DELETE",
-            });
-
+            })
             if (response.ok) {
-                // Remove the deleted form from the state
-                setForms(prevForms => prevForms.filter(form => form.id !== formToDelete.id));
-                setShowDeleteModal(false); // Close the modal after confirming the delete
-                alert("Form deleted successfully");
-            } else {
-                console.error("Failed to delete form");
+                setForms((prevForms) => prevForms.filter((f) => f.id !== formToDelete.id))
+                setShowDeleteModal(false)
+                alert("Form deleted successfully")
             }
         } catch (error) {
-            console.error("Error deleting form:", error);
+            console.error("Error deleting form:", error)
         }
-    };
+    }
 
-    // Separate archived forms for rendering
-    const archivedForms = forms.filter((form) => form.status === "Archived");
-
-    // Handle delete modal close
-    const handleCloseModal = () => {
-        setShowDeleteModal(false); // Close the delete modal when Cancel is clicked
-    };
+    const handleCloseModal = () => setShowDeleteModal(false)
+    const handleModalClose = () => setIsModalOpen(false)
+    const handlePageChange = (page) => {
+        if (page < 1 || page > totalPages) return
+        setCurrentPage(page)
+    }
 
     return (
-        <div>
-            <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
-                <table className="min-w-full bg-[#FFFFFF] justify-center rounded-xl shadow-xl">
-                    <thead className="text-[#767171CC] border-b">
-                        <tr className="text-[#767171CC] text-left">
-                            <th className="font-[500] w-[40%] px-8 py-4">Form Title</th>
-                            <th className="font-[500] w-[30%] px-4 py-4">Date Created</th>
-                            <th className="font-[500] w-[30%] px-4 py-4">Category</th>
-                            <th className="font-[500] w-[10%] px-4 py-4">Actions</th>
+        <div className="max-h-[650px] mx-16 overflow-y-auto rounded-xl shadow-xl border">
+            <table className="min-w-full bg-white rounded-xl shadow-lg border border-gray-200">
+                <thead className="bg-[#219EBC] opacity-80 text-white text-left border-b border-[#e0e0e0]">
+                    <tr>
+                        <th className="font-[500] w-[40%] px-4 py-4">Form Title</th>
+                        <th className="font-[500] w-[30%] px-4 py-4">Date Created</th>
+                        <th className="font-[500] w-[30%] px-4 py-4">Category</th>
+                        <th className="font-[500] w-[10%] px-4 py-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {paginatedForms.map((form, index) => (
+                        <tr
+                            key={form.id}
+                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
+                        >
+                            <td className="px-4 py-2 flex items-center gap-4">
+                                <img
+                                    src={getCategoryIcon(form.category)}
+                                    alt={form.category}
+                                    className="h-12 w-12 object-contain"
+                                />
+                                <span>{form.title}</span>
+                            </td>
+                            <td className="px-4 py-2">{moment(form.createdAt).format("MMMM D, YYYY")}</td>
+                            <td className="px-4 py-2">{form.category}</td>
+                            <td className="px-4 py-2 flex gap-2">
+                                <button
+                                    onClick={() => handleUndoClick(form)}
+                                    className="cursor-pointer w-8 h-8 flex justify-center items-center"
+                                >
+                                    <img src={UndoIcon} alt="Undo Icon" className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteClick(form)}
+                                    className="cursor-pointer w-8 h-8 flex justify-center items-center"
+                                >
+                                    <img src={DeleteIcon} alt="Delete Icon" className="w-5 h-5" />
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {archivedForms.map((form, index) => (
-                            <tr
-                                className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
-                                key={form.id}
-                            >
-                                <td className="px-4 w-[40%] py-2">
-                                    <div className="flex items-center gap-4">
-                                        <img
-                                            src={getCategoryIcon(form.category)} // Get the correct icon dynamically
-                                            alt={form.category}
-                                            className="h-12 w-12 object-contain"
-                                        />
-                                        <span>{form.title}</span>
-                                    </div>
-                                </td>
-                                <td className="px-4 w-[30%] py-2">
-                                    {moment(form.createdAt).format("MMMM D, YYYY")}
-                                </td>
-                                <td className="px-4 w-[20%] py-2">{form.category}</td>
-                                <td className="pl-2 text-left flex gap-2 mt-3">
-                                    <button onClick={() => handleUndoClick(form)} className="cursor-pointer w-8 h-8 flex justify-center items-center">
-                                        <img src={UndoIcon} alt="Undo Icon" className="w-5 h-5" />
-                                    </button>
-                                    <button onClick={() => handleDeleteClick(form)} className="cursor-pointer w-8 h-8 flex justify-center items-center">
-                                        <img src={DeleteIcon} alt="Delete Icon" className="w-5 h-5" />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                    ))}
+                </tbody>
+            </table>
+
+            <div className="flex fixed bottom-5 mt-4">
+                {/* Pagination controls */}
+                <div>
+                    <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    >
+                        Previous
+                    </button>
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                            key={index + 1}
+                            onClick={() => handlePageChange(index + 1)}
+                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                    <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
 
-            {/* Undo Modal */}
-            <UndoModal
-                isOpen={isModalOpen}
-                onClose={handleModalClose}
-                onConfirm={handleUndoConfirm}
-            />
-
-            {/* Delete Modal */}
-            <DeleteModal
-                isOpen={showDeleteModal}
-                onClose={handleCloseModal}
-                onConfirm={handleDeleteConfirm}
-            />
+            {/* Modals */}
+            <UndoModal isOpen={isModalOpen} onClose={handleModalClose} onConfirm={handleUndoConfirm} />
+            <DeleteModal isOpen={showDeleteModal} onClose={handleCloseModal} onConfirm={handleDeleteConfirm} />
         </div>
-    );
-};
+    )
+}
 
-export default FormsTable;
+export default FormsTable

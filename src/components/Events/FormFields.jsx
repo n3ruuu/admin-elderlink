@@ -152,9 +152,10 @@ const FormFields = ({ formData, onChange }) => {
 
                 <div>
                     <label htmlFor="organizer" className="block text-lg font-medium text-gray-700 mb-1">
-                        Organizer <span className="text-red-500">*</span>
+                        Organizer
                     </label>
                     <input
+                        readOnly
                         type="text"
                         id="organizer"
                         name="organizer"
