@@ -342,7 +342,7 @@ const Table = ({ membersData, onEdit, chronicConditions, fetchMembersData, logAc
                                 <td className="p-4 text-left font-medium text-[#333333] whitespace-nowrap align-baseline border-x border-gray-300">
                                     {member.guardianRelationship}
                                 </td>
-                                <td className="p-4 text-left font-medium text-[#333333] flex gap-3 items-center border-x border-gray-300">
+                                <td className="p-4 text-left font-medium text-[#333333] flex gap-3 items-center ">
                                     <button aria-label="Edit" onClick={() => onEdit(member)}>
                                         <img src={EditIcon} alt="Edit" />
                                     </button>

@@ -32,6 +32,16 @@ const Dashboard = () => {
 
     const COLORS = ["#0088FE", "#FFBB28"]
 
+    const categoryColorsHex = {
+        "Health & Wellness": "#2E8B57",
+        "Social Gathering": "#FF6F61",
+        "Workshops & Classes": "#FFA500",
+        Fitness: "#1E90FF",
+        "Nutritional Support": "#B8860B",
+        "Community Outreach": "#6A5ACD",
+        "Assistance Programs": "#8B0000",
+    }
+
     useEffect(() => {
         const fetchTotalSeniorCitizens = async () => {
             try {
@@ -312,14 +322,26 @@ const Dashboard = () => {
                                                         .map((event, index) => (
                                                             <div
                                                                 key={index}
-                                                                className="flex-shrink-0 h-fit w-64 p-4 bg-[#219dbc79] rounded-lg shadow-sm"
+                                                                className="flex-shrink-0 h-fit w-64 p-4 rounded-lg shadow-sm bg-[#219dbc79]"
+                                                                style={{
+                                                                    borderLeft: `8px solid ${categoryColorsHex[event.category] || "#219dbc"}`,
+                                                                }}
                                                             >
                                                                 <p className="font-semibold text-center pb-2">
                                                                     <strong>{event.title}</strong>
                                                                 </p>
                                                                 <p>
-                                                                    {new Date(event.date).toLocaleDateString()} |{" "}
-                                                                    <em>{event.location}</em>
+                                                                    {(() => {
+                                                                        const d = new Date(event.date)
+                                                                        const month = String(d.getMonth() + 1).padStart(
+                                                                            2,
+                                                                            "0",
+                                                                        )
+                                                                        const day = String(d.getDate()).padStart(2, "0")
+                                                                        const year = d.getFullYear()
+                                                                        return `${month}/${day}/${year}`
+                                                                    })()}{" "}
+                                                                    | <em>{event.location}</em>
                                                                 </p>
                                                                 <p>{event.description}</p>
                                                             </div>

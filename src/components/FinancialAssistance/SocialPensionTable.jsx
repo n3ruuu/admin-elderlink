@@ -226,28 +226,28 @@ const SocialPensionTable = ({ socialPensionMembers, onEdit, handleViewClick }) =
 
     return (
         <div className="max-h-[450px] overflow-y-auto rounded-xl shadow-xl border border-gray-200">
-            <table className="min-w-full bg-white shadow-lg rounded-xl">
-                <thead className="text-white sticky bg-[#219EBC] opacity-80 top-0 h-[50px]">
+            <table className="min-w-full text-[#333333] font-medium bg-white shadow-lg rounded-xl">
+                <thead className="text-white sticky bg-[#219EBC] opacity-90 top-0 h-[50px]">
                     <tr>
-                        <th className="px-6 py-4 text-left font-medium whitespace-nowrap border-x border-gray-200 w-[10%]">
+                        <th className="px-6 py-4 text-center font-medium whitespace-nowrap border-x border-gray-200 w-[10%]">
                             Control No.
                         </th>
-                        <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-200">
+                        <th className="px-6 text-center font-medium whitespace-nowrap border-x border-gray-200">
                             Full Name
                         </th>
-                        <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-200">
+                        <th className="text-center font-medium whitespace-nowrap border-x border-gray-200">
                             Disbursement Date
                         </th>
-                        <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-200">
+                        <th className="px-6 text-center font-medium whitespace-nowrap border-x border-gray-200">
                             Status
                         </th>
-                        <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-200">
+                        <th className="px-16 text-center font-medium whitespace-nowrap border-x border-gray-200">
                             Claimer
                         </th>
-                        <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-200">
+                        <th className="px-6 text-center font-medium whitespace-nowrap border-x border-gray-200">
                             Relationship
                         </th>
-                        <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-200">
+                        <th className="px-6 text-center font-medium whitespace-nowrap border-x border-gray-200">
                             Actions
                         </th>
                     </tr>

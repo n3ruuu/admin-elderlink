@@ -31,45 +31,36 @@ import Login from "./Login"
 const Sidebar = () => {
     const [openSubSection, setOpenSubSection] = useState(null)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
-    const location = useLocation() // Get the current path
-    const navigate = useNavigate() // Initialize navigate for redirecting after login
+    const location = useLocation()
+    const navigate = useNavigate()
 
-    // Check if the user is authenticated when the component mounts
     useEffect(() => {
         const token = localStorage.getItem("authToken")
-        if (token) {
-            setIsAuthenticated(true)
-        } else {
-            setIsAuthenticated(false)
-        }
+        setIsAuthenticated(!!token)
     }, [])
 
     const toggleSubSection = (section) => {
         setOpenSubSection(openSubSection === section ? null : section)
     }
 
-    console.log(isAuthenticated)
-
     const handleLogout = () => {
-        // Clear authentication state or tokens here
         setIsAuthenticated(false)
         localStorage.removeItem("authToken")
-        navigate("/admin-elderlink") // Redirect to login page
+        navigate("/admin-elderlink")
     }
 
     if (!isAuthenticated) {
-        // If not authenticated, redirect to login page
         return <Login onLogin={() => setIsAuthenticated(true)} />
     }
 
-    const isActive = (path) => location.pathname.includes(path) // Check if the current path matches the route
+    const isActive = (path) => location.pathname.includes(path)
 
     return (
         <section className="flex">
             <div className="pl-12 pt-12 font-bold w-[25%] bg-[#FFFFFF] text-[#1F1F29] font-inter h-screen relative">
                 <img className="h-[60px] mb-8" src={ElderlinkLogo} alt="Elderlink Logo" />
                 <div className="flex flex-col gap-2 w-[98%]">
-                    {/* Dashboard Link */}
+                    {/* Dashboard */}
                     <Link
                         to="admin-elderlink/dashboard"
                         className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
@@ -87,10 +78,11 @@ const Sidebar = () => {
                         />
                         <p>Admin Dashboard</p>
                     </Link>
+
                     {/* Members Section */}
                     <div>
                         <div
-                            className={`group flex items-center space-x-7 text-[20px] px-6 py-3 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:text-[#F5F5FA]`}
+                            className="group relative flex items-center space-x-7 text-[20px] px-6 py-3 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                             onClick={() => toggleSubSection("members")}
                         >
                             <img
@@ -98,7 +90,21 @@ const Sidebar = () => {
                                 alt="Members Icon"
                                 className="group-hover:filter group-hover:brightness-0 group-hover:invert"
                             />
-                            <p>Members</p>
+                            <p className="flex-1">Members</p>
+
+                            {/* Chevron Icon - Absolute Positioned */}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                className={`w-4 h-4 absolute right-6 transition-transform duration-200 ${
+                                    openSubSection === "members" ? "rotate-90" : ""
+                                }`}
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
                         </div>
 
                         {openSubSection === "members" && (
@@ -163,6 +169,7 @@ const Sidebar = () => {
                             </div>
                         )}
                     </div>
+
                     {/* Events */}
                     <Link
                         to="admin-elderlink/events"
@@ -181,6 +188,7 @@ const Sidebar = () => {
                         />
                         <p>Events</p>
                     </Link>
+
                     {/* News */}
                     <Link
                         to="admin-elderlink/news"
@@ -199,10 +207,11 @@ const Sidebar = () => {
                         />
                         <p>News</p>
                     </Link>
+
                     {/* Forms & Applications */}
                     <div>
                         <div
-                            className="group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer hover:bg-[#219EBC]  hover:text-[#F5F5FA]"
+                            className="group relative flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer hover:bg-[#219EBC] hover:text-[#F5F5FA]"
                             onClick={() => toggleSubSection("forms")}
                         >
                             <img
@@ -210,7 +219,21 @@ const Sidebar = () => {
                                 alt="Forms Icon"
                                 className="group-hover:filter group-hover:brightness-0 group-hover:invert"
                             />
-                            <p>Forms & Applications</p>
+                            <p className="flex-1">Forms & Applications</p>
+
+                            {/* Chevron Icon - Absolute Positioned */}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                className={`w-4 h-4 absolute right-6 transition-transform duration-200 ${
+                                    openSubSection === "forms" ? "rotate-90" : ""
+                                }`}
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
                         </div>
 
                         {openSubSection === "forms" && (
@@ -253,6 +276,7 @@ const Sidebar = () => {
                             </div>
                         )}
                     </div>
+
                     {/* Reports */}
                     <Link
                         to="admin-elderlink/reports"
@@ -271,6 +295,7 @@ const Sidebar = () => {
                         />
                         <p>Reports</p>
                     </Link>
+
                     {/* Archive */}
                     <Link
                         to="admin-elderlink/archives"
@@ -288,8 +313,9 @@ const Sidebar = () => {
                             }`}
                         />
                         <p>Archive</p>
-                    </Link>{" "}
-                    {/* Archive */}
+                    </Link>
+
+                    {/* Content Management */}
                     <Link
                         to="admin-elderlink/content-management"
                         className={`group flex items-center space-x-8 text-[20px] px-6 py-3 rounded-2xl cursor-pointer ${
@@ -307,6 +333,8 @@ const Sidebar = () => {
                         />
                         <p>Content Management</p>
                     </Link>
+
+                    {/* Logout */}
                     <div>
                         <Link
                             to="/admin-elderlink/"

@@ -156,7 +156,7 @@ const MembersListTable = () => {
                 </thead>
                 <tbody>
                     {currentMembers.map((member, index) => (
-                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} text-center`}>
+                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"} text-center`}>
                             <td className="p-4 border-x align-baseline border-gray-200">{member.controlNo}</td>
                             <td className="p-4 border-x align-baseline border-gray-200">
                                 {member.firstName} {member.lastName}

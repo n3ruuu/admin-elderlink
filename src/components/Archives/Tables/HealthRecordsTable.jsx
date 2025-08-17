@@ -132,11 +132,9 @@ const HealthRecordsTable = () => {
                         <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
                             Control No.
                         </th>
-                        <th className="p-4 text-center font-medium whitespace-nowrap w-[200px] border-x border-gray-200">
-                            Full Name
-                        </th>
+                        <th className="p-4 text-center font-medium border-x border-gray-200">Full Name</th>
                         <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
-                            Medical Conditions
+                            Conditions
                         </th>
                         <th className="p-4 text-center font-medium whitespace-nowrap border-x border-gray-200">
                             Medications
@@ -164,11 +162,11 @@ const HealthRecordsTable = () => {
 
                 <tbody>
                     {currentMembers.map((member, index) => (
-                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
                             <td className="p-4 text-center border-x border-gray-200 align-baseline">
                                 {member.controlNo}
                             </td>
-                            <td className="p-4 text-center border-x border-gray-200 whitespace-nowrap align-baseline">
+                            <td className="p-4 text-center border-x border-gray-200 align-baseline">
                                 {member.firstName} {member.lastName}
                             </td>
                             <td className="p-4 text-left border-x border-gray-200 align-baseline">

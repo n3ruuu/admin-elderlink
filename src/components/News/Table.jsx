@@ -59,16 +59,18 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
             <div className="mt-8">
                 {/* Scrollable container with a fixed height */}
                 <div className="overflow-y-auto max-h-[650px] w-full shadow-lg rounded-xl border">
-                    <table className="min-w-full bg-white">
-                        <thead className="border-b bg-[#219EBC] text-white opacity-80">
+                    <table className="min-w-full bg-white rounded-xl border-x border-gray-300 border-collapse">
+                        <thead className="bg-[#219EBC] text-white opacity-90 border-x border-gray-300">
                             <tr>
-                                <th className="px-6 py-4 text-center font-medium whitespace-nowrap">News Headline</th>
-                                <th className="px-6 py-4 text-center font-medium">Author</th>
-                                <th className="px-6 py-4 text-center font-medium flex items-center">
+                                <th className="px-6 py-4 text-center font-medium whitespace-nowrap border-x border-gray-300">
+                                    News Headline
+                                </th>
+                                <th className="px-6 py-4 text-center font-medium border-x border-gray-300">Author</th>
+                                <th className="px-6 py-4 text-center font-medium flex items-center justify-center border-x border-gray-300">
                                     Date
                                     <button
                                         onClick={handleSort}
-                                        className="ml-2 text-[#219EBC] hover:text-[#1d87a1]"
+                                        className="ml-2 text-white hover:text-gray-200 focus:outline-none"
                                         aria-label="Sort by date"
                                     >
                                         {sortOrder === "asc" ? (
@@ -78,9 +80,13 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                                         )}
                                     </button>
                                 </th>
-                                <th className="px-6 py-4 text-center w-[400px] font-medium">Body</th>
-                                <th className="px-6 py-4 text-center w-[400px] font-medium">Photos</th>
-                                <th className="px-6 py-4 text-center font-medium">Actions</th>
+                                <th className="px-6 py-4 text-center w-[400px] font-medium border-x border-gray-300">
+                                    Body
+                                </th>
+                                <th className="px-6 py-4 text-center w-[400px] font-medium border-x border-gray-300">
+                                    Photos
+                                </th>
+                                <th className="px-6 py-4 text-center font-medium border-x border-gray-300">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,16 +97,21 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                                     }`}
                                     key={news.id}
                                 >
-                                    <td className="px-6 py-4 text-left align-top">{news.headline}</td>
-                                    <td className="px-6 py-4 text-left align-top">{news.author}</td>
-                                    <td className="px-6 py-4 text-left align-top whitespace-nowrap">
+                                    <td className="px-6 py-4 text-left align-top border-x border-gray-300">
+                                        {news.headline}
+                                    </td>
+                                    <td className="px-6 py-4 text-left align-top border-x border-gray-300">
+                                        {news.author}
+                                    </td>
+                                    <td className="px-6 py-4 text-left align-top whitespace-nowrap border-x border-gray-300">
                                         {moment(news.date).format("MMMM D, YYYY")}
                                     </td>
-                                    <td className="px-6 py-4 text-left align-top">{news.body}</td>
-                                    <td className="px-6 py-4 text-left">
+                                    <td className="px-6 py-4 text-left align-top border-x border-gray-300">
+                                        {news.body}
+                                    </td>
+                                    <td className="px-6 py-4 align-baseline text-left border-x border-gray-300">
                                         {news.images ? (
                                             <div className="flex gap-2 overflow-x-auto">
-                                                {/* Parse the string into an array if necessary */}
                                                 {(() => {
                                                     let imagesArray = []
                                                     try {
@@ -114,7 +125,7 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                                                                 key={idx}
                                                                 src={`http://localhost:5000/uploads/${image}`}
                                                                 alt={`News Image ${idx + 1}`}
-                                                                className="w-[100px] h-[60px] object-cover rounded-md cursor-pointer"
+                                                                className="w-[100px] h-[60px] object-cover rounded-md cursor-pointer border border-gray-300"
                                                                 onClick={() =>
                                                                     openImageModal(
                                                                         `http://localhost:5000/uploads/${image}`,
@@ -123,12 +134,11 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                                                             />
                                                         ))
                                                     } else {
-                                                        // If images is a single string (not JSON array)
                                                         return (
                                                             <img
                                                                 src={`http://localhost:5000/uploads/${news.images}`}
                                                                 alt="News"
-                                                                className="w-[100px] h-[60px] object-cover rounded-md cursor-pointer"
+                                                                className="w-[100px] h-[60px] object-cover rounded-md cursor-pointer border border-gray-300"
                                                                 onClick={() =>
                                                                     openImageModal(
                                                                         `http://localhost:5000/uploads/${news.images}`,
@@ -143,20 +153,28 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                                             "No Image"
                                         )}
                                     </td>
+                                    <td className="px-6 py-4 align-top text-left border-x border-gray-300">
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={() => handleOpenModal(news)}
+                                                className="focus:outline-none"
+                                            >
+                                                <img src={EditIcon} alt="Edit Icon" className="h-5" />
+                                            </button>
 
-                                    <td className="px-6 py-4 text-left flex gap-2">
-                                        <button onClick={() => handleOpenModal(news)}>
-                                            <img src={EditIcon} alt="Edit Icon" className="h-5" />
-                                        </button>
-
-                                        <button onClick={() => handleOpenArchiveModal(news)}>
-                                            <img src={ArchiveIcon} alt="Archive Icon" className="h-5" />
-                                        </button>
+                                            <button
+                                                onClick={() => handleOpenArchiveModal(news)}
+                                                className="focus:outline-none"
+                                            >
+                                                <img src={ArchiveIcon} alt="Archive Icon" className="h-5" />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+
                     <div className="flex fixed bottom-5 mt-4">
                         {/* Pagination controls */}
                         <button

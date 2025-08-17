@@ -112,12 +112,12 @@ const FormsTable = () => {
     return (
         <div className="max-h-[650px] mx-16 overflow-y-auto rounded-xl shadow-xl border">
             <table className="min-w-full bg-white rounded-xl shadow-lg border border-gray-200">
-                <thead className="bg-[#219EBC] opacity-80 text-white text-left border-b border-[#e0e0e0]">
+                <thead className="bg-[#219EBC] opacity-90 text-white text-left border-b border-[#e0e0e0]">
                     <tr>
-                        <th className="font-[500] w-[40%] px-4 py-4">Form Title</th>
-                        <th className="font-[500] w-[30%] px-4 py-4">Date Created</th>
-                        <th className="font-[500] w-[30%] px-4 py-4">Category</th>
-                        <th className="font-[500] w-[10%] px-4 py-4">Actions</th>
+                        <th className="font-[500] w-[40%] px-4 py-4 border-x border-gray-200">Form Title</th>
+                        <th className="font-[500] w-[30%] px-4 py-4 border-x border-gray-200">Date Created</th>
+                        <th className="font-[500] w-[30%] px-4 py-4 border-x border-gray-200">Category</th>
+                        <th className="font-[500] w-[10%] px-4 py-4 border-x border-gray-200">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -126,7 +126,7 @@ const FormsTable = () => {
                             key={form.id}
                             className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                         >
-                            <td className="px-4 py-2 flex items-center gap-4">
+                            <td className="px-4 py-2 flex items-center gap-4 border-x border-gray-200">
                                 <img
                                     src={getCategoryIcon(form.category)}
                                     alt={form.category}
@@ -134,9 +134,11 @@ const FormsTable = () => {
                                 />
                                 <span>{form.title}</span>
                             </td>
-                            <td className="px-4 py-2">{moment(form.createdAt).format("MMMM D, YYYY")}</td>
-                            <td className="px-4 py-2">{form.category}</td>
-                            <td className="px-4 py-2 flex gap-2">
+                            <td className="px-4 py-2 border-x border-gray-200">
+                                {moment(form.createdAt).format("MMMM D, YYYY")}
+                            </td>
+                            <td className="px-4 py-2 border-x border-gray-200">{form.category}</td>
+                            <td className="px-4 py-2 flex border-x border-gray-200">
                                 <button
                                     onClick={() => handleUndoClick(form)}
                                     className="cursor-pointer w-8 h-8 flex justify-center items-center"

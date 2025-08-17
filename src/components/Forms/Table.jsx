@@ -92,26 +92,28 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
 
     return (
         <div className="max-h-[450px] mx-16 overflow-y-auto rounded-xl shadow-xl">
-            <table className="min-w-full bg-white rounded-xl shadow-lg border border-gray-200">
-                <thead className="bg-[#219EBC] opacity-80 text-white text-left border-b border-[#e0e0e0]">
+            <table className="min-w-full bg-white rounded-xl shadow-lg border-x border-gray-200">
+                <thead className="bg-[#219EBC] opacity-90 text-white text-left border-x border-[#e0e0e0]">
                     <tr>
-                        <th className="font-[500] w-[40%] px-8 py-4 first:rounded-tl-xl last:rounded-tr-none">
+                        <th className="font-[500] w-[40%] text-center px-6 py-4 first:rounded-tl-xl last:rounded-tr-none border-x border-gray-200">
                             Form Title
                         </th>
-                        <th className="font-[500] w-[30%] px-4 py-4">Date Created</th>
-                        <th className="font-[500] w-[20%] px-4 py-4">Category</th>
-                        <th className="font-[500] w-[10%] px-4 py-4 last:rounded-tr-xl">Actions</th>
+                        <th className="font-[500] w-[30%] text-center px-6 py-4 border-x border-gray-200">
+                            Date Created
+                        </th>
+                        <th className="font-[500] w-[20%] text-center px-6 py-4 border-x border-gray-200">Category</th>
+                        <th className="font-[500] w-[10%] text-center px-6 py-4 last:rounded-tr-xl border-x border-gray-200">
+                            Action
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     {activeForms.map((form, index) => (
                         <tr
-                            className={`text-[#333333] font-[500] ${
-                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
-                            } ${index === activeForms.length - 1}`}
+                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                             key={form.id}
                         >
-                            <td className="px-4 w-[40%] py-2 first:rounded-bl-xl">
+                            <td className="px-6 py-3 w-[40%] first:rounded-bl-xl border-x border-gray-200">
                                 <div className="flex items-center gap-4">
                                     <img
                                         src={getCategoryIcon(form.category)}
@@ -121,9 +123,11 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
                                     <span>{form.title}</span>
                                 </div>
                             </td>
-                            <td className="px-4 w-[30%] py-2">{moment(form.createdAt).format("MMMM D, YYYY")}</td>
-                            <td className="px-4 w-[20%] py-2">{form.category}</td>
-                            <td className="px-4 py-2 text-right pr-8">
+                            <td className="px-6 py-3 w-[30%] border-x border-gray-200">
+                                {moment(form.createdAt).format("MMMM D, YYYY")}
+                            </td>
+                            <td className="px-6 py-3 w-[20%] border-x border-gray-200">{form.category}</td>
+                            <td className="px-6 py-3 text-center pr-8 border-x border-gray-200">
                                 <button onClick={() => handleArchiveClick(form)}>
                                     <img src={ArchiveIcon} alt="Archive" className="h-5 w-5" />
                                 </button>

@@ -94,32 +94,44 @@ const EventsTable = () => {
     }
 
     return (
-        <div className="rounded-xl opacity-80 shadow-xl overflow-hidden max-h-[calc(90vh-200px)] mx-16">
-            <table className="min-w-full bg-white rounded-xl border border-gray-300">
-                <thead className="bg-[#219EBC] text-white border-b border-gray-300">
+        <div className="rounded-xl opacity-90 shadow-xl overflow-hidden max-h-[calc(90vh-200px)] mx-16">
+            <table className="min-w-full bg-white rounded-xl border-x border-gray-300">
+                <thead className="bg-[#219EBC] text-white border-x border-gray-300">
                     <tr>
-                        <th className="px-8 py-4 text-left font-medium rounded-tl-xl">Event Title</th>
-                        <th className="text-left font-medium">Date</th>
-                        <th className="text-left font-medium">Location</th>
-                        <th className="text-left font-medium">Organizer</th>
-                        <th className="text-left font-medium">Category</th>
-                        <th className="px-8 w-[150px] text-left font-medium rounded-tr-xl">Actions</th>
+                        <th className="px-8 py-4 text-left font-medium rounded-tl-xl border-x border-gray-300">
+                            Event Title
+                        </th>
+                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">Date</th>
+                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">Location</th>
+                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">Organizer</th>
+                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">Category</th>
+                        <th className="px-8 py-4 w-[150px] text-left font-medium rounded-tr-xl border-x border-gray-300">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     {paginatedEvents.map((event, index) => (
                         <tr
                             key={event.id}
-                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
+                            className={`text-[#333333] font-[500] ${
+                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
+                            } border-x border-gray-300`}
                         >
-                            <td className="px-8 py-4 text-left">{event.title}</td>
-                            <td className="text-left py-4 whitespace-nowrap">
+                            <td className="px-8 py-4 text-left border-x border-gray-300">{event.title}</td>
+                            <td className="px-8 py-4 text-left whitespace-nowrap border-x border-gray-300">
                                 {moment(event.date).format("MMMM D, YYYY")}
                             </td>
-                            <td className="text-left py-4 whitespace-nowrap">{event.location}</td>
-                            <td className="text-left py-4 whitespace-nowrap">{event.organizer}</td>
-                            <td className="text-left py-4 whitespace-nowrap">{event.category}</td>
-                            <td className="px-8 py-4 text-left flex gap-3">
+                            <td className="px-8 py-4 text-left whitespace-nowrap border-x border-gray-300">
+                                {event.location}
+                            </td>
+                            <td className="px-8 py-4 text-left whitespace-nowrap border-x border-gray-300">
+                                {event.organizer}
+                            </td>
+                            <td className="px-8 py-4 text-left whitespace-nowrap border-x border-gray-300">
+                                {event.category}
+                            </td>
+                            <td className="px-8 py-4 text-left flex gap-3 border-x border-gray-300">
                                 <button onClick={() => handleUndoClick(event)}>
                                     <img src={UndoIcon} alt="Undo Icon" className="w-5 h-5" />
                                 </button>

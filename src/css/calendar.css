@@ -1,133 +1,171 @@
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* light background */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #219ebc; /* your theme color */
+    border-radius: 10px;
+    border: 2px solid #f1f1f1; /* adds space around thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #126985; /* darker on hover */
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #219ebc #f1f1f1;
+}
+
 /* Container for calendar */
 .calendar-container {
-    height: 620px; /* Fixed height for the container */
-    width: 100%; /* Full width of the parent */
+    height: 620px;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden; /* Hide overflow */
+    padding: 12px;
+    box-sizing: border-box;
 }
 
 /* Wrapper for calendar */
 .calendar-wrapper {
     width: 100%;
     height: 100%;
-    border-radius: 12px;
+    border-radius: 16px;
     background-color: white;
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-    overflow: hidden; /* Hide scrollbars */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease;
 }
 
-.fc .fc-daygrid-event {
-  color: white !important; /* Make text white for contrast */
-  border-radius: 4px;
-  border-width: 1px;
-  border-style: solid;
-  font-size: 16px;
-  padding: 4px;
+.calendar-wrapper:hover {
+    transform: translateY(-2px);
 }
 
-
-/* FullCalendar styling */
+/* General FullCalendar styling */
 .fc {
-    font-family: Inter, sans-serif; /* Font family */
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+    color: #333;
 }
 
-/* Style for day grid day cells */
-.fc .fc-daygrid-day {
-    background: transparent;
-    border: 1px solid #76717133;
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-    position: relative; /* For positioning event titles */
-}
-
-/* Style for column header cells */
+/* Column header cells (Days of the week) */
 .fc .fc-col-header-cell-cushion {
     color: #004365;
-    background: #219ebc54;
     text-transform: uppercase;
-    width: 100%;
     font-weight: 700;
-    font-size: 1.2rem;
-    padding: 8px;
+    font-size: 1rem;
+    padding: 12px;
+    letter-spacing: 0.5px;
 }
 
-/* Style for day grid day top area */
+/* Day grid cells */
+.fc .fc-daygrid-day {
+    background: #fff;
+    border: 1px solid #eaeaea;
+    transition: background-color 0.2s ease;
+}
+
+.fc .fc-daygrid-day:hover {
+    background-color: #f1faff; /* subtle hover */
+}
+
+/* Day number (top-right) */
 .fc .fc-daygrid-day-top {
+    height: 36px;
+    padding: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+/* Event styling */
+.fc .fc-daygrid-event {
+    border-radius: 6px;
     border: none;
-    background: transparent;
+    padding: 6px 10px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
-/* Style for day grid day content */
-.fc .fc-daygrid-day-content {
-    border: none;
-    position: relative; /* To handle positioning of date numbers */
+.fc .fc-daygrid-event:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
 }
 
-.fc-daygrid-day-top {
-    height: 50px;
-}
-
-/* Center the title and style the header */
-.fc-toolbar {
-    padding-top: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.fc-toolbar-chunk:first-child {
-    display: flex;
-    justify-content: flex-start;
-    flex: 1;
-}
-
-.fc-toolbar-chunk:nth-child(2) {
-    display: flex;
-    justify-content: center;
-    flex: 2;
-}
-
-.fc-toolbar-chunk:last-child {
-    display: flex;
-    justify-content: flex-end;
-    flex: 1;
-}
-
-.fc-button-group {
-    padding-right: 16px;
-}
-
-/* Customize navigation buttons */
-.fc-prev-button,
-.fc-next-button {
-    background-color: #219ebc;
-    color: #ffffff;
-    border-radius: 5px;
-    padding: 5px 10px;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-.fc-prev-button:hover,
-.fc-next-button:hover {
-    background-color: #126985;
-}
-
+/* Event title text */
 .fc-event-title {
-    background-color: none;
-    color: white; /* Ensure the text is readable */
-    padding: 4px 8px; /* Optional: Add some padding for better visual separation */
-    border-radius: 4px; /* Optional: Give the event title rounded corners */
-
-    /* Ensure the event title is fully visible */
-    white-space: normal; /* Allow the text to wrap */
-    overflow: visible; /* Make sure the text doesn't get clipped */
-    word-wrap: break-word; /* Break words if they are too long */
-    max-width: none; /* Remove any width limitation */
+    color: white;
+    font-weight: 600;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: visible;
 }
 
+/* Hide event time */
 .fc-event-time {
     display: none;
+}
+
+/* Toolbar (Month/Week/Day navigation) */
+.fc-toolbar {
+    padding: 16px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Toolbar title */
+.fc-toolbar-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #004365;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+}
+
+/* Button group (prev/next/today) */
+.fc .fc-button {
+    background-color: #219ebc;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
+    padding: 6px 12px;
+    margin: 0 2px;
+    transition:
+        background-color 0.3s ease,
+        transform 0.15s ease;
+}
+
+.fc .fc-button:hover {
+    background-color: #126985;
+    transform: translateY(-1px);
+}
+
+.fc .fc-button:disabled {
+    background-color: #9dc8d6;
+    cursor: not-allowed;
+}
+
+/* Current day highlight */
+.fc .fc-day-today {
+    background: #fff8e1 !important;
+    border: 2px solid #ffcc00 !important;
 }

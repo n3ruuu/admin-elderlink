@@ -25,28 +25,30 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
 
     return (
         <div className="mt-8 rounded-xl shadow-xl overflow-hidden">
-            <table className="min-w-full bg-white rounded-xl border border-gray-300">
-                <thead className="bg-[#219EBC] opacity-80 text-white border-b border-gray-300">
+            <table className="min-w-full bg-white rounded-xl border border-gray-300 border-collapse">
+                <thead className="bg-[#219EBC] opacity-90 text-white border-b border-gray-300">
                     <tr>
-                        <th className="px-8 py-4 text-left font-medium rounded-tl-xl">Title</th>
-                        <th className="text-left font-medium">Date and Time</th>
-                        <th className="text-left font-medium">Location</th>
-                        <th className="text-left font-medium">Organizer</th>
-                        <th className="text-left font-medium">Category</th>
-                        <th className="text-left font-medium">Recurrence</th>
-                        <th className="px-8 w-[150px] text-left font-medium rounded-tr-xl">Actions</th>
+                        <th className="px-6 py-4 text-center font-medium border-x border-gray-300 rounded-tl-xl">
+                            Title
+                        </th>
+                        <th className="px-6 py-4 text-center font-medium border-x border-gray-300">Date and Time</th>
+                        <th className="px-6 py-4 text-center font-medium border-x border-gray-300">Location</th>
+                        <th className="px-6 py-4 text-center font-medium border-x border-gray-300">Organizer</th>
+                        <th className="px-6 py-4 text-center font-medium border-x border-gray-300">Category</th>
+                        <th className="px-6 py-4 text-center font-medium border-x border-gray-300">Recurrence</th>
+                        <th className="px-6 py-4 w-[150px] text-center font-medium border-x border-gray-300 rounded-tr-xl">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     {currentEvents.map((event, index) => (
                         <tr
-                            className={`text-[#333333] h-[100px] font-[500] ${
-                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
-                            }`}
+                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                             key={event.id}
                         >
-                            <td className="px-8 align-top w-[300px] py-4 text-left">{event.title}</td>
-                            <td className="text-left align-top w-[280px] py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 align-top w-[300px] border-x border-gray-300">{event.title}</td>
+                            <td className="px-6 py-4 align-top w-[280px] whitespace-nowrap border-x border-gray-300">
                                 {moment(event.date).format("MMMM DD, YYYY")}
                                 {event.recurrence !== "One-Time" && (
                                     <div className="text-sm text-gray-500">
@@ -54,17 +56,17 @@ const Table = ({ eventsData, handleOpenModal, onArchiveClick }) => {
                                     </div>
                                 )}
                             </td>
-                            <td className="text-left align-top py-4">{event.location}</td>
-                            <td className="text-left align-top py-4">{event.organizer}</td>
-                            <td className="text-left align-top py-4">{event.category}</td>
-                            <td className="text-left align-top py-4">
+                            <td className="px-6 py-4 align-top border-x border-gray-300">{event.location}</td>
+                            <td className="px-6 py-4 align-top border-x border-gray-300">{event.organizer}</td>
+                            <td className="px-6 py-4 align-top border-x border-gray-300">{event.category}</td>
+                            <td className="px-6 py-4 align-top border-x border-gray-300">
                                 {event.recurrence === "One-Time" ? (
                                     <span className="text-gray-500">No Recurrence</span>
                                 ) : (
                                     <div>{event.recurrence}</div>
                                 )}
                             </td>
-                            <td className="px-8 pt-4 align-top py-4 text-left flex gap-3">
+                            <td className="px-6 py-4 align-top flex gap-3">
                                 <button onClick={() => handleOpenModal(event)}>
                                     <img src={EditIcon} alt="Edit Icon" className="w-[20px]" />
                                 </button>

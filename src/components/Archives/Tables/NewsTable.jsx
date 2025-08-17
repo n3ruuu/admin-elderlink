@@ -107,12 +107,14 @@ const NewsTable = () => {
 
     return (
         <div className="overflow-y-auto rounded-xl max-h-[calc(90vh-200px)] mx-16 border">
-            <table className="min-w-full bg-white">
-                <thead className="border-b bg-[#219EBC] text-white opacity-80">
+            <table className="min-w-full bg-white border-x border-gray-300">
+                <thead className="border-b bg-[#219EBC] text-white opacity-90 border-x border-gray-300">
                     <tr>
-                        <th className="px-6 py-4 text-left font-medium whitespace-nowrap">News Headline</th>
-                        <th className="px-6 py-4 text-left font-medium">Author</th>
-                        <th className="px-6 py-4 text-left font-medium flex items-center">
+                        <th className="px-6 py-4 text-left font-medium whitespace-nowrap border-x border-gray-300">
+                            News Headline
+                        </th>
+                        <th className="px-6 py-4 text-left font-medium border-x border-gray-300">Author</th>
+                        <th className="px-6 py-4 text-left font-medium flex items-center border-x border-gray-300">
                             Date
                             <button
                                 onClick={handleSort}
@@ -122,25 +124,27 @@ const NewsTable = () => {
                                 {sortOrder === "asc" ? <FiArrowDown /> : <FiArrowUp />}
                             </button>
                         </th>
-                        <th className="px-6 py-4 text-left font-medium">Body</th>
-                        <th className="px-6 py-4 text-left font-medium">Photos</th>
-                        <th className="px-6 py-4 text-left font-medium">Actions</th>
+                        <th className="px-6 py-4 text-left font-medium border-x border-gray-300">Body</th>
+                        <th className="px-6 py-4 text-left font-medium border-x border-gray-300">Photos</th>
+                        <th className="px-6 py-4 text-left font-medium border-x border-gray-300">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {currentNews.map((newsItem, index) => (
                         <tr
-                            className={`text-[#333333] font-[500] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
                             key={newsItem.id}
+                            className={`text-[#333333] font-[500] ${
+                                index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
+                            } border-x border-gray-300`}
                         >
-                            <td className="px-6 py-4">{newsItem.headline}</td>
-                            <td className="px-6 py-4">{newsItem.author}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 border-x border-gray-300">{newsItem.headline}</td>
+                            <td className="px-6 py-4 border-x border-gray-300">{newsItem.author}</td>
+                            <td className="px-6 py-4 whitespace-nowrap border-x border-gray-300">
                                 {moment(newsItem.date).format("MMMM D, YYYY")}
                             </td>
-                            <td className="px-6 py-4">{newsItem.body}</td>
-                            <td className="px-6 py-4">
+                            <td className="px-6 py-4 border-x border-gray-300">{newsItem.body}</td>
+                            <td className="px-6 py-4 border-x border-gray-300">
                                 {newsItem.images ? (
                                     <div className="flex gap-2 overflow-x-auto">
                                         {(() => {
@@ -174,7 +178,7 @@ const NewsTable = () => {
                                     "No Image"
                                 )}
                             </td>
-                            <td className="px-6 py-4 flex gap-2">
+                            <td className="px-6 py-4 flex gap-2 border-x border-gray-300">
                                 <button onClick={() => handleUndoClick(newsItem)}>
                                     <img src={UndoIcon} alt="Undo Icon" className="w-5 h-5" />
                                 </button>
@@ -186,6 +190,7 @@ const NewsTable = () => {
                     ))}
                 </tbody>
             </table>
+
             <div className="flex fixed bottom-5 mt-4">
                 {/* Pagination controls */}
                 <button

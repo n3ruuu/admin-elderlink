@@ -67,16 +67,28 @@ const FinanceTable = () => {
                 </select>
             </div>
 
-            <div className="rounded-xl max-h-[calc(90vh-200px)] mx-16">
-                <table className="min-w-full bg-[#FFFFFF] shadow-lg rounded-xl">
-                    <thead className="text-[#767171CC]">
+            <div className="mx-16 max-h-[450px] overflow-y-auto rounded-xl shadow-xl border border-gray-200">
+                <table className="min-w-full text-[#333333] font-medium bg-white shadow-lg rounded-xl border-x border-gray-300">
+                    <thead className="text-white sticky bg-[#219EBC] opacity-90 top-0 h-[50px] border-x border-gray-300">
                         <tr>
-                            <th className="px-6 py-4 text-left font-medium whitespace-nowrap w-[10%]">Control No.</th>
-                            <th className="px-6 text-left font-medium whitespace-nowrap">Full Name</th>
-                            <th className="px-6 text-left font-medium whitespace-nowrap">Disbursement Date</th>
-                            <th className="px-6 text-left font-medium whitespace-nowrap">Status</th>
-                            <th className="px-6 text-left font-medium whitespace-nowrap">Claimer</th>
-                            <th className="px-6 text-left font-medium whitespace-nowrap">Relationship</th>
+                            <th className="px-6 py-4 text-left font-medium whitespace-nowrap w-[10%] border-x border-gray-300">
+                                Control No.
+                            </th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-300">
+                                Full Name
+                            </th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-300">
+                                Disbursement Date
+                            </th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-300">
+                                Status
+                            </th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-300">
+                                Claimer
+                            </th>
+                            <th className="px-6 text-left font-medium whitespace-nowrap border-x border-gray-300">
+                                Relationship
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -96,17 +108,32 @@ const FinanceTable = () => {
                             }
 
                             return (
-                                <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
-                                    <td className="px-6 py-4 text-left">{member.control_no}</td>
-                                    <td className="px-6 text-left whitespace-nowrap">{member.full_name}</td>
-                                    <td className="px-6 whitespace-nowrap">
+                                <tr
+                                    key={member.id}
+                                    className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"} border-x border-gray-300`}
+                                >
+                                    <td className="px-6 py-4 text-left border-x border-gray-300">
+                                        {member.control_no}
+                                    </td>
+                                    <td className="px-6 text-left whitespace-nowrap border-x border-gray-300">
+                                        {member.full_name}
+                                    </td>
+                                    <td className="px-6 whitespace-nowrap border-x border-gray-300">
                                         {member.disbursement_date
                                             ? moment(member.disbursement_date).format("MMMM D, YYYY")
                                             : "N/A"}
                                     </td>
-                                    <td className={`px-6 whitespace-nowrap ${getStatusColor()}`}>{getStatusText()}</td>
-                                    <td className="px-6 whitespace-nowrap">{member.claimer || "N/A"}</td>
-                                    <td className="px-6 whitespace-nowrap">{member.relationship || "N/A"}</td>
+                                    <td
+                                        className={`px-6 whitespace-nowrap border-x border-gray-300 ${getStatusColor()}`}
+                                    >
+                                        {getStatusText()}
+                                    </td>
+                                    <td className="px-6 whitespace-nowrap border-x border-gray-300">
+                                        {member.claimer || "N/A"}
+                                    </td>
+                                    <td className="px-6 whitespace-nowrap border-x border-gray-300">
+                                        {member.relationship || "N/A"}
+                                    </td>
                                 </tr>
                             )
                         })}

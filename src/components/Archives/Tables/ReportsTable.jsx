@@ -99,30 +99,40 @@ const ReportsTable = () => {
     return (
         <div className="px-4">
             {/* Scrollable container with a fixed height */}
-            <div className="mx-16 rounded-xl shadow-lg overflow-hidden">
+            <div className="mx-12 rounded-xl shadow-lg overflow-hidden">
                 <table className="min-w-full bg-white border border-gray-300">
-                    <thead className="border-b opacity-80 bg-[#219EBC] text-white">
+                    <thead className="border-b opacity-90 bg-[#219EBC] text-white">
                         <tr>
-                            <th className="px-8 py-4 text-left font-medium whitespace-nowrap">Report Name</th>
-                            <th className="px-6 py-4 text-left font-medium">Report Type</th>
-                            <th className="px-6 py-4 text-left font-medium">Time Created</th>
-                            <th className="px-6 py-4 text-left font-medium">Created by</th>
-                            <th className="px-6 py-4 text-left font-medium">Action</th>
+                            <th className="px-8 py-4 text-left font-medium whitespace-nowrap border-x border-gray-300">
+                                Report Name
+                            </th>
+                            <th className="px-6 py-4 text-left font-medium border-x border-gray-300">Report Type</th>
+                            <th className="px-6 py-4 text-left font-medium border-x border-gray-300">Time Created</th>
+                            <th className="px-6 py-4 text-left font-medium border-x border-gray-300">Created by</th>
+                            <th className="px-6 py-4 text-left font-medium border-x border-gray-300">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {reportsData.map((report, index) => (
                             <tr
-                                className={`text-[#333333] font-[500] transition-colors hover:bg-[#F1F1F1] ${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}
+                                className={`text-[#333333] font-[500] transition-colors hover:bg-[#F1F1F1] ${
+                                    index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
+                                }`}
                                 key={report.id}
                             >
-                                <td className="px-8 py-4 text-left align-top">{report.report_name}</td>
-                                <td className="px-6 py-4 text-left align-top">{report.report_type}</td>
-                                <td className="px-6 py-4 text-left align-top">
+                                <td className="px-8 py-4 text-left align-top border-x border-gray-300">
+                                    {report.report_name}
+                                </td>
+                                <td className="px-6 py-4 text-left align-top border-x border-gray-300">
+                                    {report.report_type}
+                                </td>
+                                <td className="px-6 py-4 text-left align-top border-x border-gray-300">
                                     {moment(report.created_at).format("MM-DD-YYYY, h:mm:ss A")}
                                 </td>
-                                <td className="px-6 py-4 text-left align-top whitespace-nowrap">{report.created_by}</td>
-                                <td className="pl-2 text-left flex gap-2 mt-3">
+                                <td className="px-6 py-4 text-left align-top whitespace-nowrap border-x border-gray-300">
+                                    {report.created_by}
+                                </td>
+                                <td className="pl-4 text-center flex mt-3 border-x">
                                     <button
                                         onClick={() => handleUndoClick(report.id)}
                                         className="cursor-pointer w-8 h-8 flex justify-center items-center"

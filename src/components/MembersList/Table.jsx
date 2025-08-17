@@ -327,7 +327,7 @@ const Table = ({ membersData, onEdit, fetchMembersData, logAction }) => {
 
                 <tbody>
                     {currentMembers.map((member, index) => (
-                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]"}`}>
+                        <tr key={member.id} className={`${index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"}`}>
                             <td className="p-4 text-left font-medium text-[#333333] align-top border-x border-gray-200">
                                 {member.controlNo}
                             </td>
