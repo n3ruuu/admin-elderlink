@@ -5,7 +5,7 @@ import Header from "./Header"
 const ContentManagement = () => {
     const [officers, setOfficers] = useState([])
     const [coordinators, setCoordinators] = useState([])
-    const [signatory, setSignatory] = useState({ name: "", position: "" })  // State for single signatory
+    const [signatory, setSignatory] = useState({ name: "", position: "" }) // State for single signatory
     const [newOfficer, setNewOfficer] = useState({ name: "", position: "" })
     const [newCoordinator, setNewCoordinator] = useState({ name: "", area: "" })
     const [newSignatory, setNewSignatory] = useState({ name: "", position: "" }) // State for new signatory
@@ -13,33 +13,31 @@ const ContentManagement = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const officerResponse = await axios.get("http://localhost:5000/cms/officers");
-                const coordinatorResponse = await axios.get("http://localhost:5000/cms/area-coordinators");
-                const signatoryResponse = await axios.get("http://localhost:5000/cms/signatory");
-    
+                const officerResponse = await axios.get("http://5.181.217.153:5000/cms/officers")
+                const coordinatorResponse = await axios.get("http://5.181.217.153:5000/cms/area-coordinators")
+                const signatoryResponse = await axios.get("http://5.181.217.153:5000/cms/signatory")
+
                 // Log the fetched data for debugging
-                console.log("Officers:", officerResponse.data);
-                console.log("Coordinators:", coordinatorResponse.data);
-                console.log("Signatory:", signatoryResponse.data);
-    
+                console.log("Officers:", officerResponse.data)
+                console.log("Coordinators:", coordinatorResponse.data)
+                console.log("Signatory:", signatoryResponse.data)
+
                 // Set data into the state
-                setOfficers(officerResponse.data);
-                setCoordinators(coordinatorResponse.data);
-                setSignatory(signatoryResponse.data[0] || {});  // Assuming the signatory is an array with one item
-    
+                setOfficers(officerResponse.data)
+                setCoordinators(coordinatorResponse.data)
+                setSignatory(signatoryResponse.data[0] || {}) // Assuming the signatory is an array with one item
             } catch (error) {
-                console.error("Error fetching data", error);
+                console.error("Error fetching data", error)
             }
         }
-    
-        fetchData();
-    }, []);
-    
+
+        fetchData()
+    }, [])
 
     // Handle adding a new officer
     const handleAddOfficer = async () => {
         try {
-            await axios.post("http://localhost:5000/cms/officers", newOfficer)
+            await axios.post("http://5.181.217.153:5000/cms/officers", newOfficer)
             setOfficers([...officers, newOfficer])
             setNewOfficer({ name: "", position: "" })
         } catch (error) {
@@ -50,7 +48,7 @@ const ContentManagement = () => {
     // Handle adding a new area coordinator
     const handleAddCoordinator = async () => {
         try {
-            await axios.post("http://localhost:5000/cms/area-coordinators", newCoordinator)
+            await axios.post("http://5.181.217.153:5000/cms/area-coordinators", newCoordinator)
             setCoordinators([...coordinators, newCoordinator])
             setNewCoordinator({ name: "", area: "" })
         } catch (error) {
@@ -60,28 +58,27 @@ const ContentManagement = () => {
 
     const handleAddSignatory = async () => {
         try {
-            let response;
+            let response
             if (signatory.id) {
                 // Update the existing signatory
-                response = await axios.put(`http://localhost:5000/cms/signatory/${signatory.id}`, newSignatory);
+                response = await axios.put(`http://5.181.217.153:5000/cms/signatory/${signatory.id}`, newSignatory)
             } else {
                 // Create a new signatory
-                response = await axios.post("http://localhost:5000/cms/signatory", newSignatory);
+                response = await axios.post("http://5.181.217.153:5000/cms/signatory", newSignatory)
             }
-    
-            setSignatory(response.data); // Update state with server's response
-            setNewSignatory({ name: "", position: "" }); // Reset input fields
+
+            setSignatory(response.data) // Update state with server's response
+            setNewSignatory({ name: "", position: "" }) // Reset input fields
         } catch (error) {
-            console.error("Error adding/updating signatory:", error);
+            console.error("Error adding/updating signatory:", error)
         }
-    };
-    
+    }
 
     // Handle deleting the signatory
     const handleDeleteSignatory = async () => {
         try {
-            await axios.delete(`http://localhost:5000/cms/signatory/${signatory.id}`)
-            setSignatory({ name: "", position: "" })  // Remove the signatory data
+            await axios.delete(`http://5.181.217.153:5000/cms/signatory/${signatory.id}`)
+            setSignatory({ name: "", position: "" }) // Remove the signatory data
         } catch (error) {
             console.error("Error deleting signatory", error)
         }
@@ -90,7 +87,7 @@ const ContentManagement = () => {
     // Handle deleting an officer
     const handleDeleteOfficer = async (officerId) => {
         try {
-            await axios.delete(`http://localhost:5000/cms/officers/${officerId}`)
+            await axios.delete(`http://5.181.217.153:5000/cms/officers/${officerId}`)
             setOfficers(officers.filter((officer) => officer.id !== officerId))
         } catch (error) {
             console.error("Error deleting officer", error)
@@ -98,15 +95,14 @@ const ContentManagement = () => {
     }
 
     // Handle deleting a coordinator
-const handleDeleteCoordinator = async (coordinatorId) => {
-    try {
-        await axios.delete(`http://localhost:5000/cms/area-coordinators/${coordinatorId}`)
-        setCoordinators(coordinators.filter((coordinator) => coordinator.id !== coordinatorId))
-    } catch (error) {
-        console.error("Error deleting coordinator", error)
+    const handleDeleteCoordinator = async (coordinatorId) => {
+        try {
+            await axios.delete(`http://5.181.217.153:5000/cms/area-coordinators/${coordinatorId}`)
+            setCoordinators(coordinators.filter((coordinator) => coordinator.id !== coordinatorId))
+        } catch (error) {
+            console.error("Error deleting coordinator", error)
+        }
     }
-}
-
 
     return (
         <section className="w-full font-inter h-screen bg-[#F5F5FA] overflow-auto">

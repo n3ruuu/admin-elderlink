@@ -38,7 +38,7 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData, logAct
     const handleTitleChange = async (e) => {
         if (e.key === "Enter") {
             try {
-                await axios.put(`http://localhost:5000/forms/update-title/${activeFormId}`, {
+                await axios.put(`http://5.181.217.153:5000/forms/update-title/${activeFormId}`, {
                     newTitle: editableTitle,
                 })
                 setIsEditing(false)
@@ -52,7 +52,7 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData, logAct
 
     const handleArchiveConfirm = async () => {
         try {
-            await axios.put(`http://localhost:5000/forms/archive/${activeFormId}`, {
+            await axios.put(`http://5.181.217.153:5000/forms/archive/${activeFormId}`, {
                 newStatus: "Archived",
             })
             handleModalClose()
@@ -81,7 +81,7 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData, logAct
                                 {/* PDF Preview */}
                                 <div className="w-full h-44 bg-gray-100 mb-4 rounded-lg overflow-hidden relative">
                                     <object
-                                        data={`http://localhost:5000/${form.pdfLink}`}
+                                        data={`http://5.181.217.153:5000/${form.pdfLink}`}
                                         type="application/pdf"
                                         width="100%"
                                         height="100%"
@@ -112,7 +112,7 @@ const FormsContainer = ({ groupedForms, selectedCategory, fetchFormsData, logAct
 
                                 {/* Open Form Link */}
                                 <a
-                                    href={`http://localhost:5000/${form.pdfLink}`}
+                                    href={`http://5.181.217.153:5000/${form.pdfLink}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-white bg-[#219EBC] hover:bg-[#1b8ca3] font-semibold py-1 px-3 rounded inline-block mb-4 text-center transition-colors"

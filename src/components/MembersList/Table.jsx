@@ -46,7 +46,7 @@ const Table = ({ membersData, onEdit, fetchMembersData, logAction }) => {
 
             try {
                 // Make a PUT request to update the member status
-                const response = await axios.put(`http://localhost:5000/members/archive/${selectedMember.id}`, {
+                const response = await axios.put(`http://5.181.217.153:5000/members/archive/${selectedMember.id}`, {
                     reason,
                 })
 

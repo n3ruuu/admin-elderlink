@@ -14,7 +14,7 @@ const ViewModal = ({ member, onClose }) => {
 
     const fetchMembersData = async () => {
         try {
-            const response = await fetch("http://localhost:5000/financial-assistance")
+            const response = await fetch("http://5.181.217.153:5000/financial-assistance")
             if (!response.ok) throw new Error("Network response was not ok")
             const data = await response.json()
             setMembersData(data)
@@ -49,7 +49,7 @@ const ViewModal = ({ member, onClose }) => {
 
         try {
             const response = await axios.post(
-                "http://localhost:5000/financial-assistance/social-pension/upload-proof",
+                "http://5.181.217.153:5000/financial-assistance/social-pension/upload-proof",
                 formData,
                 {
                     headers: {
@@ -77,7 +77,7 @@ const ViewModal = ({ member, onClose }) => {
 
         try {
             const response = await axios.post(
-                "http://localhost:5000/financial-assistance/social-pension/remove-proof",
+                "http://5.181.217.153:5000/financial-assistance/social-pension/remove-proof",
                 {
                     member_id: member.member_id,
                     record_id: record.id,
@@ -139,7 +139,7 @@ const ViewModal = ({ member, onClose }) => {
                                             <>
                                                 {/* Display the uploaded proof file name with a link to view it */}
                                                 <a
-                                                    href={`http://localhost:5000/${record.proof}`} // Assuming the proof file is served from this path
+                                                    href={`http://5.181.217.153:5000/${record.proof}`} // Assuming the proof file is served from this path
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-[#219EBC] font-semibold underline"

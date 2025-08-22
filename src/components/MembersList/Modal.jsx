@@ -9,7 +9,7 @@ import HealthRecordsModal from "../HealthRecords/Modal"
 const Modal = ({ onClose, member, onSave }) => {
     const fetchNextControlNo = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/members")
+            const response = await axios.get("http://5.181.217.153:5000/members")
             const members = response.data
 
             // Get all controlNos that match "MOJ####" format
@@ -105,7 +105,7 @@ const Modal = ({ onClose, member, onSave }) => {
 
     const checkForDuplicates = async (controlNo, purchaseBookletNo, medicineBookletNo) => {
         try {
-            const response = await axios.get("http://localhost:5000/members")
+            const response = await axios.get("http://5.181.217.153:5000/members")
             const members = response.data
 
             const controlNoExists = members.some((member) => member.controlNo === controlNo)
@@ -222,7 +222,7 @@ const Modal = ({ onClose, member, onSave }) => {
                 if (member) {
                     // Edit existing member in the database
 
-                    await axios.put(`http://localhost:5000/members/members-list/${member.id}`, formValues)
+                    await axios.put(`http://5.181.217.153:5000/members/members-list/${member.id}`, formValues)
                 } else {
                     onOpenHealthRecordsModal(formValues)
                 }

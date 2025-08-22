@@ -24,7 +24,7 @@ const NewsTable = () => {
 
     const fetchNews = async () => {
         try {
-            const response = await fetch("http://localhost:5000/news")
+            const response = await fetch("http://5.181.217.153:5000/news")
             const data = await response.json()
             // Only archived news
             const archivedNews = data.filter((item) => item.status === "Archived")
@@ -62,7 +62,7 @@ const NewsTable = () => {
     const handleUndoConfirm = async () => {
         if (!selectedNewsId) return
         try {
-            const response = await fetch(`http://localhost:5000/news/archive/${selectedNewsId}`, {
+            const response = await fetch(`http://5.181.217.153:5000/news/archive/${selectedNewsId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: "Active" }),
@@ -89,7 +89,7 @@ const NewsTable = () => {
     const handleDeleteConfirm = async () => {
         if (!selectedNewsId) return
         try {
-            const response = await fetch(`http://localhost:5000/news/${selectedNewsId}`, {
+            const response = await fetch(`http://5.181.217.153:5000/news/${selectedNewsId}`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
             })
@@ -163,7 +163,7 @@ const NewsTable = () => {
                                                 return imagesArray.map((image, idx) => (
                                                     <img
                                                         key={idx}
-                                                        src={`http://localhost:5000/uploads/${image}`}
+                                                        src={`http://5.181.217.153:5000/uploads/${image}`}
                                                         alt={`News Image ${idx + 1}`}
                                                         className="w-[100px] h-[60px] object-cover rounded-md cursor-pointer"
                                                     />
@@ -171,7 +171,7 @@ const NewsTable = () => {
                                             } else {
                                                 return (
                                                     <img
-                                                        src={`http://localhost:5000/uploads/${newsItem.images}`}
+                                                        src={`http://5.181.217.153:5000/uploads/${newsItem.images}`}
                                                         alt="News"
                                                         className="w-[100px] h-[60px] object-cover rounded-md cursor-pointer"
                                                     />

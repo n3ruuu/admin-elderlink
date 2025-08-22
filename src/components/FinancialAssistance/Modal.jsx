@@ -10,7 +10,6 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
     const [successModalMessage, setSuccessModalMessage] = useState("")
     const [successModalTitle, setSuccessModalTitle] = useState("")
 
-
     const memberRecords = member ? membersData.filter((data) => data.member_id === member.member_id) : []
     console.log(memberRecords)
 
@@ -101,14 +100,13 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
 
             // If adding a new member
             if (!member) {
-                const memberResponse = await axios.post("http://localhost:5000/members", memberInfo)
+                const memberResponse = await axios.post("http://5.181.217.153:5000/members", memberInfo)
                 memberId = memberResponse.data.memberId // Get the new member ID from the response
                 fullName = `${memberInfo.firstName} ${memberInfo.lastName}` // Construct full_name for the new member
                 controlNo = memberResponse.data.control_no // Assuming control_no is returned in the response
             } else {
                 fullName = `${member.firstName} ${member.lastName}` // Construct full_name for an existing member
                 controlNo = member.control_no // Get control_no from the existing member
-
             }
 
             // Prepare data for social pension
@@ -130,7 +128,7 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
 
                 // Send the updated data to the server for updating the record
                 await axios.put(
-                    `http://localhost:5000/financial-assistance/social-pension/${socialPensionId}/${memberId}`,
+                    `http://5.181.217.153:5000/financial-assistance/social-pension/${socialPensionId}/${memberId}`,
                     updatedSocialPensionData,
                 )
 
@@ -138,7 +136,7 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
                 onSave()
             } else {
                 // If no social_pension_id, create a new record
-                await axios.post("http://localhost:5000/financial-assistance/social-pension", socialPensionData)
+                await axios.post("http://5.181.217.153:5000/financial-assistance/social-pension", socialPensionData)
                 setSuccessModalTitle("Member Added!")
                 setSuccessModalMessage("New member has been successfully added.")
                 setIsSuccessModalOpen(true)
@@ -180,7 +178,6 @@ const Modal = ({ closeAllModal, onClose, member, onSave, membersData, memberInfo
                 onClose={() => {
                     closeAllModal() // Close parent modal after dismissing success modal
                     setIsSuccessModalOpen(false)
-                  
                 }}
                 title={successModalTitle}
                 message={successModalMessage}

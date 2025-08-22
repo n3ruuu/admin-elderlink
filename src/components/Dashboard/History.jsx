@@ -28,7 +28,7 @@ const History = () => {
         // Fetch logs from the backend
         const fetchLogs = async () => {
             try {
-                const response = await fetch("http://localhost:5000/log")
+                const response = await fetch("http://5.181.217.153:5000/log")
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`)
                 }

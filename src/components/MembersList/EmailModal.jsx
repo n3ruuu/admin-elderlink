@@ -51,7 +51,7 @@ const EmailModal = ({ isOpen, onClose, member }) => {
         if (image) formData.append("image", image)
 
         try {
-            const response = await fetch("http://localhost:5000/events/send-email", {
+            const response = await fetch("http://5.181.217.153:5000/events/send-email", {
                 method: "POST",
                 body: formData,
             })

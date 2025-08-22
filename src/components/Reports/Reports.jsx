@@ -12,7 +12,7 @@ const Reports = () => {
     // Fetch reports data from the API
     const fetchReportsData = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/reports/get-news") // Replace with your API endpoint
+            const response = await axios.get("http://5.181.217.153:5000/reports/get-news") // Replace with your API endpoint
             const activeReports = response.data.filter((report) => report.status === "Active") // Filter active reports
             setReportsData(activeReports) // Update state with filtered data
         } catch (error) {

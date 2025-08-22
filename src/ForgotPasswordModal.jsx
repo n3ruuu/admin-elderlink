@@ -22,7 +22,7 @@ const ForgotPasswordModal = ({ closeModal }) => {
         }
 
         try {
-            const response = await axios.get(`http://localhost:5000/login/check-email`, {
+            const response = await axios.get(`http://5.181.217.153:5000/login/check-email`, {
                 params: { email },
             })
             console.log("Response:", response.data)
@@ -49,7 +49,9 @@ const ForgotPasswordModal = ({ closeModal }) => {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/verification/send-verification-code", { email })
+            const response = await axios.post("http://5.181.217.153:5000/verification/send-verification-code", {
+                email,
+            })
             if (response.status === 200) {
                 alert("Verification code sent to your email.")
                 setStep(2) // Move to verification code step
@@ -62,7 +64,7 @@ const ForgotPasswordModal = ({ closeModal }) => {
     const handleCodeSubmit = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post("http://localhost:5000/verification/verify-code", {
+            const response = await axios.post("http://5.181.217.153:5000/verification/verify-code", {
                 email,
                 code: verificationCode,
             })
@@ -82,7 +84,7 @@ const ForgotPasswordModal = ({ closeModal }) => {
             return
         }
         try {
-            const response = await axios.post("http://localhost:5000/verification/reset-password", {
+            const response = await axios.post("http://5.181.217.153:5000/verification/reset-password", {
                 email,
                 newPassword,
             })

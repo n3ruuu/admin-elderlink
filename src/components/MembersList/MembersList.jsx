@@ -19,7 +19,7 @@ const MembersList = () => {
     // Fetch members data from backend on component mount
     const fetchMembersData = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/members")
+            const response = await axios.get("http://5.181.217.153:5000/members")
 
             // Filter members to only include those with status "Active" or "Approved"
             const filteredMembers = response.data.filter(
@@ -34,7 +34,7 @@ const MembersList = () => {
 
     const logAction = async (action) => {
         try {
-            const response = await fetch("http://localhost:5000/log", {
+            const response = await fetch("http://5.181.217.153:5000/log", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

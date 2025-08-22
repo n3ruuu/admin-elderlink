@@ -5,28 +5,28 @@ import axios from "axios"
 
 const Modal = ({ onClose, application }) => {
     const [formValues, setFormValues] = useState({
-        firstName: '',
-        lastName: '',
-        middleName: '',
-        extension: '',
-        dob: '',
-        sex: '',
-        civilStatus: '',
-        placeOfBirth: '',
-        occupation: '',
-        address: '',
-        contactNumber: '',
-        nameOfSpouse: '',
-        education: '',
-        guardianFirstName: '',
-        guardianMiddleName: '',
-        guardianLastName: '',
-        guardianEmail: '',
-        guardianContact: '',
-        guardianRelationship: '',
-        requirement1: '',
-        requirement2: '',
-        requirement3: '',
+        firstName: "",
+        lastName: "",
+        middleName: "",
+        extension: "",
+        dob: "",
+        sex: "",
+        civilStatus: "",
+        placeOfBirth: "",
+        occupation: "",
+        address: "",
+        contactNumber: "",
+        nameOfSpouse: "",
+        education: "",
+        guardianFirstName: "",
+        guardianMiddleName: "",
+        guardianLastName: "",
+        guardianEmail: "",
+        guardianContact: "",
+        guardianRelationship: "",
+        requirement1: "",
+        requirement2: "",
+        requirement3: "",
     })
 
     // Populate the form with the selected application's values
@@ -64,7 +64,10 @@ const Modal = ({ onClose, application }) => {
         e.preventDefault()
 
         try {
-            const response = await axios.put(`http://localhost:5000/application/members/${application.id}`, formValues)
+            const response = await axios.put(
+                `http://5.181.217.153:5000/application/members/${application.id}`,
+                formValues,
+            )
             console.log("Updated application:", response.data)
             onClose() // Close the modal after submitting the form
         } catch (error) {
@@ -78,11 +81,7 @@ const Modal = ({ onClose, application }) => {
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6">Register to OSCA</h2>
 
                 <form onSubmit={handleSubmit}>
-                    <Form
-                        formValues={formValues}
-                        onClose={onClose}
-                    />
-
+                    <Form formValues={formValues} onClose={onClose} />
                 </form>
             </div>
         </div>

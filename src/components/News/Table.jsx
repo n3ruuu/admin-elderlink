@@ -123,12 +123,12 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                                                         return imagesArray.map((image, idx) => (
                                                             <img
                                                                 key={idx}
-                                                                src={`http://localhost:5000/uploads/${image}`}
+                                                                src={`http://5.181.217.153:5000/uploads/${image}`}
                                                                 alt={`News Image ${idx + 1}`}
                                                                 className="w-[100px] h-[60px] object-cover rounded-md cursor-pointer border border-gray-300"
                                                                 onClick={() =>
                                                                     openImageModal(
-                                                                        `http://localhost:5000/uploads/${image}`,
+                                                                        `http://5.181.217.153:5000/uploads/${image}`,
                                                                     )
                                                                 }
                                                             />
@@ -136,12 +136,12 @@ const Table = ({ newsData, handleOpenModal, handleOpenArchiveModal }) => {
                                                     } else {
                                                         return (
                                                             <img
-                                                                src={`http://localhost:5000/uploads/${news.images}`}
+                                                                src={`http://5.181.217.153:5000/uploads/${news.images}`}
                                                                 alt="News"
                                                                 className="w-[100px] h-[60px] object-cover rounded-md cursor-pointer border border-gray-300"
                                                                 onClick={() =>
                                                                     openImageModal(
-                                                                        `http://localhost:5000/uploads/${news.images}`,
+                                                                        `http://5.181.217.153:5000/uploads/${news.images}`,
                                                                     )
                                                                 }
                                                             />

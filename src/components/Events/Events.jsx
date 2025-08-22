@@ -29,7 +29,7 @@ const Events = () => {
 
     const fetchEvents = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/events")
+            const response = await axios.get("http://5.181.217.153:5000/events")
             setEventsData(response.data)
         } catch (error) {
             console.error("Error fetching events:", error)
@@ -38,7 +38,7 @@ const Events = () => {
 
     const logAction = async (action) => {
         try {
-            const response = await fetch("http://localhost:5000/log", {
+            const response = await fetch("http://5.181.217.153:5000/log", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -72,10 +72,9 @@ const Events = () => {
 
     const handleSave = async (updatedEvent) => {
         try {
-
             if (moment(updatedEvent.date).isBefore(moment(), "day")) {
-                alert("Error: The event date cannot be in the past.");
-                return; // Exit the function without saving
+                alert("Error: The event date cannot be in the past.")
+                return // Exit the function without saving
             }
 
             const eventData = {
@@ -88,10 +87,10 @@ const Events = () => {
                 category: updatedEvent.category,
                 recurrence: updatedEvent.recurrence, // Add recurrence
                 endDate: updatedEvent.endDate, // Add endDate
-                recurrenceDates: updatedEvent.recurrenceDates // Add an array to store recurrence dates
-            };
+                recurrenceDates: updatedEvent.recurrenceDates, // Add an array to store recurrence dates
+            }
             if (updatedEvent.id) {
-                const response = await axios.put(`http://localhost:5000/events/${updatedEvent.id}`, eventData)
+                const response = await axios.put(`http://5.181.217.153:5000/events/${updatedEvent.id}`, eventData)
                 setEventsData((prevData) =>
                     prevData.map((event) => (event.id === updatedEvent.id ? response.data : event)),
                 )
@@ -99,7 +98,7 @@ const Events = () => {
                 setModalMessage("The event has been successfully edited.")
                 await logAction(`Update Event`)
             } else {
-                const response = await axios.post("http://localhost:5000/events", eventData)
+                const response = await axios.post("http://5.181.217.153:5000/events", eventData)
                 setEventsData((prevData) => [...prevData, response.data])
                 setModalTitle("Event Added!")
                 setModalMessage("The event has been successfully added to the event list.")
@@ -112,7 +111,6 @@ const Events = () => {
         setSuccessModalOpen(true)
         fetchEvents()
     }
-    
 
     const handleArchiveClick = (event) => {
         setEventToArchive(event)
@@ -122,7 +120,7 @@ const Events = () => {
     const handleConfirmArchive = async () => {
         try {
             // Archive the event in the backend
-            await axios.put(`http://localhost:5000/events/archive/${eventToArchive.id}`, { status: "Archived" })
+            await axios.put(`http://5.181.217.153:5000/events/archive/${eventToArchive.id}`, { status: "Archived" })
 
             // Update local state by filtering out the archived event
             setEventsData((prevData) => {

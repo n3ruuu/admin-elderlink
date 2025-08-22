@@ -4,21 +4,21 @@ import { useState, useEffect } from "react"
 import SendIcon from "../../assets/icons/news-send.svg"
 import PhotoIcon from "../../assets/icons/photo.svg"
 import axios from "axios"
-import moment from 'moment'
+import moment from "moment"
 
 const Modal = ({ onClose, onSubmit, news }) => {
     const loggedInUsername = localStorage.getItem("username") || ""
 
     const [headline, setHeadline] = useState(news?.headline || "")
     const [author, setAuthor] = useState(news?.author || loggedInUsername)
-const [date, setDate] = useState(news?.date ? moment(news.date).format("YYYY-MM-DD") : "")
+    const [date, setDate] = useState(news?.date ? moment(news.date).format("YYYY-MM-DD") : "")
     const [body, setBody] = useState(news?.body || "")
     const [images, setImages] = useState(news.images || "")
     const [imagePreviews, setImagePreviews] = useState(
         news?.images
             ? Array.isArray(news.images)
-                ? news.images.map((img) => `http://localhost:5000/uploads/${img}`)
-                : JSON.parse(news.images).map((img) => `http://localhost:5000/uploads/${img}`)
+                ? news.images.map((img) => `http://5.181.217.153:5000/uploads/${img}`)
+                : JSON.parse(news.images).map((img) => `http://5.181.217.153:5000/uploads/${img}`)
             : [],
     )
 
@@ -82,10 +82,10 @@ const [date, setDate] = useState(news?.date ? moment(news.date).format("YYYY-MM-
 
         try {
             const response = news?.id
-                ? await axios.put(`http://localhost:5000/news/${news.id}`, formData, {
+                ? await axios.put(`http://5.181.217.153:5000/news/${news.id}`, formData, {
                       headers: { "Content-Type": "multipart/form-data" },
                   })
-                : await axios.post("http://localhost:5000/news", formData, {
+                : await axios.post("http://5.181.217.153:5000/news", formData, {
                       headers: { "Content-Type": "multipart/form-data" },
                   })
 

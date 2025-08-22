@@ -45,7 +45,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchTotalSeniorCitizens = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/members")
+                const response = await axios.get("http://5.181.217.153:5000/members")
                 setTotalSeniorCitizens(response.data.length)
 
                 // Filter active senior citizens
@@ -98,7 +98,7 @@ const Dashboard = () => {
 
         const fetchUpcomingEvents = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/events")
+                const response = await axios.get("http://5.181.217.153:5000/events")
                 console.log("Fetched events:", response.data) // Log the raw fetched events
 
                 const upcomingEvents = []
@@ -164,7 +164,7 @@ const Dashboard = () => {
         // Fetch pending applications from the backend
         const fetchPendingApplications = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/members/registrations")
+                const response = await axios.get("http://5.181.217.153:5000/members/registrations")
 
                 // Ensure response.data contains the expected structure
                 const applications = response.data || []

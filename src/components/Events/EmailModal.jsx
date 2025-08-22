@@ -14,7 +14,7 @@ const EmailModal = ({ isOpen, onClose }) => {
     useEffect(() => {
         const fetchMembers = async () => {
             try {
-                const response = await fetch("http://localhost:5000/members")
+                const response = await fetch("http://5.181.217.153:5000/members")
                 const data = await response.json()
                 setMembers(data)
             } catch (error) {
@@ -47,7 +47,7 @@ const EmailModal = ({ isOpen, onClose }) => {
         if (image) formData.append("image", image)
 
         try {
-            const response = await fetch("http://localhost:5000/events/send-email", {
+            const response = await fetch("http://5.181.217.153:5000/events/send-email", {
                 method: "POST",
                 body: formData,
             })

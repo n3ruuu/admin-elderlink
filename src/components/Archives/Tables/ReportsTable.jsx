@@ -16,7 +16,7 @@ const ReportsTable = () => {
 
     const fetchReportsData = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/reports/get-news")
+            const response = await axios.get("http://5.181.217.153:5000/reports/get-news")
             const archivedReports = response.data.filter((report) => report.status === "Archived")
             setReportsData(archivedReports)
         } catch (error) {
@@ -42,7 +42,7 @@ const ReportsTable = () => {
         if (!selectedReportId) return
 
         try {
-            const response = await axios.put(`http://localhost:5000/reports/undo/${selectedReportId}`, {
+            const response = await axios.put(`http://5.181.217.153:5000/reports/undo/${selectedReportId}`, {
                 status: "Active",
             })
 
@@ -67,12 +67,10 @@ const ReportsTable = () => {
         if (!selectedReportId) return
 
         try {
-            const response = await axios.delete(`http://localhost:5000/reports/delete/${selectedReportId}`)
+            const response = await axios.delete(`http://5.181.217.153:5000/reports/delete/${selectedReportId}`)
 
             if (response.status === 200) {
-                setReportsData((prevReports) =>
-                    prevReports.filter((report) => report.id !== selectedReportId),
-                )
+                setReportsData((prevReports) => prevReports.filter((report) => report.id !== selectedReportId))
                 // ✅ open success modal
                 setIsSuccessModalOpen(true)
             } else {

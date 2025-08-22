@@ -1,41 +1,40 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
-import SendIcon from "../../assets/icons/send-icon.svg";
+import { useState } from "react"
+import SendIcon from "../../assets/icons/send-icon.svg"
 
 const EmailModal = ({ isOpen, onClose, recipients }) => {
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState("")
 
     const handleSendEmail = async () => {
-        const formData = new FormData();
-        formData.append("subject", "Application Rejected!"); // Set subject to "Application Rejected!"
-        formData.append("message", message);
-    
+        const formData = new FormData()
+        formData.append("subject", "Application Rejected!") // Set subject to "Application Rejected!"
+        formData.append("message", message)
+
         // Clean recipient emails to remove whitespace
-        const sanitizedRecipients = recipients.map((email) => email.trimEnd()); // Use trimEnd to clean trailing spaces
-        formData.append("recipients", JSON.stringify(sanitizedRecipients));
-    
+        const sanitizedRecipients = recipients.map((email) => email.trimEnd()) // Use trimEnd to clean trailing spaces
+        formData.append("recipients", JSON.stringify(sanitizedRecipients))
+
         try {
-            const response = await fetch("http://localhost:5000/events/send-email", {
+            const response = await fetch("http://5.181.217.153:5000/events/send-email", {
                 method: "POST",
                 body: formData,
-            });
+            })
             if (response.ok) {
-                console.log("Email sent successfully!");
-                alert("Email sent successfully!");
-                onClose(); // Close the modal after sending the email
+                console.log("Email sent successfully!")
+                alert("Email sent successfully!")
+                onClose() // Close the modal after sending the email
             } else {
-                console.error("Failed to send email");
+                console.error("Failed to send email")
             }
         } catch (error) {
-            console.error("Error sending email:", error);
+            console.error("Error sending email:", error)
         }
-    };
-    
+    }
 
-    if (!isOpen) return null;
+    if (!isOpen) return null
 
-    const isMessageEmpty = !message.trim();
-    const isRecipientsEmpty = recipients.length === 0;
+    const isMessageEmpty = !message.trim()
+    const isRecipientsEmpty = recipients.length === 0
 
     return (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
@@ -48,7 +47,7 @@ const EmailModal = ({ isOpen, onClose, recipients }) => {
                             type="text"
                             className="p-4 border border-gray-300 rounded-lg flex-grow focus:outline-none focus:ring-2 focus:ring-blue-400"
                         >
-                            {recipients.join(", ")} 
+                            {recipients.join(", ")}
                         </div>
                     </div>
                 </div>
@@ -89,7 +88,7 @@ const EmailModal = ({ isOpen, onClose, recipients }) => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default EmailModal;
+export default EmailModal

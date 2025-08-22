@@ -19,7 +19,7 @@ const FormsCategories = ({ categories, onCategoryClick, onCategoryDelete }) => {
 
     const handleArchiveConfirm = async () => {
         try {
-            await axios.delete(`http://localhost:5000/forms/initiatives/${selectedInitiative.id}`)
+            await axios.delete(`http://5.181.217.153:5000/forms/initiatives/${selectedInitiative.id}`)
             onCategoryDelete(selectedInitiative.id)
             setIsModalOpen(false)
             setSuccessModalTitle("Initiative Deleted!")
@@ -50,7 +50,7 @@ const FormsCategories = ({ categories, onCategoryClick, onCategoryDelete }) => {
                         className="flex pl-8 text-[20px] items-center bg-[#FFFFFF] rounded-[12px] w-[31.5%] h-[120px] hover:bg-[#F0F0F0] transition-colors duration-300"
                     >
                         <img
-                            src={`http://localhost:5000${category.icon_path}`}
+                            src={`http://5.181.217.153:5000${category.icon_path}`}
                             alt={`${category.category_name} Icon`}
                             className="mr-4 w-16 h-16 rounded-[50%]"
                         />

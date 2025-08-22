@@ -26,7 +26,7 @@ const Forms = () => {
     // Fetch categories from backend
     const fetchCategories = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/forms/initiatives")
+            const response = await axios.get("http://5.181.217.153:5000/forms/initiatives")
             setCategories(response.data) // Set categories to state
         } catch (error) {
             console.error("Error fetching categories:", error)
@@ -35,7 +35,7 @@ const Forms = () => {
 
     const fetchFormsData = async () => {
         try {
-            const response = await fetch("http://localhost:5000/forms")
+            const response = await fetch("http://5.181.217.153:5000/forms")
             if (!response.ok) throw new Error("Failed to fetch forms data")
             const data = await response.json()
             setFormsData(data)
@@ -73,7 +73,7 @@ const Forms = () => {
 
     const logAction = async (action) => {
         try {
-            const response = await fetch("http://localhost:5000/log", {
+            const response = await fetch("http://5.181.217.153:5000/log", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -102,7 +102,7 @@ const Forms = () => {
         formData.append("createdAt", new Date().toISOString())
 
         try {
-            const response = await fetch("http://localhost:5000/forms", {
+            const response = await fetch("http://5.181.217.153:5000/forms", {
                 method: "POST",
                 body: formData,
             })

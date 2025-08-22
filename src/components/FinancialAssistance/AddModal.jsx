@@ -93,7 +93,7 @@ const Modal = ({ onClose, member }) => {
 
         try {
             // Send a POST request to create a new financial assistance record
-            await axios.post("http://localhost:5000/financial-assistance/social-pension", socialPensionData)
+            await axios.post("http://5.181.217.153:5000/financial-assistance/social-pension", socialPensionData)
 
             setSuccessModalTitle("New Record Added!")
             setSuccessModalMessage("New social pension has been successfully added.")

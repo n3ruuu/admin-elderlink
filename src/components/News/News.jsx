@@ -22,22 +22,21 @@ const News = () => {
         fetchNews()
     }, [])
 
-   const fetchNews = async () => {
-    try {
-        const response = await axios.get("http://localhost:5000/news")
-        const sortedNews = response.data
-            .filter(news => news.status === 'Active')
-            .sort((a, b) => new Date(a.date) - new Date(b.date)) // Oldest first
-        setNewsData(sortedNews)
-    } catch (error) {
-        console.error("Error fetching news:", error)
+    const fetchNews = async () => {
+        try {
+            const response = await axios.get("http://5.181.217.153:5000/news")
+            const sortedNews = response.data
+                .filter((news) => news.status === "Active")
+                .sort((a, b) => new Date(a.date) - new Date(b.date)) // Oldest first
+            setNewsData(sortedNews)
+        } catch (error) {
+            console.error("Error fetching news:", error)
+        }
     }
-}
-
 
     const logAction = async (action) => {
         try {
-            const response = await fetch("http://localhost:5000/log", {
+            const response = await fetch("http://5.181.217.153:5000/log", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -119,7 +118,7 @@ const News = () => {
         if (selectedNews) {
             try {
                 // Update the status of the news to "Archived" in the backend
-                await axios.put(`http://localhost:5000/news/archive/${selectedNews.id}`)
+                await axios.put(`http://5.181.217.153:5000/news/archive/${selectedNews.id}`)
                 setNewsData(
                     newsData.map((news) => (news.id === selectedNews.id ? { ...news, status: "Archived" } : news)),
                 )

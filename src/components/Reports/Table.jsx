@@ -30,7 +30,7 @@ const Table = ({ reportsData, fetchReportsData }) => {
     }
 
     const handleDownload = (report) => {
-        const fileUrl = `http://localhost:5000/${report.pdf_file_path}`
+        const fileUrl = `http://5.181.217.153:5000/${report.pdf_file_path}`
         window.open(fileUrl, "_blank")
     }
 
@@ -48,7 +48,7 @@ const Table = ({ reportsData, fetchReportsData }) => {
 
     const logAction = async (action) => {
         try {
-            const response = await fetch("http://localhost:5000/log", {
+            const response = await fetch("http://5.181.217.153:5000/log", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -67,7 +67,7 @@ const Table = ({ reportsData, fetchReportsData }) => {
         if (!selectedReport) return
 
         try {
-            await axios.put(`http://localhost:5000/reports/archive-report/${selectedReport.id}`)
+            await axios.put(`http://5.181.217.153:5000/reports/archive-report/${selectedReport.id}`)
 
             setModalTitle("Report Archived!")
             setModalMessage("The report has been successfully archived.")

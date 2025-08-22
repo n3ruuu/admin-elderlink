@@ -24,7 +24,7 @@ const Login = ({ onLogin }) => {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/login", {
+            const response = await axios.post("http://5.181.217.153:5000/login", {
                 identifier: username, // Send 'identifier' (username or email)
                 password,
             })

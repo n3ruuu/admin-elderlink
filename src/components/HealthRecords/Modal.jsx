@@ -57,7 +57,7 @@ const Modal = ({ closeAllModal, onClose, member, onSave, memberInfo }) => {
                 if (member) {
                     // Edit existing member in the database
                     const response = await axios.put(
-                        `http://localhost:5000/members/health-records/${member.id}`,
+                        `http://5.181.217.153:5000/members/health-records/${member.id}`,
                         formValues,
                     )
                     console.log("Response:", response.data) // Log the response from the backend

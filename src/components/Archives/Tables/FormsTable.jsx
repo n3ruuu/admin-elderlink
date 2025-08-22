@@ -36,7 +36,7 @@ const FormsTable = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/forms/initiatives")
+            const response = await axios.get("http://5.181.217.153:5000/forms/initiatives")
             setCategories(response.data)
         } catch (error) {
             console.error("Error fetching categories:", error)
@@ -45,7 +45,7 @@ const FormsTable = () => {
 
     const fetchForms = async () => {
         try {
-            const response = await fetch("http://localhost:5000/forms")
+            const response = await fetch("http://5.181.217.153:5000/forms")
             const data = await response.json()
             setForms(data)
         } catch (error) {
@@ -55,7 +55,7 @@ const FormsTable = () => {
 
     const getCategoryIcon = (categoryName) => {
         const category = categories.find((c) => c.category_name === categoryName)
-        return category ? `http://localhost:5000${category.icon_path}` : "/path/to/default-icon.svg"
+        return category ? `http://5.181.217.153:5000${category.icon_path}` : "/path/to/default-icon.svg"
     }
 
     const handleUndoClick = (form) => {
@@ -69,7 +69,7 @@ const FormsTable = () => {
         const newStatus = formToUpdate.status === "Archived" ? "Active" : "Archived"
 
         try {
-            const response = await fetch(`http://localhost:5000/forms/archive/${selectedFormId}`, {
+            const response = await fetch(`http://5.181.217.153:5000/forms/archive/${selectedFormId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ newStatus }),
@@ -98,7 +98,7 @@ const FormsTable = () => {
 
     const handleDeleteConfirm = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/forms/${formToDelete.id}`, {
+            const response = await fetch(`http://5.181.217.153:5000/forms/${formToDelete.id}`, {
                 method: "DELETE",
             })
             if (response.ok) {

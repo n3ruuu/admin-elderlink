@@ -33,7 +33,7 @@ const FinanceTable = () => {
     }
     const fetchFinance = async () => {
         try {
-            const response = await fetch("http://localhost:5000/financial-assistance/social-pension")
+            const response = await fetch("http://5.181.217.153:5000/financial-assistance/social-pension")
             const data = await response.json()
 
             // Filter out archived finance

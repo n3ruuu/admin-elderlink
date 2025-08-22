@@ -60,7 +60,7 @@ const Table = ({ applications, onStatusUpdate }) => {
     const handleStatusUpdate = async (application, status) => {
         if (status === "Approved") {
             try {
-                await axios.post("http://localhost:5000/members", {
+                await axios.post("http://5.181.217.153:5000/members", {
                     firstName: application.firstName,
                     lastName: application.lastName,
                     middleName: application.middleName,

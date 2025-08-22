@@ -23,7 +23,7 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
 
     const logAction = async (action) => {
         try {
-            const response = await fetch("http://localhost:5000/log", {
+            const response = await fetch("http://5.181.217.153:5000/log", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -46,7 +46,7 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
 
     const fetchMembersData = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/members")
+            const response = await axios.get("http://5.181.217.153:5000/members")
             const membersWithFullName = response.data.map((member) => ({
                 ...member,
                 fullName: `${member.firstName || ""} ${member.middleName || ""} ${member.lastName || ""}`.trim(),
@@ -224,7 +224,7 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
             formData.append("createdAt", moment().format("YYYY-MM-DD HH:mm:ss"))
             formData.append("pdfFilePath", filePath)
 
-            await axios.post("http://localhost:5000/reports/save-report", formData, {
+            await axios.post("http://5.181.217.153:5000/reports/save-report", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             })
 

@@ -23,7 +23,7 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
         // Fetch categories with icon paths from the backend
         const fetchCategories = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/forms/initiatives")
+                const response = await axios.get("http://5.181.217.153:5000/forms/initiatives")
                 setCategories(response.data) // Set categories to state
             } catch (error) {
                 console.error("Error fetching categories:", error)
@@ -36,7 +36,7 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
     // Find category icon path by category name
     const getCategoryIcon = (categoryName) => {
         const category = categories.find((c) => c.category_name === categoryName)
-        return category ? `http://localhost:5000${category.icon_path}` : "/path/to/default-icon.svg" // Fallback to default icon if not found
+        return category ? `http://5.181.217.153:5000${category.icon_path}` : "/path/to/default-icon.svg" // Fallback to default icon if not found
     }
 
     // Open the modal and set the selected form
@@ -65,7 +65,7 @@ const Table = ({ formsData, fetchFormsData, logAction }) => {
         try {
             // Send PUT request to archive the form with the new status
             const response = await axios.put(
-                `http://localhost:5000/forms/archive/${selectedForm.id}`,
+                `http://5.181.217.153:5000/forms/archive/${selectedForm.id}`,
                 { newStatus }, // Send the new status in the request body
             )
             console.log(response.data.message) // Log success message

@@ -25,12 +25,10 @@ const EventsTable = () => {
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch("http://localhost:5000/events")
+            const response = await fetch("http://5.181.217.153:5000/events")
             const data = await response.json()
             // Only fetch Archived or Deleted events
-            const archivedEvents = data.filter(
-                (event) => event.status === "Archived" || event.status === "Deleted"
-            )
+            const archivedEvents = data.filter((event) => event.status === "Archived" || event.status === "Deleted")
             setEvents(archivedEvents)
         } catch (error) {
             console.error("Error fetching events:", error)
@@ -56,20 +54,13 @@ const EventsTable = () => {
     const handleUndoConfirm = async () => {
         if (!selectedEvent) return
         try {
-            const response = await fetch(
-                `http://localhost:5000/events/archive/${selectedEvent.id}`,
-                {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ status: "Active" }),
-                }
-            )
+            const response = await fetch(`http://5.181.217.153:5000/events/archive/${selectedEvent.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "Active" }),
+            })
             if (response.ok) {
-                setEvents((prev) =>
-                    prev.map((ev) =>
-                        ev.id === selectedEvent.id ? { ...ev, status: "Active" } : ev
-                    )
-                )
+                setEvents((prev) => prev.map((ev) => (ev.id === selectedEvent.id ? { ...ev, status: "Active" } : ev)))
                 setSuccessMessage("Event has been successfully restored.")
                 setShowSuccessModal(true)
             } else console.error("Failed to undo archive")
@@ -88,16 +79,11 @@ const EventsTable = () => {
     const handleDeleteConfirm = async () => {
         if (!selectedEvent) return
         try {
-            const response = await fetch(
-                `http://localhost:5000/events/delete/${selectedEvent.id}`,
-                {
-                    method: "DELETE",
-                }
-            )
+            const response = await fetch(`http://5.181.217.153:5000/events/delete/${selectedEvent.id}`, {
+                method: "DELETE",
+            })
             if (response.ok) {
-                setEvents((prev) =>
-                    prev.filter((ev) => ev.id !== selectedEvent.id)
-                )
+                setEvents((prev) => prev.filter((ev) => ev.id !== selectedEvent.id))
                 setShowDeleteSuccessModal(true) // ✅ show delete success modal
             } else console.error("Failed to delete event")
         } catch (error) {
@@ -121,18 +107,10 @@ const EventsTable = () => {
                         <th className="px-8 py-4 text-left font-medium rounded-tl-xl border-x border-gray-300">
                             Event Title
                         </th>
-                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">
-                            Date
-                        </th>
-                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">
-                            Location
-                        </th>
-                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">
-                            Organizer
-                        </th>
-                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">
-                            Category
-                        </th>
+                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">Date</th>
+                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">Location</th>
+                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">Organizer</th>
+                        <th className="px-8 py-4 text-left font-medium border-x border-gray-300">Category</th>
                         <th className="px-8 py-4 w-[150px] text-left font-medium rounded-tr-xl border-x border-gray-300">
                             Actions
                         </th>
@@ -146,9 +124,7 @@ const EventsTable = () => {
                                 index % 2 === 0 ? "bg-white" : "bg-[#F5F5FA]"
                             } border-x border-gray-300`}
                         >
-                            <td className="px-8 py-4 text-left border-x border-gray-300">
-                                {event.title}
-                            </td>
+                            <td className="px-8 py-4 text-left border-x border-gray-300">{event.title}</td>
                             <td className="px-8 py-4 text-left whitespace-nowrap border-x border-gray-300">
                                 {moment(event.date).format("MMMM D, YYYY")}
                             </td>
@@ -213,25 +189,14 @@ const EventsTable = () => {
             </div>
 
             {/* Modals */}
-            <UndoModal
-                isOpen={showUndoModal}
-                onClose={handleCloseModal}
-                onConfirm={handleUndoConfirm}
-            />
-            <DeleteModal
-                isOpen={showDeleteModal}
-                onClose={handleCloseModal}
-                onConfirm={handleDeleteConfirm}
-            />
+            <UndoModal isOpen={showUndoModal} onClose={handleCloseModal} onConfirm={handleUndoConfirm} />
+            <DeleteModal isOpen={showDeleteModal} onClose={handleCloseModal} onConfirm={handleDeleteConfirm} />
             <SuccessModal
                 isOpen={showSuccessModal}
                 onClose={() => setShowSuccessModal(false)}
                 message={successMessage}
             />
-            <DeleteSuccessModal
-                isOpen={showDeleteSuccessModal}
-                onClose={() => setShowDeleteSuccessModal(false)}
-            />
+            <DeleteSuccessModal isOpen={showDeleteSuccessModal} onClose={() => setShowDeleteSuccessModal(false)} />
         </div>
     )
 }

@@ -51,7 +51,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                                 lastName: row.lastName || "",
                                 middleName: row.middleName || "", // Default empty if not available
                                 extension: row.extension || "",
-                              dob: moment(row.dob).format("YYYY-MM-DD"),
+                                dob: moment(row.dob).format("YYYY-MM-DD"),
                                 sex: row.sex || "",
                                 civilStatus: row.civilStatus || "",
                                 address: row.address || "",
@@ -95,7 +95,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
     // Function to handle importing data
     const sendDataToBackend = async (data, Q1, Q2, Q3, Q4) => {
         try {
-            const response = await axios.post("http://localhost:5000/members/import-csv", data)
+            const response = await axios.post("http://5.181.217.153:5000/members/import-csv", data)
             console.log("Data imported successfully:", response.data)
 
             // After successful import, each member should now have a member_id returned by the backend
@@ -390,7 +390,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                                 onClick={() => document.getElementById("csvFile").click()}
                             >
                                 Import .CSV File
-                            </button> 
+                            </button>
 
                             {/* Display selected file name with small "X" button to remove */}
                             {selectedFile && (

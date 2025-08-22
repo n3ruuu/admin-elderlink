@@ -36,7 +36,7 @@ const ServiceRequests = () => {
     useEffect(() => {
         const fetchLogs = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/log")
+                const response = await axios.get("http://5.181.217.153:5000/log")
                 const logs = response.data
 
                 // Aggregate data by LOCAL date instead of UTC

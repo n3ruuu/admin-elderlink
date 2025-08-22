@@ -21,7 +21,7 @@ const FinancialAssistance = () => {
 
     const fetchMembersData = async () => {
         try {
-            const response = await fetch("http://localhost:5000/financial-assistance/social-pension") // Assuming endpoint is for social_pension table
+            const response = await fetch("http://5.181.217.153:5000/financial-assistance/social-pension") // Assuming endpoint is for social_pension table
             if (!response.ok) throw new Error("Network response was not ok")
             const data = await response.json()
             setMembersData(data)
@@ -32,7 +32,7 @@ const FinancialAssistance = () => {
 
     const logAction = async (action) => {
         try {
-            const response = await fetch("http://localhost:5000/log", {
+            const response = await fetch("http://5.181.217.153:5000/log", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -65,21 +65,20 @@ const FinancialAssistance = () => {
     }
 
     const getMonthlyTotalPayouts = () => {
-        const startOfMonth = moment().startOf("month");
-        const endOfMonth = moment().endOf("month");
-    
+        const startOfMonth = moment().startOf("month")
+        const endOfMonth = moment().endOf("month")
+
         return membersData.filter((member) => {
-            const claimDate = moment(member.disbursement_date); // Assuming 'disbursement_date' is used to filter
-            
+            const claimDate = moment(member.disbursement_date) // Assuming 'disbursement_date' is used to filter
+
             // Ensure the member's disbursement is unclaimed, not inactive, and within the current month
             return (
-                member.status === "Unclaimed" && 
-                member.memberStatus === "Inactive" && 
+                member.status === "Unclaimed" &&
+                member.memberStatus === "Inactive" &&
                 claimDate.isBetween(startOfMonth, endOfMonth, null, "[]") // inclusive of start and end
-            );
-        }).length; // Return the number of active payouts in this month
-    };
-    
+            )
+        }).length // Return the number of active payouts in this month
+    }
 
     // Calculate upcoming payouts for the current week
     const getUpcomingPayoutsThisWeek = () => {

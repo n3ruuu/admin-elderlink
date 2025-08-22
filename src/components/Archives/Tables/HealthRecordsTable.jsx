@@ -43,7 +43,7 @@ const HealthRecordsTable = () => {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/members/${selectedMember.id}`, {
+            const response = await fetch(`http://5.181.217.153:5000/members/${selectedMember.id}`, {
                 method: "DELETE",
             })
 
@@ -63,7 +63,7 @@ const HealthRecordsTable = () => {
 
     const fetchMembers = async () => {
         try {
-            const response = await fetch("http://localhost:5000/members")
+            const response = await fetch("http://5.181.217.153:5000/members")
             const data = await response.json()
 
             const archivedMembers = data.filter((member) =>
@@ -100,7 +100,7 @@ const HealthRecordsTable = () => {
 
     const handleUndoArchive = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/members/undo/${selectedMember.id}`, {
+            const response = await fetch(`http://5.181.217.153:5000/members/undo/${selectedMember.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: "Active" }),
@@ -108,9 +108,7 @@ const HealthRecordsTable = () => {
 
             if (response.ok) {
                 // ✅ Remove the member from archived list since they're now Active
-                setMembers((prevMembers) =>
-                    prevMembers.filter((member) => member.id !== selectedMember.id),
-                )
+                setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id))
 
                 setSuccessMessage("Member has been successfully restored.")
                 setShowSuccessModal(true)
@@ -260,10 +258,7 @@ const HealthRecordsTable = () => {
                 onClose={() => setShowSuccessModal(false)}
                 message={successMessage}
             />
-            <DeleteSuccessModal
-                isOpen={showDeleteSuccessModal}
-                onClose={() => setShowDeleteSuccessModal(false)}
-            />
+            <DeleteSuccessModal isOpen={showDeleteSuccessModal} onClose={() => setShowDeleteSuccessModal(false)} />
         </div>
     )
 }

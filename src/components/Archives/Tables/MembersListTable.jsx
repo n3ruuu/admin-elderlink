@@ -28,7 +28,7 @@ const MembersListTable = () => {
 
     const fetchMembers = async () => {
         try {
-            const response = await fetch("http://localhost:5000/members")
+            const response = await fetch("http://5.181.217.153:5000/members")
             const data = await response.json()
 
             const archivedMembers = data.filter((member) =>
@@ -66,7 +66,7 @@ const MembersListTable = () => {
 
     const handleUndoArchive = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/members/undo/${selectedMember.id}`, {
+            const response = await fetch(`http://5.181.217.153:5000/members/undo/${selectedMember.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: "Active" }),
@@ -99,7 +99,7 @@ const MembersListTable = () => {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/members/${selectedMember.id}`, {
+            const response = await fetch(`http://5.181.217.153:5000/members/${selectedMember.id}`, {
                 method: "DELETE",
             })
 
@@ -245,11 +245,12 @@ const MembersListTable = () => {
             {/* Modals */}
             <UndoModal isOpen={showModal} onClose={closeUndoModal} onConfirm={handleUndoArchive} />
             <DeleteModal isOpen={showDeleteModal} onClose={closeDeleteModal} onConfirm={handleDelete} />
-            <SuccessModal isOpen={showSuccessModal} onClose={() => setShowSuccessModal(false)} message={successMessage} />
-            <DeleteSuccessModal
-                isOpen={showDeleteSuccessModal}
-                onClose={() => setShowDeleteSuccessModal(false)}
+            <SuccessModal
+                isOpen={showSuccessModal}
+                onClose={() => setShowSuccessModal(false)}
+                message={successMessage}
             />
+            <DeleteSuccessModal isOpen={showDeleteSuccessModal} onClose={() => setShowDeleteSuccessModal(false)} />
         </div>
     )
 }
