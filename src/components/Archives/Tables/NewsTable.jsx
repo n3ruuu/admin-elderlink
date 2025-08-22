@@ -4,12 +4,15 @@ import UndoModal from "../UndoModal"
 import UndoIcon from "../../../assets/icons/cancel.svg"
 import DeleteIcon from "../../../assets/icons/archive.svg"
 import DeleteModal from "../DeleteModal"
+import SuccessModal from "../SuccessModal"
 import { FiArrowDown, FiArrowUp } from "react-icons/fi"
 
 const NewsTable = () => {
     const [news, setNews] = useState([])
     const [isUndoModalOpen, setIsUndoModalOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+    const [successMessage, setSuccessMessage] = useState("")
     const [selectedNewsId, setSelectedNewsId] = useState(null)
     const [sortOrder, setSortOrder] = useState("asc")
     const [currentPage, setCurrentPage] = useState(1)
@@ -68,7 +71,8 @@ const NewsTable = () => {
                 setNews((prevNews) =>
                     prevNews.map((item) => (item.id === selectedNewsId ? { ...item, status: "Active" } : item)),
                 )
-                alert("News has been successfully restored.")
+                setSuccessMessage("News has been successfully restored.")
+                setIsSuccessModalOpen(true)
             }
         } catch (error) {
             console.error("Error undoing action:", error)
@@ -91,7 +95,8 @@ const NewsTable = () => {
             })
             if (response.ok) {
                 setNews((prevNews) => prevNews.filter((item) => item.id !== selectedNewsId))
-                alert("News has been successfully deleted.")
+                setSuccessMessage("News has been successfully deleted.")
+                setIsSuccessModalOpen(true)
             }
         } catch (error) {
             console.error("Error deleting news:", error)
@@ -232,6 +237,11 @@ const NewsTable = () => {
 
             <UndoModal isOpen={isUndoModalOpen} onClose={handleModalClose} onConfirm={handleUndoConfirm} />
             <DeleteModal isOpen={isDeleteModalOpen} onClose={handleModalClose} onConfirm={handleDeleteConfirm} />
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                message={successMessage}
+            />
         </div>
     )
 }

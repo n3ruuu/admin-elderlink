@@ -3,6 +3,7 @@ import UndoModal from "../UndoModal"
 import UndoIcon from "../../../assets/icons/cancel.svg"
 import DeleteIcon from "../../../assets/icons/archive.svg"
 import DeleteModal from "../DeleteModal"
+import SuccessModal from "../SuccessModal" // ✅ Import SuccessModal
 import moment from "moment"
 import axios from "axios"
 
@@ -15,9 +16,13 @@ const FormsTable = () => {
     const [formToDelete, setFormToDelete] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
 
-    const itemsPerPage = 8
+    // ✅ Success modal states
+    const [showSuccessModal, setShowSuccessModal] = useState(false)
+    const [successMessage, setSuccessMessage] = useState("")
+    const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false)
+    const [deleteSuccessMessage, setDeleteSuccessMessage] = useState("")
 
-    // Pagination calculation
+    const itemsPerPage = 8
     const totalPages = Math.ceil(forms.length / itemsPerPage)
     const startIndex = (currentPage - 1) * itemsPerPage
     const paginatedForms = forms
@@ -58,6 +63,7 @@ const FormsTable = () => {
         setIsModalOpen(true)
     }
 
+    // ✅ Handle Undo with SuccessModal
     const handleUndoConfirm = async () => {
         const formToUpdate = forms.find((form) => form.id === selectedFormId)
         const newStatus = formToUpdate.status === "Archived" ? "Active" : "Archived"
@@ -73,9 +79,12 @@ const FormsTable = () => {
                 setForms((prevForms) =>
                     prevForms.map((form) => (form.id === selectedFormId ? { ...form, status: newStatus } : form)),
                 )
-                alert("Form has been successfully restored.")
+
+                // ✅ Show success modal instead of alert
+                setSuccessMessage("Form has been successfully restored.")
+                setShowSuccessModal(true)
+
                 setIsModalOpen(false)
-                fetchForms()
             }
         } catch (error) {
             console.error("Error undoing action:", error)
@@ -95,7 +104,10 @@ const FormsTable = () => {
             if (response.ok) {
                 setForms((prevForms) => prevForms.filter((f) => f.id !== formToDelete.id))
                 setShowDeleteModal(false)
-                alert("Form deleted successfully")
+
+                // ✅ Show delete success modal
+                setDeleteSuccessMessage("Form deleted successfully.")
+                setShowDeleteSuccessModal(true)
             }
         } catch (error) {
             console.error("Error deleting form:", error)
@@ -189,6 +201,18 @@ const FormsTable = () => {
             {/* Modals */}
             <UndoModal isOpen={isModalOpen} onClose={handleModalClose} onConfirm={handleUndoConfirm} />
             <DeleteModal isOpen={showDeleteModal} onClose={handleCloseModal} onConfirm={handleDeleteConfirm} />
+
+            {/* ✅ Success Modals */}
+            <SuccessModal
+                isOpen={showSuccessModal}
+                onClose={() => setShowSuccessModal(false)}
+                message={successMessage}
+            />
+            <SuccessModal
+                isOpen={showDeleteSuccessModal}
+                onClose={() => setShowDeleteSuccessModal(false)}
+                message={deleteSuccessMessage}
+            />
         </div>
     )
 }

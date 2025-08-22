@@ -4,11 +4,16 @@ import UndoModal from "../UndoModal"
 import UndoIcon from "../../../assets/icons/cancel.svg"
 import DeleteIcon from "../../../assets/icons/archive.svg"
 import DeleteModal from "../DeleteModal"
+import SuccessModal from "../SuccessModal"
+import DeleteSuccessModal from "../DeleteSuccessModal" // ✅ new modal
 
 const MembersListTable = () => {
     const [members, setMembers] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [showSuccessModal, setShowSuccessModal] = useState(false)
+    const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false) // ✅ new state
+    const [successMessage, setSuccessMessage] = useState("")
     const [selectedMember, setSelectedMember] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
 
@@ -71,7 +76,8 @@ const MembersListTable = () => {
                 setMembers((prev) =>
                     prev.map((member) => (member.id === selectedMember.id ? { ...member, status: "Active" } : member)),
                 )
-                alert("Member has been successfully restored.")
+                setSuccessMessage("Member has been successfully restored.")
+                setShowSuccessModal(true)
                 closeUndoModal()
             } else {
                 console.error("Failed to undo archive.")
@@ -99,8 +105,8 @@ const MembersListTable = () => {
 
             if (response.ok) {
                 setMembers((prev) => prev.filter((member) => member.id !== selectedMember.id))
+                setShowDeleteSuccessModal(true) // ✅ show delete success modal
                 closeDeleteModal()
-                alert("Member has been successfully deleted.")
             } else {
                 console.error("Failed to delete member.")
             }
@@ -178,7 +184,9 @@ const MembersListTable = () => {
                                 {member.dateIssued ? moment(member.dateIssued).format("MM-DD-YYYY") : "N/A"}
                             </td>
                             <td
-                                className={`p-4 border-x align-baseline border-gray-200 font-medium ${getStatusColor(member.status)}`}
+                                className={`p-4 border-x align-baseline border-gray-200 font-medium ${getStatusColor(
+                                    member.status,
+                                )}`}
                             >
                                 {member.status || "N/A"}
                             </td>
@@ -200,7 +208,11 @@ const MembersListTable = () => {
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    className={`px-4 py-2 ${
+                        currentPage === 1
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                    } rounded-md`}
                 >
                     Previous
                 </button>
@@ -208,7 +220,11 @@ const MembersListTable = () => {
                     <button
                         key={index + 1}
                         onClick={() => handlePageChange(index + 1)}
-                        className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
+                        className={`px-4 py-2 ${
+                            currentPage === index + 1
+                                ? "bg-[#219EBC] text-white"
+                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                        } rounded-md mx-1`}
                     >
                         {index + 1}
                     </button>
@@ -216,7 +232,11 @@ const MembersListTable = () => {
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                    className={`px-4 py-2 ${
+                        currentPage === totalPages
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                    } rounded-md`}
                 >
                     Next
                 </button>
@@ -225,6 +245,11 @@ const MembersListTable = () => {
             {/* Modals */}
             <UndoModal isOpen={showModal} onClose={closeUndoModal} onConfirm={handleUndoArchive} />
             <DeleteModal isOpen={showDeleteModal} onClose={closeDeleteModal} onConfirm={handleDelete} />
+            <SuccessModal isOpen={showSuccessModal} onClose={() => setShowSuccessModal(false)} message={successMessage} />
+            <DeleteSuccessModal
+                isOpen={showDeleteSuccessModal}
+                onClose={() => setShowDeleteSuccessModal(false)}
+            />
         </div>
     )
 }

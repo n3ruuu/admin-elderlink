@@ -51,7 +51,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                                 lastName: row.lastName || "",
                                 middleName: row.middleName || "", // Default empty if not available
                                 extension: row.extension || "",
-                                dob: moment(row.dob).format("MM/DD/YYYY"),
+                              dob: moment(row.dob).format("YYYY-MM-DD"),
                                 sex: row.sex || "",
                                 civilStatus: row.civilStatus || "",
                                 address: row.address || "",
@@ -59,7 +59,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                                 controlNo: row.controlNo || "",
                                 purchaseBookletNo: row.purchaseBookletNo || "",
                                 medicineBookletNo: row.medicineBookletNo || "",
-                                dateIssued: moment(row.dateIssued).format("MM/DD/YYYY") || "",
+                                dateIssued: moment(row.dateIssued).format("YYYY-MM-DD") || "",
                                 medicalConditions: row.medicalConditions || "",
                                 medications: row.medications || "",
                                 guardianFirstName: row.guardianFirstName || "",
@@ -77,7 +77,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                     sendDataToBackend(formattedData)
 
                     // After importing, make the POST request for allQuarterData
-                    sendQuarterDataToBackend(formattedData)
+                    // sendQuarterDataToBackend(formattedData)
 
                     setSuccessModalTitle("Imported Members!")
                     setSuccessModalMessage("Members have been successfully imported.")
@@ -101,10 +101,10 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
             // After successful import, each member should now have a member_id returned by the backend
             const importedMembers = response.data.members // assuming the response contains an array of imported members
 
-            if (importedMembers && importedMembers.length > 0) {
-                // Now pass the imported members' data to the next function along with the quarter data
-                sendQuarterDataToBackend(importedMembers, Q1, Q2, Q3, Q4)
-            }
+            // if (importedMembers && importedMembers.length > 0) {
+            //     // Now pass the imported members' data to the next function along with the quarter data
+            //     sendQuarterDataToBackend(importedMembers, Q1, Q2, Q3, Q4)
+            // }
 
             // Optionally reset the selected file or do other UI updates
             setSelectedFile(null)
@@ -114,45 +114,45 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
     }
 
     // Function to handle the social pension data and send it to the backend
-    const sendQuarterDataToBackend = async (importedMembers, Q1, Q2, Q3, Q4) => {
-        try {
-            // Ensure Q1, Q2, Q3, and Q4 are passed correctly into the function
-            const allQuarterData = [Q1, Q2, Q3, Q4].map((quarterData, idx) => ({
-                quarter: `Q${idx + 1}`,
-                disbursement_date: quarterData?.disbursement_date || null,
-                claimer: quarterData?.claimer || null,
-                relationship: quarterData?.relationship || null,
-                proof: null, // Default proof as null
-            }))
+    // const sendQuarterDataToBackend = async (importedMembers, Q1, Q2, Q3, Q4) => {
+    //     try {
+    //         // Ensure Q1, Q2, Q3, and Q4 are passed correctly into the function
+    //         const allQuarterData = [Q1, Q2, Q3, Q4].map((quarterData, idx) => ({
+    //             quarter: `Q${idx + 1}`,
+    //             disbursement_date: quarterData?.disbursement_date || null,
+    //             claimer: quarterData?.claimer || null,
+    //             relationship: quarterData?.relationship || null,
+    //             proof: null, // Default proof as null
+    //         }))
 
-            console.log("Currently imported members:", importedMembers) // This will log the currently imported members
+    //         console.log("Currently imported members:", importedMembers) // This will log the currently imported members
 
-            // Check if there are any imported members
-            if (importedMembers && importedMembers.length > 0) {
-                // Loop through the imported members to send the social pension data for each
-                for (const member of importedMembers) {
-                    let memberId = member.id // Get the member_id from the imported member
-                    let fullName = `${member.firstName} ${member.lastName}`
-                    let controlNo = member.controlNo || null
+    //         // Check if there are any imported members
+    //         if (importedMembers && importedMembers.length > 0) {
+    //             // Loop through the imported members to send the social pension data for each
+    //             for (const member of importedMembers) {
+    //                 let memberId = member.id // Get the member_id from the imported member
+    //                 let fullName = `${member.firstName} ${member.lastName}`
+    //                 let controlNo = member.controlNo || null
 
-                    // Prepare the social pension data
-                    const socialPensionData = {
-                        member_id: memberId, // Use the member_id from the import
-                        control_no: controlNo,
-                        full_name: fullName,
-                        quarterData: allQuarterData,
-                    }
+    //                 // Prepare the social pension data
+    //                 const socialPensionData = {
+    //                     member_id: memberId, // Use the member_id from the import
+    //                     control_no: controlNo,
+    //                     full_name: fullName,
+    //                     quarterData: allQuarterData,
+    //                 }
 
-                    // Send data to the backend
-                    await axios.post("http://localhost:5000/financial-assistance/social-pension", socialPensionData)
-                }
-            } else {
-                console.log("No imported members to process.")
-            }
-        } catch (error) {
-            console.error("Error saving data:", error)
-        }
-    }
+    //                 // Send data to the backend
+    //                 await axios.post("http://localhost:5000/financial-assistance/social-pension", socialPensionData)
+    //             }
+    //         } else {
+    //             console.log("No imported members to process.")
+    //         }
+    //     } catch (error) {
+    //         console.error("Error saving data:", error)
+    //     }
+    // }
 
     return (
         <>
@@ -377,7 +377,6 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                 <div>
                     {!isEditMode && (
                         <>
-                            {/* Hidden file input
                             <input
                                 type="file"
                                 id="csvFile"
@@ -391,7 +390,7 @@ const Form = ({ formValues, onChange, onClose, handleSubmit, isFormValid, isEdit
                                 onClick={() => document.getElementById("csvFile").click()}
                             >
                                 Import .CSV File
-                            </button> */}
+                            </button> 
 
                             {/* Display selected file name with small "X" button to remove */}
                             {selectedFile && (

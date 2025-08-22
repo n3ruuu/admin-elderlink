@@ -1,20 +1,27 @@
 import { useState, useEffect } from "react"
-import UndoModal from "../UndoModal" // Import the UndoModal
+import UndoModal from "../UndoModal"
 import UndoIcon from "../../../assets/icons/cancel.svg"
 import DeleteIcon from "../../../assets/icons/archive.svg"
-import DeleteModal from "../DeleteModal" // Import the DeleteModal component
+import DeleteModal from "../DeleteModal"
+import SuccessModal from "../SuccessModal"
+import DeleteSuccessModal from "../DeleteSuccessModal" // ✅ new modal
 
 const HealthRecordsTable = () => {
-    const [members, setMembers] = useState([]) // State to hold fetched members data
-    const [showModal, setShowModal] = useState(false) // State for showing the UndoModal
-    const [selectedMember, setSelectedMember] = useState(null) // State to store the member being archived/undo-archived
-    const [currentPage, setCurrentPage] = useState(1) // Current page state
-    const [showDeleteModal, setShowDeleteModal] = useState(false) // State for DeleteModal visibility
+    const [members, setMembers] = useState([])
+    const [showModal, setShowModal] = useState(false)
+    const [selectedMember, setSelectedMember] = useState(null)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
 
-    const itemsPerPage = 6 // Number of items to display per page
-    const totalPages = Math.ceil(members.length / itemsPerPage) // Calculate total pages
-    const startIndex = (currentPage - 1) * itemsPerPage // Calculate start index
-    const currentMembers = members.slice(startIndex, startIndex + itemsPerPage) // Get current active members for display
+    // ✅ Modals for success messages
+    const [showSuccessModal, setShowSuccessModal] = useState(false)
+    const [successMessage, setSuccessMessage] = useState("")
+    const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false) // ✅ new state
+
+    const itemsPerPage = 6
+    const totalPages = Math.ceil(members.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const currentMembers = members.slice(startIndex, startIndex + itemsPerPage)
 
     useEffect(() => {
         fetchMembers()
@@ -31,7 +38,7 @@ const HealthRecordsTable = () => {
 
     const openDeleteModal = (memberId) => {
         setSelectedMember({ id: memberId })
-        setShowDeleteModal(true) // Open the Delete Modal
+        setShowDeleteModal(true)
     }
 
     const handleDelete = async () => {
@@ -41,9 +48,11 @@ const HealthRecordsTable = () => {
             })
 
             if (response.ok) {
+                // ✅ Remove from list
                 setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id))
+
+                setShowDeleteSuccessModal(true) // ✅ open delete success modal
                 closeDeleteModal()
-                alert("Member has been successfully deleted.")
             } else {
                 console.error("Failed to delete member.")
             }
@@ -57,7 +66,6 @@ const HealthRecordsTable = () => {
             const response = await fetch("http://localhost:5000/members")
             const data = await response.json()
 
-            // Only show active members (assuming 'status' is 'Active' for active members)
             const archivedMembers = data.filter((member) =>
                 ["Relocated", "Deceased", "Inactive"].includes(member.status),
             )
@@ -67,54 +75,46 @@ const HealthRecordsTable = () => {
         }
     }
 
-    // Function to get the status color
     const getStatusColor = (status) => {
         switch (status) {
             case "Deceased":
-                return "text-red-500" // Red for Deceased
+                return "text-red-500"
             case "Relocated":
-                return "text-green-500" // Green for Relocated
+                return "text-green-500"
             case "Inactive":
-                return "text-yellow-500" // Yellow for Inactive
+                return "text-yellow-500"
             default:
-                return "text-gray-500" // Default gray color
+                return "text-gray-500"
         }
     }
 
-    // Function to handle opening the modal for undo archiving
     const openUndoModal = (memberId, currentStatus) => {
         setSelectedMember({ id: memberId, status: currentStatus })
         setShowModal(true)
     }
 
-    // Function to handle closing the UndoModal
     const closeUndoModal = () => {
         setShowModal(false)
         setSelectedMember(null)
     }
 
-    // Function to handle undo archiving or archiving a member
     const handleUndoArchive = async () => {
         try {
             const response = await fetch(`http://localhost:5000/members/undo/${selectedMember.id}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    status: "Active", // Set the status to "Active"
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "Active" }),
             })
 
             if (response.ok) {
-                // Update the frontend by setting the member's status to "Active"
+                // ✅ Remove the member from archived list since they're now Active
                 setMembers((prevMembers) =>
-                    prevMembers.map((member) =>
-                        member.id === selectedMember.id ? { ...member, status: "Active" } : member,
-                    ),
+                    prevMembers.filter((member) => member.id !== selectedMember.id),
                 )
 
-                // Close the modal after the update
+                setSuccessMessage("Member has been successfully restored.")
+                setShowSuccessModal(true)
+
                 closeUndoModal()
             } else {
                 console.error("Failed to undo archive.")
@@ -194,7 +194,9 @@ const HealthRecordsTable = () => {
                                 {member.guardianRelationship}
                             </td>
                             <td
-                                className={`p-4 text-center border-x border-gray-200 align-baseline ${getStatusColor(member.status) || "text-gray-500"}`}
+                                className={`p-4 text-center border-x border-gray-200 align-baseline ${getStatusColor(
+                                    member.status,
+                                )}`}
                             >
                                 {member.status || "N/A"}
                             </td>
@@ -211,38 +213,57 @@ const HealthRecordsTable = () => {
                 </tbody>
             </table>
 
+            {/* Pagination */}
             <div className="flex fixed bottom-5 mt-4">
-                {/* Pagination controls */}
-                <div>
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 ${
+                        currentPage === 1
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                    } rounded-md`}
+                >
+                    Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, index) => (
                     <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className={`px-4 py-2 ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`px-4 py-2 ${
+                            currentPage === index + 1
+                                ? "bg-[#219EBC] text-white"
+                                : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                        } rounded-md mx-1`}
                     >
-                        Previous
+                        {index + 1}
                     </button>
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index + 1}
-                            onClick={() => handlePageChange(index + 1)}
-                            className={`px-4 py-2 ${currentPage === index + 1 ? "bg-[#219EBC] text-white" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md mx-1`}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                    <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className={`px-4 py-2 ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"} rounded-md`}
-                    >
-                        Next
-                    </button>
-                </div>
+                ))}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 ${
+                        currentPage === totalPages
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : "bg-white text-[#219EBC] border border-[#219EBC] hover:bg-[#219EBC] hover:text-white transition-colors duration-300"
+                    } rounded-md`}
+                >
+                    Next
+                </button>
             </div>
 
-            {/* Undo Modal */}
+            {/* Modals */}
             <UndoModal isOpen={showModal} onClose={closeUndoModal} onConfirm={handleUndoArchive} />
             <DeleteModal isOpen={showDeleteModal} onClose={closeDeleteModal} onConfirm={handleDelete} />
+            <SuccessModal
+                isOpen={showSuccessModal}
+                onClose={() => setShowSuccessModal(false)}
+                message={successMessage}
+            />
+            <DeleteSuccessModal
+                isOpen={showDeleteSuccessModal}
+                onClose={() => setShowDeleteSuccessModal(false)}
+            />
         </div>
     )
 }

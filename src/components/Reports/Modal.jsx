@@ -170,8 +170,7 @@ const Modal = ({ isOpen, onClose, fetchReportsData }) => {
         </div>
         <div class="barangay-info">
             <p><strong>Barangay Mojon</strong></p>
-            <p>123 Main Street, Brgy. Mojon</p>
-            <p>Contact No: (123) 456-7890</p>
+            <p>VR69+82W, Malolos, Bulacan</p>
         </div>
         <table>
             <thead>

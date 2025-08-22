@@ -22,14 +22,14 @@ const ViewModeSwitcher = ({ filter, handleFilterChange }) => {
                         >
                             Health
                         </button>
-                        <button
+                        {/* <button
                             className={`border-1 border-[#219EBC] text-[#219EBC] border-r px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
                                 filter === "finance" ? "bg-[#219EBC] text-white" : ""
                             }`}
                             onClick={() => handleFilterChange("finance")}
                         >
                             Finance
-                        </button>
+                        </button> */}
                         <button
                             className={`border-1 border-[#219EBC] text-[#219EBC] border-r px-4 py-2 hover:bg-[#219EBC] hover:text-white ${
                                 filter === "events" ? "bg-[#219EBC] text-white" : ""

@@ -3,60 +3,55 @@ import moment from "moment"
 import UndoModal from "../UndoModal"
 import UndoIcon from "../../../assets/icons/cancel.svg"
 import DeleteIcon from "../../../assets/icons/archive.svg"
-import DeleteModal from "../DeleteModal" // Import the DeleteModal component
+import DeleteModal from "../DeleteModal"
+import DeleteSuccessModal from "../DeleteSuccessModal" // ✅ import success modal
 import axios from "axios"
 
 const ReportsTable = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false) // Modal visibility state
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false) // Delete modal visibility state
-    const [reportsData, setReportsData] = useState([]) // Store fetched reports
-    const [selectedReportId, setSelectedReportId] = useState(null) // Track selected report ID
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false) // ✅ success modal state
+    const [reportsData, setReportsData] = useState([])
+    const [selectedReportId, setSelectedReportId] = useState(null)
 
     const fetchReportsData = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/reports/get-news") // Replace with your API endpoint
-            const archivedReports = response.data.filter((report) => report.status === "Archived") // Filter archived reports
-            setReportsData(archivedReports) // Update state with filtered data
+            const response = await axios.get("http://localhost:5000/reports/get-news")
+            const archivedReports = response.data.filter((report) => report.status === "Archived")
+            setReportsData(archivedReports)
         } catch (error) {
             console.error("Error fetching reports data:", error)
         }
     }
 
-    // Fetch data on component mount
     useEffect(() => {
         fetchReportsData()
     }, [])
 
-    // Open the modal and set the selected report ID for undo
     const handleUndoClick = (id) => {
-        setSelectedReportId(id) // Set the ID of the report to be undone
-        setIsModalOpen(true) // Open the UndoModal
+        setSelectedReportId(id)
+        setIsModalOpen(true)
     }
 
-    // Open the delete modal and set the selected report ID for deletion
     const handleDeleteClick = (id) => {
-        setSelectedReportId(id) // Set the ID of the report to be deleted
-        setIsDeleteModalOpen(true) // Open the DeleteModal
+        setSelectedReportId(id)
+        setIsDeleteModalOpen(true)
     }
 
-    // Handle confirming the Undo action
     const handleUndoConfirm = async () => {
-        if (!selectedReportId) return // Ensure an ID is selected
+        if (!selectedReportId) return
 
         try {
             const response = await axios.put(`http://localhost:5000/reports/undo/${selectedReportId}`, {
-                status: "Active", // Example payload; adjust based on API requirements
+                status: "Active",
             })
 
             if (response.status === 200) {
-                // Update the state to reflect the change
                 setReportsData((prevReports) =>
                     prevReports.map((report) =>
                         report.id === selectedReportId ? { ...report, status: "Active" } : report,
                     ),
                 )
-                console.log("Report status updated successfully.")
-                alert("Report has been successfully restored.")
                 fetchReportsData()
             } else {
                 console.error("Failed to update report status.")
@@ -64,41 +59,40 @@ const ReportsTable = () => {
         } catch (error) {
             console.error("Error confirming undo action:", error)
         } finally {
-            setIsModalOpen(false) // Close the modal
+            setIsModalOpen(false)
         }
     }
 
-    // Handle confirming the Delete action
     const handleDeleteConfirm = async () => {
-        if (!selectedReportId) return // Ensure an ID is selected
+        if (!selectedReportId) return
 
         try {
             const response = await axios.delete(`http://localhost:5000/reports/delete/${selectedReportId}`)
 
             if (response.status === 200) {
-                // Remove the deleted report from the state
-                setReportsData((prevReports) => prevReports.filter((report) => report.id !== selectedReportId))
-                console.log("Report deleted successfully.")
-                alert("Report has been successfully deleted.")
+                setReportsData((prevReports) =>
+                    prevReports.filter((report) => report.id !== selectedReportId),
+                )
+                // ✅ open success modal
+                setIsSuccessModalOpen(true)
             } else {
                 console.error("Failed to delete report.")
             }
         } catch (error) {
             console.error("Error confirming delete action:", error)
         } finally {
-            setIsDeleteModalOpen(false) // Close the delete modal
+            setIsDeleteModalOpen(false)
         }
     }
 
-    // Handle closing the modals
     const handleModalClose = () => {
         setIsModalOpen(false)
         setIsDeleteModalOpen(false)
+        setIsSuccessModalOpen(false) // ✅ close success modal
     }
 
     return (
         <div className="px-4">
-            {/* Scrollable container with a fixed height */}
             <div className="mx-12 rounded-xl shadow-lg overflow-hidden">
                 <table className="min-w-full bg-white border border-gray-300">
                     <thead className="border-b opacity-90 bg-[#219EBC] text-white">
@@ -157,6 +151,13 @@ const ReportsTable = () => {
 
             {/* Delete Modal */}
             <DeleteModal isOpen={isDeleteModalOpen} onClose={handleModalClose} onConfirm={handleDeleteConfirm} />
+
+            {/* ✅ Success Modal */}
+            <DeleteSuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={handleModalClose}
+                message="Report has been successfully deleted."
+            />
         </div>
     )
 }
